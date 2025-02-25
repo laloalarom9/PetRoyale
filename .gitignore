@@ -1,2 +1,8 @@
+# Ignorar base de datos local
+db.sqlite3
+
+# Ignorar archivos de caché de Python
+__pycache__/
+
 # Ignorar entorno virtual
 venv/
