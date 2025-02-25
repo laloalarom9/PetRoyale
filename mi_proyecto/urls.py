@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.shortcuts import render
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls),  # Panel de administración de Django
+    path("", lambda request: render(request, "index.html"), name="home"),  # Página de inicio
 ]
