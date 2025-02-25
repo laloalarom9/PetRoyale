@@ -1,4 +1,5 @@
 import os
+import dj_database_url
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,19 +49,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "mi_proyecto.wsgi.application"
 
-# 📌 CONFIGURACIÓN DE ARCHIVOS ESTÁTICOS
+#  CONFIGURACIÓN DE ARCHIVOS ESTÁTICOS
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # 🔹 Azure necesita este valor
 
-# 📌 CONFIGURACIÓN DE BASE DE DATOS (TEMPORALMENTE SQLITE)
+
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("PGDATABASE", "postgres"),  # Nombre de la base de datos
+        "USER": os.getenv("PGUSER", "petroyale"),  # Usuario de PostgreSQL
+        "PASSWORD": os.getenv("PGPASSWORD", "Libert@d25"),  # Contraseña de PostgreSQL
+        "HOST": os.getenv("PGHOST", "petroyalebd.postgres.database.azure.com"),  # Servidor en Azure
+        "PORT": os.getenv("PGPORT", "5432"),  # Puerto de PostgreSQL
+        "OPTIONS": {"sslmode": "require"},  # Azure requiere SSL
     }
 }
 
-# 📌 SEGURIDAD EN PRODUCCIÓN
+
+#  SEGURIDAD EN PRODUCCIÓN
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 CSRF_TRUSTED_ORIGINS = ["https://petroyale-ehg7gyadd4h6c7gk.spaincentral-01.azurewebsites.net"]
 
