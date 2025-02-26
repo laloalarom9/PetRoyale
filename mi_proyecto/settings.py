@@ -2,6 +2,8 @@ import os
 import dj_database_url
 from pathlib import Path
 
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-6vl06(3ti$*_c%0lb5390qvmwf1imvlv16ncsqz5&p)*u!@llv"
@@ -49,11 +51,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "mi_proyecto.wsgi.application"
 
-#  CONFIGURACIÓN DE ARCHIVOS ESTÁTICOS
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 🚀 Poner DEBUG en True temporalmente
+DEBUG = True  # Cambiar a False solo en producción
+
+# Configuración de archivos estáticos
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # 🔹 Azure necesita este valor
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),  # Asegura que 'static' está en la raíz del proyecto
+]
 
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # Para producción (Azure)
+
+# Si estás en producción o Azure, usa WhiteNoise
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DATABASES = {
     "default": {
