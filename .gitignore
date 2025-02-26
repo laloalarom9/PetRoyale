@@ -3,9 +3,33 @@ db.sqlite3
 
 # Ignorar archivos de caché de Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
 
 # Ignorar entorno virtual
 venv/
+env/
+
 # Ignorar archivos de configuración de Azure y VS Code
 .deployment
 .vscode/
+
+# Ignorar archivos estáticos generados automáticamente
+staticfiles/
+
+# Ignorar archivos de logs
+*.log
+*.bak
+*.swp
+
+# Ignorar archivos sensibles o de configuración
+.env
+*.sqlite3
+/secrets.json
+
+# Ignorar migraciones de Django (opcional si no quieres incluirlas en el repo)
+**/migrations/*.pyc
+**/migrations/*.pyo
+**/migrations/*.pyd
+**/migrations/__pycache__/
