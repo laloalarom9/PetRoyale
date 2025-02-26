@@ -15,8 +15,6 @@ env/
 .deployment
 .vscode/
 
-# Ignorar archivos estáticos generados automáticamente
-staticfiles/
 
 # Ignorar archivos de logs
 *.log
