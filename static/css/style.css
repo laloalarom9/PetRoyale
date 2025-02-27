@@ -1,11 +1,16 @@
 /* Ajustar el header y la barra de navegación */
 header {
     background-color: #2c3e50; /* Azul oscuro */
-    padding: 15px 0;
+    padding: 0 15px;
+    margin: 0;
+    width: 100vw; /* Ocupa todo el ancho de la pantalla */
     text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: fixed; /* Opcional, si quieres que la navbar sea fija */
+    top: 0;
+    left: 0;
 }
 
 /* Contenedor del logo */
@@ -33,6 +38,7 @@ nav {
     justify-content: center;
     gap: 25px;
     flex-wrap: wrap;
+    width: 100%; /* Asegura que ocupe todo el ancho */
 }
 
 /* Enlaces de la barra de navegación */
@@ -73,6 +79,7 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding-top: 100px;
 }
 
 /* Botón de explorar tienda */
