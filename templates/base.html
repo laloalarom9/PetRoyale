@@ -10,7 +10,9 @@
 <body>
     <header>
         <nav>
-            <a href="{% url 'inicio' %}">Inicio</a>
+            <a href="{% url 'inicio' %}">
+                <img src="{% static 'img/PetRoyaleLogo.png' %}" alt="PetRoyale Logo" class="logo">
+            </a>
             <a href="#">Tienda</a>
             <a href="#">Perfil</a>
             <a href="#">Donaciones</a>
@@ -20,6 +22,7 @@
             <a href="#">Iniciar sesión</a>
         </nav>
     </header>
+    
     <main>
         {% block content %}{% endblock %}
     </main>
