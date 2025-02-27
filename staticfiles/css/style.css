@@ -1,62 +1,115 @@
 /* Ajustar el header y la barra de navegación */
 header {
     background-color: #2c3e50; /* Azul oscuro */
-    padding: 10px 20px;
+    padding: 15px 0;
     text-align: center;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+}
+
+/* Contenedor del logo */
+.logo-container {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
 }
 
 /* Estilizar el logo */
 .logo {
-    height: 80px; /* Tamaño más manejable */
+    height: 70px;
     width: auto;
-    margin-left: 20px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.logo-container:hover .logo {
+    transform: scale(1.1);
 }
 
 /* Estilos de la barra de navegación */
 nav {
     display: flex;
     align-items: center;
-    gap: 20px;
-    flex-grow: 1;
     justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
 }
 
+/* Enlaces de la barra de navegación */
 nav a {
-    color: #f4d03f; /* Amarillo dorado */
+    color: #ffffff; /* Blanco para mayor contraste */
     text-decoration: none;
-    font-size: 18px;
+    font-size: 20px; /* Tamaño de letra más grande */
     font-weight: bold;
-    padding: 10px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
     transition: color 0.3s ease;
 }
 
-nav a:hover {
-    color: #ecf0f1; /* Blanco */
+/* Estilos para los iconos */
+nav a i, nav a img {
+    width: 30px; /* Aumentar tamaño de los iconos */
+    height: auto;
+    margin-right: 10px;
+    filter: brightness(0) invert(1); /* Hacer iconos blancos */
 }
 
-/* Sección principal */
+/* Efecto hover en enlaces */
+nav a:hover {
+    color: #f4d03f; /* Amarillo dorado al pasar el cursor */
+    text-decoration: underline;
+}
+
+nav a:hover i {
+    filter: brightness(1) invert(0); /* Cambia el icono a negro cuando está en hover */
+}
+
+/* Centrar la sección principal */
 main {
     text-align: center;
-    padding: 50px;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Botón de explorar tienda */
 .btn {
     background-color: #f4d03f; /* Amarillo */
     color: #1e2a3a; /* Azul oscuro */
-    padding: 12px 20px;
+    padding: 14px 24px;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     border-radius: 8px;
     display: inline-block;
-    margin-top: 10px;
-    transition: background 0.3s ease;
+    margin-top: 15px;
+    transition: background 0.3s ease, transform 0.2s ease-in-out;
 }
 
 .btn:hover {
     background-color: #e1b12c; /* Amarillo más oscuro */
+    transform: scale(1.05);
+}
+/* Eliminar filtro de inversión de color en el logo */
+.logo {
+    height: 70px;
+    width: auto;
+    transition: transform 0.3s ease-in-out;
+    filter: none; /* Asegura que el logo no tenga ningún filtro */
+}
+
+/* Aplicar el filtro SOLO a los iconos de la navbar */
+nav a i {
+    font-size: 24px; /* Tamaño correcto de los iconos */
+    margin-right: 8px;
+    color: #ffffff; /* Blancos */
+    transition: color 0.3s ease;
+}
+
+/* Efecto hover en iconos (manteniendo el color blanco) */
+nav a:hover i {
+    color: #f4d03f; /* Amarillo en hover */
 }

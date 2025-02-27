@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <title>{% block title %}PetRoyale{% endblock %}</title>
-        {% load static %}
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-        
-    </head>
-    
+<head>
+    <title>{% block title %}PetRoyale{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
 <body>
     <header>
         <nav>
-            <a href="{% url 'inicio' %}">
+            <a href="{% url 'inicio' %}" class="logo-container" title="Ir a inicio">
                 <img src="{% static 'img/PetRoyaleLogo.png' %}" alt="PetRoyale Logo" class="logo">
             </a>
-            <a href="#">Tienda</a>
-            <a href="#">Perfil</a>
-            <a href="#">Donaciones</a>
-            <a href="#">Reseñas</a>
-            <a href="#">Pedidos</a>
-            <a href="#">FAQ</a>
-            <a href="#">Iniciar sesión</a>
+            <a href="#"><img src="{% static 'img/iconos/store.png' %}" alt="Tienda" class="icon"> Tienda</a>
+            <a href="#"><img src="{% static 'img/iconos/donar.png' %}" alt="Donaciones" class="icon"> Donaciones</a>
+            <a href="#"><img src="{% static 'img/iconos/review.png' %}" alt="Reseñas" class="icon"> Reseñas</a>
+            <a href="#"><img src="{% static 'img/iconos/orders.png' %}" alt="Pedidos" class="icon"> Pedidos</a>
+            <a href="#"><img src="{% static 'img/iconos/faq.png' %}" alt="FAQ" class="icon"> FAQ</a>
+            <a href="#"><img src="{% static 'img/iconos/user.png' %}" alt="Perfil" class="icon"> Perfil</a>
+            <a href="#"><img src="{% static 'img/iconos/login.png' %}" alt="Iniciar sesión" class="icon"> Iniciar sesión</a>
         </nav>
     </header>
-    
+
     <main>
         {% block content %}{% endblock %}
     </main>
