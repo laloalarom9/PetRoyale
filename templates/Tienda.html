@@ -4,31 +4,30 @@
 {% block title %}Tienda - PetRoyale{% endblock %}
 
 {% block content %}
-    <h2 style="font-size: 56px;">Nuestros Productos</h2>
-    <div class="container">
-        <div class="product">
+<section class="store-section">
+    <h1 class="store-title">Nuestros Productos</h1>
+    
+    <div class="store-container">
+        <div class="product-card">
             <img src="{% static 'img/productos/juguete_perro.webp' %}" alt="Juguete para Perros" class="product-img">
-            <h3>Juguete para Perros</h3>
-            <p>9.99€</p>
-            <button class="btn">Comprar</button>
-            <br></br>
-            <br></br>
+            <h3 class="product-title">Juguete para Perros</h3>
+            <p class="product-price">9.99€</p>
+            <button class="btn-buy">Comprar</button>
         </div>
-        <div class="product">
+        
+        <div class="product-card">
             <img src="{% static 'img/productos/rascador_gato.jpg' %}" alt="Rascador para Gatos" class="product-img">
-            <h3>Rascador para Gatos</h3>
-            <p>24.99€</p>
-            <button class="btn">Comprar</button>
-            <br></br>
-            <br></br>
+            <h3 class="product-title">Rascador para Gatos</h3>
+            <p class="product-price">24.99€</p>
+            <button class="btn-buy">Comprar</button>
         </div>
-        <div class="product">
+        
+        <div class="product-card">
             <img src="{% static 'img/productos/comedero_automatico.jpg' %}" alt="Comedero Automático" class="product-img">
-            <h3>Comedero Automático</h3>
-            <p>39.99€</p>
-            <button class="btn">Comprar</button>
-            <br></br>
-            <br></br>
+            <h3 class="product-title">Comedero Automático</h3>
+            <p class="product-price">39.99€</p>
+            <button class="btn-buy">Comprar</button>
         </div>
     </div>
+</section>
 {% endblock %}

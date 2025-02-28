@@ -1,94 +1,213 @@
-/* Ajustar el header y la barra de navegación */
-header {
-    background-color: #2c3e50; /* Azul oscuro */
-    padding: 0 15px;
-    margin: 0;
-    width: 100vw; /* Ocupa todo el ancho de la pantalla */
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed; /* Opcional, si quieres que la navbar sea fija */
-    top: 0;
-    left: 0;
+/* 🔹 Ajustar el header */
+.navbar {
+    background-color: #2c3e50 !important; /* Azul oscuro */
+    padding: 15px;
 }
 
-/* Contenedor del logo */
-.logo-container {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-}
-
-/* Estilizar el logo */
+/* 🔹 Estilizar el logo */
 .logo {
-    height: 70px;
+    height: 60px;
     width: auto;
-    transition: transform 0.3s ease-in-out;
 }
 
-.logo-container:hover .logo {
-    transform: scale(1.1);
+/* 🔹 Centrar los elementos del navbar */
+.navbar-nav {
+    margin: auto;
 }
 
-/* Estilos de la barra de navegación */
-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 70px;
-    flex-wrap: wrap;
-    width: 100%; /* Asegura que ocupe todo el ancho */
-}
-
-/* Enlaces de la barra de navegación */
-nav a {
-    color: #ffffff; /* Blanco para mayor contraste */
-    text-decoration: none;
-    font-size: 30px; /* Tamaño de letra más grande */
+/* 🔹 Estilos de la barra de navegación */
+.navbar-nav .nav-link {
+    color: #ffffff !important;
+    font-size: 18px;
     font-weight: bold;
-    padding: 12px 18px;
     display: flex;
     align-items: center;
     transition: color 0.3s ease;
+    padding: 10px 20px;
 }
 
-/* Estilos para los iconos */
-nav a i, nav a img {
-    width: 40px; /* Aumentar tamaño de los iconos */
+/* 🔹 Estilos para los iconos */
+.navbar-nav .nav-link img {
+    width: 24px;
     height: auto;
-    margin-right: 10px;
-    filter: brightness(0) invert(1); /* Hacer iconos blancos */
+    margin-right: 8px;
 }
 
-/* Efecto hover en enlaces */
-nav a:hover {
-    color: #f4d03f; /* Amarillo dorado al pasar el cursor */
-    text-decoration: underline;
+/* 🔹 Efecto hover en enlaces */
+.navbar-nav .nav-link:hover {
+    color: #f4d03f !important;
 }
 
-nav a:hover i {
-    filter: brightness(1) invert(0); /* Cambia el icono a negro cuando está en hover */
+/* 🔹 Enlace activo (página actual) */
+.navbar-nav .nav-link.active {
+    color: #f4d03f !important;
+    font-weight: bold;
+    border-bottom: 3px solid #f4d03f;
 }
 
-/* Centrar la sección principal */
-main {
+/* 🔹 Ajustar menú hamburguesa */
+.navbar-toggler {
+    border: none;
+    background: none;
+}
+
+.navbar-toggler:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* 🔹 Ajuste del menú en pantallas pequeñas */
+@media screen and (max-width: 768px) {
+    .navbar {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .navbar-toggler {
+        margin-left: auto;
+    }
+
+    .navbar-collapse {
+        background-color: #2c3e50 !important; /* Azul oscuro */
+        max-height: 80vh; /* Limita la altura del menú al 80% de la pantalla */
+        overflow-y: auto; /* Activa el scroll si el contenido excede la altura */
+        scrollbar-width: thin; /* Hace la barra de scroll más delgada */
+        scrollbar-color: #f4d03f #2c3e50; /* Personaliza los colores de la barra de scroll */
+    }
+    
+    /* 🔹 Personalización de la barra de scroll en navegadores WebKit (Chrome, Edge, Safari) */
+    .navbar-collapse::-webkit-scrollbar {
+        width: 6px; /* Ancho de la barra de scroll */
+    }
+    
+    .navbar-collapse::-webkit-scrollbar-thumb {
+        background-color: #f4d03f; /* Color de la barra de scroll */
+        border-radius: 10px;
+    }
+    
+    .navbar-collapse::-webkit-scrollbar-track {
+        background-color: #2c3e50; /* Color del fondo de la barra de scroll */
+    }
+    
+
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .navbar-nav .nav-link {
+        font-size: 20px;
+        padding: 12px 0;
+    }
+
+    .logo {
+        height: 50px;
+    }
+}
+
+/* 🔹 Ajuste en pantallas grandes */
+@media screen and (min-width: 1024px) {
+    .navbar-nav {
+        justify-content: center;
+    }
+
+    .navbar-nav .nav-link {
+        font-size: 18px;
+    }
+}
+/* 🔹 Asegurar que los iconos sean blancos */
+.navbar-nav .nav-link img {
+    filter: brightness(0) invert(1); /* Convierte los iconos a blanco */
+    transition: filter 0.3s ease;
+}
+
+/* 🔹 Cambio de color en hover */
+.navbar-nav .nav-link:hover img {
+    filter: brightness(1) invert(0); /* Los cambia a negro al pasar el cursor */
+}
+
+/* 🔹 Asegurar que los iconos se mantengan blancos en el menú desplegable */
+.navbar-collapse .nav-link img {
+    filter: brightness(0) invert(1);
+}
+
+/* 🔹 Mantener los iconos blancos en el enlace activo */
+.navbar-nav .nav-link.active img {
+    filter: brightness(0) invert(1);
+}
+
+/* 🔹 Ajustar icono del botón menú hamburguesa a blanco */
+.navbar-toggler-icon {
+    filter: brightness(0) invert(1); /* Hace el icono del menú hamburguesa blanco */
+}
+
+
+/* 🔹 Cambiar color del texto a naranja dorado en hover */
+.navbar-nav .nav-link:hover {
+    color: #f4d03f !important; /* Naranja dorado */
+}
+
+/* 🔹 Cambiar color de los iconos a naranja dorado en hover */
+.navbar-nav .nav-link:hover img {
+    filter: brightness(0) saturate(100%) invert(77%) sepia(65%) saturate(600%) hue-rotate(5deg) brightness(95%) contrast(90%);
+}
+
+/* 🔹 Mantener el color cuando un enlace está activo */
+.navbar-nav .nav-link.active {
+    color: #f4d03f !important;
+    font-weight: bold;
+    border-bottom: 3px solid #f4d03f;
+    filter: brightness(0) saturate(100%) invert(77%) sepia(65%) saturate(600%) hue-rotate(5deg) brightness(95%) contrast(90%);
+
+}
+
+/* 🔹 Cambiar color del icono en el enlace activo */
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PRINCIPIO PAGINA INICIO------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* 🔹 Sección principal */
+.hero-section {
     text-align: center;
     padding: 60px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding-top: 100px;
 }
 
-/* Botón de explorar tienda */
-.btn {
+/* 🔹 Título principal */
+.hero-title {
+    font-size: 56px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #2c3e50; /* Azul oscuro */
+}
+
+/* 🔹 Imagen de portada */
+.hero-image {
+    width: 100%; /* Ocupa todo el ancho disponible */
+    max-width: 1200px; /* Limita el tamaño máximo */
+    height: auto; /* Mantiene la proporción */
+    display: block; /* Elimina espacios extra */
+    object-fit: cover; /* Evita distorsiones */
+    border-radius: 15px; /* Esquinas redondeadas */
+    margin-bottom: 20px;
+}
+
+/* 🔹 Subtítulo */
+.hero-subtitle {
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* 🔹 Botón de explorar tienda */
+.btn-explorar {
     background-color: #f4d03f; /* Amarillo */
     color: #1e2a3a; /* Azul oscuro */
     padding: 14px 24px;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 26px;
     font-weight: bold;
     border-radius: 8px;
     display: inline-block;
@@ -96,42 +215,542 @@ main {
     transition: background 0.3s ease, transform 0.2s ease-in-out;
 }
 
-.btn:hover {
+.btn-explorar:hover {
     background-color: #e1b12c; /* Amarillo más oscuro */
     transform: scale(1.05);
 }
-/* Eliminar filtro de inversión de color en el logo */
-.logo {
-    height: 70px;
-    width: auto;
+
+/* 🔹 Responsive: Tablets */
+@media screen and (max-width: 1024px) {
+    .hero-title {
+        font-size: 48px;
+    }
+    .hero-subtitle {
+        font-size: 22px;
+    }
+    .btn-explorar {
+        font-size: 22px;
+    }
+}
+
+/* 🔹 Responsive: Móviles */
+@media screen and (max-width: 768px) {
+    .hero-title {
+        font-size: 40px;
+    }
+    .hero-subtitle {
+        font-size: 20px;
+    }
+    .btn-explorar {
+        font-size: 20px;
+        padding: 12px 20px;
+    }
+}
+
+/* 🔹 Responsive: Pantallas muy pequeñas */
+@media screen and (max-width: 480px) {
+    .hero-title {
+        font-size: 32px;
+    }
+    .hero-subtitle {
+        font-size: 18px;
+    }
+    .btn-explorar {
+        font-size: 18px;
+        padding: 10px 18px;
+    }
+}
+
+
+/*FIN PAGINA INICIO------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PRINCIPIO PAGINA TIENDA------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* 🔹 Sección de la tienda */
+.store-section {
+    text-align: center;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 🔹 Título de la tienda */
+.store-title {
+    font-size: 56px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #2c3e50; /* Azul oscuro */
+}
+
+/* 🔹 Contenedor de productos */
+.store-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 20px;
+}
+
+/* 🔹 Tarjeta de producto */
+.product-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease-in-out;
-    filter: none; /* Asegura que el logo no tenga ningún filtro */
 }
 
-/* Aplicar el filtro SOLO a los iconos de la navbar */
-nav a i {
-    font-size: 24px; /* Tamaño correcto de los iconos */
-    margin-right: 8px;
-    color: #ffffff; /* Blancos */
-    transition: color 0.3s ease;
+.product-card:hover {
+    transform: scale(1.05);
 }
 
-/* Efecto hover en iconos (manteniendo el color blanco) */
-nav a:hover i {
-    color: #f4d03f; /* Amarillo en hover */
+/* 🔹 Imagen de producto */
+.product-img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
 }
-#explorarTienda {
-    background-color: green;  /* Cambia el fondo a verde */
-    color: white;             /* Cambia el color del texto a blanco */
-    padding: 10px 20px;       /* Agrega algo de relleno */
-    text-decoration: none;    /* Elimina el subrayado del enlace */
-    border-radius: 5px;       /* Redondea las esquinas */
+
+/* 🔹 Nombre del producto */
+.product-title {
+    font-size: 22px;
+    color: #2c3e50;
+    font-weight: bold;
 }
-#explorarTienda:hover {
-    background-color: darkgreen; /* Cambia el color de fondo al pasar el cursor */
+
+/* 🔹 Precio del producto */
+.product-price {
+    font-size: 20px;
+    color: #e67e22; /* Naranja */
+    font-weight: bold;
+    margin-bottom: 10px;
 }
-#imagenPortada {
-    width: 100%;         /* Ocupa el 100% del ancho de la página */
-    height: auto;        /* Mantiene las proporciones de la imagen */
-    display: block;      /* Elimina el espacio debajo de la imagen */
+
+/* 🔹 Botón de compra */
+.btn-buy {
+    background-color: #f4d03f; /* Amarillo */
+    color: #1e2a3a; /* Azul oscuro */
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease-in-out;
 }
+
+.btn-buy:hover {
+    background-color: #e1b12c; /* Amarillo más oscuro */
+    transform: scale(1.05);
+}
+
+/* 🔹 Responsive: Tablets */
+@media screen and (max-width: 1024px) {
+    .store-title {
+        font-size: 48px;
+    }
+    .store-container {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+/* 🔹 Responsive: Móviles */
+@media screen and (max-width: 768px) {
+    .store-title {
+        font-size: 40px;
+    }
+    .store-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 🔹 Responsive: Pantallas muy pequeñas */
+@media screen and (max-width: 480px) {
+    .store-title {
+        font-size: 32px;
+    }
+    .btn-buy {
+        font-size: 16px;
+        padding: 10px 16px;
+    }
+}
+/*FIN PAGINA TIENDA------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PRINCIPIO PAGINA RESEÑAS------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* 🔹 Sección de Reseñas */
+.reviews-section {
+    text-align: center;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 🔹 Título de Reseñas */
+.reviews-title {
+    font-size: 56px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #2c3e50; /* Azul oscuro */
+}
+
+/* 🔹 Texto de Reseñas */
+.reviews-text {
+    font-size: 26px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* 🔹 Botón Crear Reseña */
+.btn-create {
+    background-color: #28a745; /* Verde */
+    color: white;
+    padding: 14px 24px;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease-in-out;
+}
+
+.btn-create:hover {
+    background-color: #218838; /* Verde más oscuro */
+    transform: scale(1.05);
+}
+
+/* 🔹 Responsive: Tablets */
+@media screen and (max-width: 1024px) {
+    .reviews-title {
+        font-size: 48px;
+    }
+}
+
+/* 🔹 Responsive: Móviles */
+@media screen and (max-width: 768px) {
+    .reviews-title {
+        font-size: 40px;
+    }
+
+    .btn-create {
+        font-size: 20px;
+        padding: 12px 20px;
+    }
+}
+
+/* 🔹 Responsive: Pantallas muy pequeñas */
+@media screen and (max-width: 480px) {
+    .reviews-title {
+        font-size: 32px;
+    }
+
+    .btn-create {
+        font-size: 18px;
+        padding: 10px 16px;
+    }
+}
+
+
+/*FIN PAGINA RESEÑAS------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PRINCIPIO PAGINA PEDIDOS------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* 🔹 Sección de Pedidos */
+.orders-section {
+    text-align: center;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 🔹 Título de Pedidos */
+.orders-title {
+    font-size: 56px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #2c3e50; /* Azul oscuro */
+}
+
+/* 🔹 Subtítulo de Pedidos */
+.orders-subtitle {
+    font-size: 36px;
+    font-weight: bold;
+    color: #34495e; /* Azul más oscuro */
+    margin-bottom: 10px;
+}
+
+/* 🔹 Texto de Pedidos */
+.orders-text {
+    font-size: 26px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* 🔹 Botón Hacer Nuevo Pedido */
+.btn-create {
+    background-color: #28a745; /* Verde */
+    color: white;
+    padding: 14px 24px;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease-in-out;
+}
+
+.btn-create:hover {
+    background-color: #218838; /* Verde más oscuro */
+    transform: scale(1.05);
+}
+
+/* 🔹 Responsive: Tablets */
+@media screen and (max-width: 1024px) {
+    .orders-title {
+        font-size: 48px;
+    }
+
+    .orders-subtitle {
+        font-size: 32px;
+    }
+}
+
+/* 🔹 Responsive: Móviles */
+@media screen and (max-width: 768px) {
+    .orders-title {
+        font-size: 40px;
+    }
+
+    .orders-subtitle {
+        font-size: 28px;
+    }
+
+    .btn-create {
+        font-size: 20px;
+        padding: 12px 20px;
+    }
+}
+
+/* 🔹 Responsive: Pantallas muy pequeñas */
+@media screen and (max-width: 480px) {
+    .orders-title {
+        font-size: 32px;
+    }
+
+    .orders-subtitle {
+        font-size: 24px;
+    }
+
+    .btn-create {
+        font-size: 18px;
+        padding: 10px 16px;
+    }
+}
+
+/*FIN PAGINA PEDIDOS------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PRINCIPIO PAGINA FAQ------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* 🔹 Sección de Preguntas Frecuentes */
+/* 🔹 Sección Principal FAQ */
+.faq-section {
+    text-align: center;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 🔹 Título Principal */
+.faq-title {
+    font-size: 56px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #2c3e50; /* Azul oscuro */
+}
+
+/* 🔹 Introducción */
+.faq-intro {
+    font-size: 24px;
+    color: #555;
+    margin-bottom: 30px;
+    max-width: 800px;
+}
+
+/* 🔹 Contenedor de Preguntas */
+.faq-container {
+    width: 90%;
+    max-width: 900px;
+}
+
+/* 🔹 Estilos para cada pregunta */
+.faq-item {
+    width: 100%;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* 🔹 Botón de Pregunta */
+.faq-question {
+    background-color: #f4d03f; /* Amarillo */
+    color: #1e2a3a; /* Azul oscuro */
+    font-size: 22px;
+    font-weight: bold;
+    padding: 15px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* 🔹 Efecto Hover en Pregunta */
+.faq-question:hover {
+    background-color: #e1b12c; /* Amarillo más oscuro */
+}
+
+/* 🔹 Icono Indicador de Expansión */
+.faq-question::after {
+    content: "▼";
+    font-size: 18px;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* 🔹 Cambiar el Ícono cuando está expandido */
+.faq-item.active .faq-question::after {
+    transform: rotate(180deg);
+}
+
+/* 🔹 Respuestas (Ocultas por Defecto) */
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    background-color: #ecf0f1; /* Gris claro */
+    padding: 0 20px;
+    border-radius: 0 0 8px 8px;
+    text-align: left;
+    font-size: 20px;
+    color: #2c3e50;
+    transition: max-height 0.4s ease-in-out, padding 0.3s ease-in-out;
+}
+
+/* 🔹 Mostrar Respuesta cuando está Activa */
+.faq-item.active .faq-answer {
+    padding: 15px 20px;
+    max-height: 300px; /* Ajuste para evitar que se abra demasiado */
+}
+
+/* 🔹 Responsive: Tablets */
+@media screen and (max-width: 1024px) {
+    .faq-title {
+        font-size: 48px;
+    }
+
+    .faq-intro {
+        font-size: 22px;
+    }
+
+    .faq-question {
+        font-size: 20px;
+        padding: 12px;
+    }
+
+    .faq-answer {
+        font-size: 18px;
+    }
+}
+
+/* 🔹 Responsive: Móviles */
+@media screen and (max-width: 768px) {
+    .faq-title {
+        font-size: 40px;
+    }
+
+    .faq-intro {
+        font-size: 20px;
+    }
+
+    .faq-question {
+        font-size: 18px;
+        padding: 10px;
+    }
+
+    .faq-answer {
+        font-size: 18px;
+        padding: 0 15px;
+    }
+    
+    /* 🔹 Mostrar la respuesta cuando está activa */
+    .faq-item.active .faq-answer {
+        padding: 15px;
+        max-height: 300px;
+    }
+}
+
+/* 🔹 Responsive: Pantallas muy pequeñas */
+@media screen and (max-width: 480px) {
+    .faq-title {
+        font-size: 32px;
+    }
+
+    .faq-intro {
+        font-size: 18px;
+    }
+
+    .faq-question {
+        font-size: 16px;
+        padding: 8px;
+    }
+
+    .faq-answer {
+        font-size: 16px;
+        padding: 10px;
+    }
+}
+
+
+
+/*FIN PAGINA FAQ------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PRINCIPIO PAGINA PERFIL------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*FIN PAGINA PERFIL------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PRINCIPIO PAGINA INICIAR-SESION------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*FIN PAGINA INICIAR-SESION------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/

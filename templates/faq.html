@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ - Preguntas Frecuentes{% endblock %}
+
+{% block content %}
+<section class="faq-section">
+    <h1 class="faq-title">Preguntas Frecuentes</h1>
+    <p class="faq-intro">Aquí encontrarás respuestas a las preguntas más comunes sobre nuestros productos y servicios.</p>
+
+    <div class="faq-container">
+        <div class="faq-item">
+            <button class="faq-question">📦 ¿Cuánto tarda en llegar mi pedido?</button>
+            <div class="faq-answer">
+                <p>El tiempo de entrega depende de tu ubicación. En general, los pedidos nacionales tardan entre 2 y 5 días hábiles.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">💳 ¿Qué métodos de pago aceptan?</button>
+            <div class="faq-answer">
+                <p>Aceptamos tarjetas de crédito y débito, PayPal, y transferencias bancarias.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">🔄 ¿Puedo devolver un producto?</button>
+            <div class="faq-answer">
+                <p>Sí, puedes devolver un producto dentro de los 30 días posteriores a la compra, siempre que esté en su estado original.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">🐶 ¿Tienen productos para todas las mascotas?</button>
+            <div class="faq-answer">
+                <p>Sí, contamos con una amplia variedad de productos para perros, gatos, aves, roedores y más.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">📞 ¿Cómo puedo contactar con atención al cliente?</button>
+            <div class="faq-answer">
+                <p>Puedes contactarnos a través de nuestro chat en vivo, por correo electrónico a soporte@petroyale.com, o llamarnos al +34 123 456 789.</p>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const questions = document.querySelectorAll(".faq-question");
+
+        questions.forEach((question) => {
+            question.addEventListener("click", function () {
+                const faqItem = this.parentElement;
+
+                // Si ya está abierto, lo cerramos
+                if (faqItem.classList.contains("active")) {
+                    faqItem.classList.remove("active");
+                    this.nextElementSibling.style.maxHeight = null;
+                } else {
+                    // Cerrar todos los otros FAQ abiertos
+                    document.querySelectorAll(".faq-item").forEach((item) => {
+                        item.classList.remove("active");
+                        item.querySelector(".faq-answer").style.maxHeight = null;
+                    });
+
+                    // Abrir el seleccionado
+                    faqItem.classList.add("active");
+                    this.nextElementSibling.style.maxHeight = this.nextElementSibling.scrollHeight + "px";
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

@@ -9,3 +9,9 @@ def pedidos(request):
     return render(request, "pedidos.html")  # Se usa "pedidos.html" desde templates
 def Tienda(request):
     return render(request, "Tienda.html")  # Se usa "Tienda.html" desde templates
+def faq(request):
+    return render(request, "faq.html")  # Se usa faq.html" desde templates    
+def login(request):
+    return render(request, "login.html")  # Se usa "login.html" desde templates
+def perfil(request):
+    return render(request, "perfil.html")  # Se usa "perfil.html" desde templates

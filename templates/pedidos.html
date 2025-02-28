@@ -3,8 +3,12 @@
 {% block title %}Pedidos - PetRoyale{% endblock %}
 
 {% block content %}
-<h2 style="font-size: 56px;">Pedidos</h2>
-<h3 style="font-size: 36px;">Listado de pedidos</h3>
-<p style="font-size: 26px;">No hay ningún pedido</p>
-<button id="explorarTienda"class="btn btn-success" style="font-size: 26px;">Hacer nuevo pedido</button>
+<section class="orders-section">
+    <h1 class="orders-title">Pedidos</h1>
+    <h2 class="orders-subtitle">Listado de pedidos</h2>
+    
+    <p class="orders-text">No hay ningún pedido</p>
+    
+    <button id="btn-create-order" class="btn-create">Hacer nuevo pedido</button>
+</section>
 {% endblock %}
