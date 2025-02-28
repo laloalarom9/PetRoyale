@@ -3,10 +3,13 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from mi_proyecto.views import inicio  # Importa la vista correctamente
+from mi_proyecto import views  # Importa las vistas correctamente
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", inicio, name="inicio"),
+    path('reseñas/', views.reseñas, name='reseñas'),
+    path('pedidos/', views.pedidos, name='pedidos'),
 ]
 
 # 🔹 Configuración correcta para servir archivos estáticos en desarrollo

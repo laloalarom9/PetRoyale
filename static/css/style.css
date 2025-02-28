@@ -120,3 +120,18 @@ nav a i {
 nav a:hover i {
     color: #f4d03f; /* Amarillo en hover */
 }
+#explorarTienda {
+    background-color: green;  /* Cambia el fondo a verde */
+    color: white;             /* Cambia el color del texto a blanco */
+    padding: 10px 20px;       /* Agrega algo de relleno */
+    text-decoration: none;    /* Elimina el subrayado del enlace */
+    border-radius: 5px;       /* Redondea las esquinas */
+}
+#explorarTienda:hover {
+    background-color: darkgreen; /* Cambia el color de fondo al pasar el cursor */
+}
+#imagenPortada {
+    width: 100%;         /* Ocupa el 100% del ancho de la página */
+    height: auto;        /* Mantiene las proporciones de la imagen */
+    display: block;      /* Elimina el espacio debajo de la imagen */
+}
