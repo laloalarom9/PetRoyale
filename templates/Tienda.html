@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tienda - PetRoyale{% endblock %}
+
+{% block content %}
+    <h2 style="font-size: 56px;">Nuestros Productos</h2>
+    <div class="container">
+        <div class="product">
+            <img src="{% static 'img/productos/juguete_perro.webp' %}" alt="Juguete para Perros" class="product-img">
+            <h3>Juguete para Perros</h3>
+            <p>9.99€</p>
+            <button class="btn">Comprar</button>
+            <br></br>
+            <br></br>
+        </div>
+        <div class="product">
+            <img src="{% static 'img/productos/rascador_gato.jpg' %}" alt="Rascador para Gatos" class="product-img">
+            <h3>Rascador para Gatos</h3>
+            <p>24.99€</p>
+            <button class="btn">Comprar</button>
+            <br></br>
+            <br></br>
+        </div>
+        <div class="product">
+            <img src="{% static 'img/productos/comedero_automatico.jpg' %}" alt="Comedero Automático" class="product-img">
+            <h3>Comedero Automático</h3>
+            <p>39.99€</p>
+            <button class="btn">Comprar</button>
+            <br></br>
+            <br></br>
+        </div>
+    </div>
+{% endblock %}

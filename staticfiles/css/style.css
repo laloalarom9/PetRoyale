@@ -36,7 +36,7 @@ nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 25px;
+    gap: 70px;
     flex-wrap: wrap;
     width: 100%; /* Asegura que ocupe todo el ancho */
 }
@@ -45,7 +45,7 @@ nav {
 nav a {
     color: #ffffff; /* Blanco para mayor contraste */
     text-decoration: none;
-    font-size: 20px; /* Tamaño de letra más grande */
+    font-size: 30px; /* Tamaño de letra más grande */
     font-weight: bold;
     padding: 12px 18px;
     display: flex;
@@ -55,7 +55,7 @@ nav a {
 
 /* Estilos para los iconos */
 nav a i, nav a img {
-    width: 30px; /* Aumentar tamaño de los iconos */
+    width: 40px; /* Aumentar tamaño de los iconos */
     height: auto;
     margin-right: 10px;
     filter: brightness(0) invert(1); /* Hacer iconos blancos */

@@ -36,7 +36,7 @@ nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 25px;
+    gap: 70px;
     flex-wrap: wrap;
     width: 100%; /* Asegura que ocupe todo el ancho */
 }
@@ -45,7 +45,7 @@ nav {
 nav a {
     color: #ffffff; /* Blanco para mayor contraste */
     text-decoration: none;
-    font-size: 20px; /* Tamaño de letra más grande */
+    font-size: 30px; /* Tamaño de letra más grande */
     font-weight: bold;
     padding: 12px 18px;
     display: flex;
@@ -55,7 +55,7 @@ nav a {
 
 /* Estilos para los iconos */
 nav a i, nav a img {
-    width: 30px; /* Aumentar tamaño de los iconos */
+    width: 40px; /* Aumentar tamaño de los iconos */
     height: auto;
     margin-right: 10px;
     filter: brightness(0) invert(1); /* Hacer iconos blancos */
@@ -86,7 +86,7 @@ main {
 .btn {
     background-color: #f4d03f; /* Amarillo */
     color: #1e2a3a; /* Azul oscuro */
-    padding: 14px 24px;
+    padding: 14px 24px ;
     text-decoration: none;
     font-size: 18px;
     font-weight: bold;
@@ -134,4 +134,13 @@ nav a:hover i {
     width: 100%;         /* Ocupa el 100% del ancho de la página */
     height: auto;        /* Mantiene las proporciones de la imagen */
     display: block;      /* Elimina el espacio debajo de la imagen */
+}
+.product-img {
+    width: 25%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 90px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
 }

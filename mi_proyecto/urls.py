@@ -10,6 +10,7 @@ urlpatterns = [
     path("", inicio, name="inicio"),
     path('reseñas/', views.reseñas, name='reseñas'),
     path('pedidos/', views.pedidos, name='pedidos'),
+    path('Tienda/', views.Tienda, name='Tienda'),
 ]
 
 # 🔹 Configuración correcta para servir archivos estáticos en desarrollo

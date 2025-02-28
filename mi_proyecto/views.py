@@ -7,3 +7,5 @@ def reseñas(request):
     return render(request, "reseñas.html")  # Se usa "reseñas.html" desde templates
 def pedidos(request):
     return render(request, "pedidos.html")  # Se usa "pedidos.html" desde templates
+def Tienda(request):
+    return render(request, "Tienda.html")  # Se usa "Tienda.html" desde templates
