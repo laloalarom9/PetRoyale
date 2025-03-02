@@ -62,31 +62,37 @@ def Tienda(request):
 def faq(request):
     return render(request, "faq.html")
 
-#  CORREGIDO: Manejo de autenticación para login
+User = get_user_model()  # Obtener el modelo de usuario personalizado
+
+User = get_user_model()
+
 def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        # Buscar usuario por email
         try:
             user = User.objects.get(email=email)
-            username = user.username  # Convertir email a username
         except User.DoesNotExist:
-            username = None
+            messages.error(request, "No existe una cuenta con ese correo electrónico.")
+            return render(request, "login.html")
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=user.username, password=password)
+
         if user is not None:
-            login(request, user)
-            messages.success(request, "Inicio de sesión exitoso.")
-            return redirect("inicio")  # Cambia "inicio" por la página a donde quieras redirigir
-
+            if user.is_active:
+                login(request, user)
+                messages.success(request, "Inicio de sesión exitoso.")
+                return redirect("inicio")  # Redirige a la página principal
+            else:
+                messages.error(request, "Tu cuenta está inactiva. Contacta con soporte.")
         else:
-            messages.error(request, "Credenciales incorrectas.")
+            messages.error(request, "Correo o contraseña incorrectos.")
 
-    return render(request, "login.html")
+    return render(request, "login.html")  # Siempre muestra la página de login
 
-User = get_user_model()  # Obtener el modelo de usuario personalizado
+
+User = get_user_model()
 
 def registro_view(request):
     if request.method == "POST":
@@ -95,9 +101,11 @@ def registro_view(request):
         apellido = request.POST.get("apellido")
         apellido2 = request.POST.get("apellido2", "")
         email = request.POST.get("email")
-        num_tel = request.POST.get("num_tel")
+        num_tel = request.POST.get("num_tel", "")
         password1 = request.POST.get("password1")
         password2 = request.POST.get("password2")
+        cuenta_bancaria = request.POST.get("cuenta_bancaria", "")
+        direccion = request.POST.get("direccion", "")
 
         # Validaciones
         if password1 != password2:
@@ -107,7 +115,7 @@ def registro_view(request):
         elif User.objects.filter(email=email).exists():
             messages.error(request, "El correo ya está registrado.")
         else:
-            # Crear usuario con el modelo personalizado
+            # Crear usuario
             user = User.objects.create_user(
                 username=username,
                 first_name=nombre,
@@ -117,6 +125,8 @@ def registro_view(request):
             )
             user.apellido2 = apellido2  # Guardar segundo apellido
             user.num_tel = num_tel  # Guardar teléfono
+            user.cuenta_bancaria = cuenta_bancaria  # Guardar cuenta bancaria
+            user.direccion = direccion  # Guardar dirección
             user.save()
 
             messages.success(request, "Cuenta creada exitosamente. Ahora puedes iniciar sesión.")

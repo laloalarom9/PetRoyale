@@ -1029,3 +1029,139 @@
 
 /*FIN PAGINA INICIAR-SESION------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PRINCIPIO PAGINA REGISTRO------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+#registro-container {
+    text-align: center;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#registro-title {
+    font-size: 56px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #2c3e50; /* Azul oscuro */
+}
+
+.registro-form-group {
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 400px;
+    text-align: left;
+}
+
+.registro-form-group label {
+    display: block;
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.registro-form-group input, 
+.registro-form-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    border: 2px solid #bdc3c7; /* Gris */
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.registro-form-group input:focus, 
+.registro-form-group select:focus {
+    border-color: #3498db; /* Azul */
+}
+
+#registro-btn {
+    background-color: #f4d03f; /* Amarillo */
+    color: #1e2a3a; /* Azul oscuro */
+    font-size: 22px;
+    font-weight: bold;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+#registro-btn:hover {
+    background-color: #e1b12c; /* Amarillo más oscuro */
+}
+
+#login-message {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+#login-link {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#login-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media screen and (max-width: 1024px) {
+    #registro-title {
+        font-size: 48px;
+    }
+    .registro-form-group label {
+        font-size: 18px;
+    }
+    .registro-form-group input, 
+    .registro-form-group select {
+        font-size: 16px;
+    }
+    #registro-btn {
+        font-size: 20px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #registro-title {
+        font-size: 40px;
+    }
+    .registro-form-group label {
+        font-size: 16px;
+    }
+    .registro-form-group input, 
+    .registro-form-group select {
+        font-size: 14px;
+    }
+    #registro-btn {
+        font-size: 18px;
+        padding: 12px 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #registro-title {
+        font-size: 32px;
+    }
+    .registro-form-group label {
+        font-size: 14px;
+    }
+    .registro-form-group input, 
+    .registro-form-group select {
+        font-size: 12px;
+    }
+    #registro-btn {
+        font-size: 16px;
+        padding: 10px 18px;
+    }
+}
+
+/*FIN PAGINA REGISTRO------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
