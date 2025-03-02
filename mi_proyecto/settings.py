@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "whitenoise.runserver_nostatic",  # Debe estar en la lista
+    "mi_proyecto",
 ]
 
 
@@ -52,6 +53,7 @@ TEMPLATES = [
         },
     },
 ]
+AUTH_USER_MODEL = 'mi_proyecto.CustomUser'  # Cambia "mi_proyecto" por el nombre real de tu app
 
 WSGI_APPLICATION = "mi_proyecto.wsgi.application"
 
