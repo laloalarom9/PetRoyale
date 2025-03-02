@@ -7,38 +7,53 @@
 <div class="profile-container">
     <h2 class="profile-title">Mi Perfil</h2>
     
-    <!-- Foto de perfil -->
-    <div class="profile-image">
-        <img src="{% static 'img/perfil/default-avatar.png' %}" alt="Foto de perfil" id="userProfileImage">
-        <input type="file" id="uploadProfileImage" class="btn-upload">
-    </div>
+    <form method="POST" action="{% url 'perfil' %}">
+        {% csrf_token %}
+        
+        <!-- Información del usuario -->
+        <div class="profile-info">
+            <table class="profile-table">
+                <tr>
+                    <th>Nombre de Usuario:</th>
+                    <td><input type="text" value="{{ user.username }}" class="form-control" disabled></td>
+                </tr>
+                <tr>
+                    <th>Correo Electrónico:</th>
+                    <td><input type="email" name="email" value="{{ user.email|default:'' }}" class="form-control" required></td>
+                </tr>
+                <tr>
+                    <th>Nombre:</th>
+                    <td><input type="text" name="first_name" value="{{ user.first_name|default:'' }}" class="form-control"></td>
+                </tr>
+                <tr>
+                    <th>Primer Apellido:</th>
+                    <td><input type="text" name="last_name" value="{{ user.last_name|default:'' }}" class="form-control"></td>
+                </tr>
+                <tr>
+                    <th>Segundo Apellido:</th>
+                    <td><input type="text" name="apellido2" value="{{ user.apellido2|default:'' }}" class="form-control"></td>
+                </tr>
+                <tr>
+                    <th>Número de Teléfono:</th>
+                    <td><input type="text" name="num_tel" value="{{ user.num_tel|default:'' }}" class="form-control"></td>
+                </tr>
+                <tr>
+                    <th>Género:</th>
+                    <td>
+                        <select name="genero" class="form-control">
+                            <option value="hombre" {% if user.genero == "hombre" %}selected{% endif %}>Hombre</option>
+                            <option value="mujer" {% if user.genero == "mujer" %}selected{% endif %}>Mujer</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
-    <!-- Información del usuario -->
-    <div class="profile-info">
-        <table class="profile-table">
-            <tr>
-                <th>Nombre:</th>
-                <td id="userName">Juan Pérez</td>
-            </tr>
-            <tr>
-                <th>Email:</th>
-                <td id="userEmail">juan.perez@email.com</td>
-            </tr>
-            <tr>
-                <th>Fecha de Registro:</th>
-                <td id="userDate">12/03/2023</td>
-            </tr>
-            <tr>
-                <th>Número de Teléfono:</th>
-                <td id="userPhone">+34 600 123 456</td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Botones de acciones -->
-    <div class="profile-actions">
-        <button class="btn btn-primary">Editar Perfil</button>
-        <button class="btn btn-danger">Eliminar Cuenta</button>
-    </div>
+        <!-- Botones de acciones -->
+        <div class="profile-actions">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <a href="{% url 'eliminar_cuenta' %}" class="btn btn-danger">Eliminar Cuenta</a>
+        </div>
+    </form>
 </div>
 {% endblock %}

@@ -4,8 +4,14 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
+    GENERO_CHOICES = [
+        ("hombre", "Hombre"),
+        ("mujer", "Mujer"),
+    ]
+
     apellido2 = models.CharField(max_length=50, blank=True, null=True)  # Segundo apellido opcional
     num_tel = models.CharField(max_length=15, blank=True, null=True)  # Número de teléfono
+    genero = models.CharField(max_length=10, choices=GENERO_CHOICES, default="hombre")  # Nuevo campo de género
 
     def __str__(self):
         return self.username

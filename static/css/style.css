@@ -741,102 +741,86 @@
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
-/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*PRINCIPIO PAGINA PERFIL------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*  Contenedor principal del perfil */
+/*------------------------------------------------------------*/
+/* PERFIL - ESTILOS MEJORADOS */
+/*------------------------------------------------------------*/
+
+/* Contenedor principal */
 .profile-container {
-    max-width: 800px;
+    max-width: 600px;
     margin: 50px auto;
     padding: 20px;
     background: #ffffff;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    border-radius: 10px;
     text-align: center;
 }
 
-/*  Título */
+/* Título */
 .profile-title {
-    font-size: 32px;
+    font-size: 28px;
     font-weight: bold;
     color: #2c3e50;
     margin-bottom: 20px;
 }
 
-/* Imagen de perfil */
-.profile-image {
-    position: relative;
-    display: inline-block;
-    margin-bottom: 20px;
-}
-
-.profile-image img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #f4d03f;
-}
-
-/*  Botón para subir imagen */
-.btn-upload {
-    display: block;
-    margin: 10px auto;
-    font-size: 14px;
-    background-color: #2c3e50;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-upload:hover {
-    background-color: #f4d03f;
-    color: #2c3e50;
-}
-
-/*  Tabla de información */
+/* Tabla de información del usuario */
 .profile-table {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 10px;
     border-collapse: collapse;
-}
-
-.profile-table th, .profile-table td {
-    padding: 10px;
-    text-align: left;
-    font-size: 18px;
 }
 
 .profile-table th {
     background: #f4d03f;
     color: #1e2a3a;
     text-align: right;
-    width: 40%;
+    padding: 12px;
     border-radius: 5px;
+    font-weight: bold;
+    width: 40%;
 }
 
 .profile-table td {
     background: #ecf0f1;
     color: #2c3e50;
+    padding: 12px;
+    text-align: left;
     border-radius: 5px;
+    width: 60%;
 }
 
-/*  Botones de acción */
+/* Ajuste de inputs dentro de la tabla */
+.profile-table input,
+.profile-table select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Botones */
 .profile-actions {
     margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .profile-actions .btn {
-    font-size: 18px;
-    padding: 10px 20px;
-    margin: 10px;
+    flex: 1;
+    font-size: 16px;
+    padding: 10px;
+    margin: 5px;
     border: none;
     cursor: pointer;
     border-radius: 5px;
     transition: 0.3s ease;
+    text-align: center;
 }
 
+/* Botón "Guardar Cambios" */
 .profile-actions .btn-primary {
     background-color: #2c3e50;
     color: white;
@@ -847,6 +831,7 @@
     color: #2c3e50;
 }
 
+/* Botón "Eliminar Cuenta" */
 .profile-actions .btn-danger {
     background-color: #d9534f;
     color: white;
@@ -856,20 +841,33 @@
     background-color: #c9302c;
 }
 
-/*  Responsive */
+/* RESPONSIVE DESIGN */
 @media screen and (max-width: 768px) {
     .profile-container {
         width: 90%;
+        padding: 15px;
     }
 
     .profile-table th, .profile-table td {
-        font-size: 16px;
-        padding: 8px;
+        font-size: 14px;
+        padding: 10px;
+        display: block;
+        width: 100%;
+        text-align: left;
+    }
+
+    .profile-table th {
+        text-align: left;
+        background: #f4d03f;
+        padding-top: 10px;
+    }
+
+    .profile-actions {
+        flex-direction: column;
     }
 
     .profile-actions .btn {
-        font-size: 16px;
-        padding: 8px 16px;
+        width: 100%;
     }
 }
 
@@ -1035,71 +1033,88 @@
 /*PRINCIPIO PAGINA REGISTRO------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
+
+/* Contenedor principal */
 #registro-container {
-    text-align: center;
-    padding: 60px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-#registro-title {
-    font-size: 56px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #2c3e50; /* Azul oscuro */
-}
-
-.registro-form-group {
-    margin-bottom: 15px;
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
+    margin: 50px auto;
+    background: #ffffff; /* Fondo blanco */
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Título del formulario */
+#registro-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Contenedor de cada grupo de input */
+.registro-form-group {
+    margin-bottom: 20px;
     text-align: left;
 }
 
+/* Etiquetas de los campos */
 .registro-form-group label {
+    font-size: 18px;
+    font-weight: bold;
+    color: #34495e;
     display: block;
-    font-size: 20px;
-    color: #555;
     margin-bottom: 5px;
 }
 
-.registro-form-group input, 
+/* Campos de entrada y selección */
+.registro-form-group input,
 .registro-form-group select {
     width: 100%;
-    padding: 10px;
-    font-size: 18px;
-    border: 2px solid #bdc3c7; /* Gris */
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #bdc3c7;
     border-radius: 8px;
     outline: none;
-    transition: border-color 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    background: #f8f9fa;
+    box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.registro-form-group input:focus, 
+/* Efecto cuando el usuario hace clic en un input */
+.registro-form-group input:focus,
 .registro-form-group select:focus {
-    border-color: #3498db; /* Azul */
+    border-color: #3498db;
+    background: #ffffff;
 }
 
+/* Botón de registro */
 #registro-btn {
-    background-color: #f4d03f; /* Amarillo */
-    color: #1e2a3a; /* Azul oscuro */
-    font-size: 22px;
+    width: 100%;
+    background: linear-gradient(135deg, #f4d03f, #f39c12);
+    color: white;
+    font-size: 18px;
     font-weight: bold;
-    padding: 15px 25px;
+    padding: 14px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+/* Efecto hover en el botón */
 #registro-btn:hover {
-    background-color: #e1b12c; /* Amarillo más oscuro */
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* Mensaje de inicio de sesión */
 #login-message {
     margin-top: 20px;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 #login-link {
@@ -1112,54 +1127,49 @@
     text-decoration: underline;
 }
 
-/* Responsive */
-@media screen and (max-width: 1024px) {
-    #registro-title {
-        font-size: 48px;
-    }
-    .registro-form-group label {
-        font-size: 18px;
-    }
-    .registro-form-group input, 
-    .registro-form-group select {
-        font-size: 16px;
-    }
-    #registro-btn {
-        font-size: 20px;
-    }
-}
-
+/* 🔹 Estilos Responsivos 🔹 */
 @media screen and (max-width: 768px) {
-    #registro-title {
-        font-size: 40px;
+    #registro-container {
+        max-width: 90%;
+        padding: 30px;
     }
+    
+    #registro-title {
+        font-size: 28px;
+    }
+    
     .registro-form-group label {
         font-size: 16px;
     }
-    .registro-form-group input, 
+    
+    .registro-form-group input,
     .registro-form-group select {
         font-size: 14px;
     }
+    
     #registro-btn {
-        font-size: 18px;
-        padding: 12px 20px;
+        font-size: 16px;
+        padding: 12px;
     }
 }
 
 @media screen and (max-width: 480px) {
     #registro-title {
-        font-size: 32px;
+        font-size: 24px;
     }
+    
     .registro-form-group label {
         font-size: 14px;
     }
-    .registro-form-group input, 
+    
+    .registro-form-group input,
     .registro-form-group select {
         font-size: 12px;
     }
+    
     #registro-btn {
-        font-size: 16px;
-        padding: 10px 18px;
+        font-size: 14px;
+        padding: 10px;
     }
 }
 

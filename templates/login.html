@@ -5,7 +5,14 @@
 {% block content %}
     <div id="login-container">
         <h2 id="login-title">Iniciar Sesión</h2>
-        
+        {% if messages %}
+            <div class="alert-container">
+        {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+            </div>
+        {% endif %}
+
         <form method="POST" action="{% url 'login' %}">
             {% csrf_token %}
             <div class="login-form-group">
