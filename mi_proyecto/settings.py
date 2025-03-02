@@ -49,10 +49,16 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "mi_proyecto.context_processors.avatar_context",  # Usa mi_proyecto en lugar de una app
+                "mi_proyecto.context_processors.user_groups_processor",  # 🔹 Agregar aquí
+
             ],
         },
     },
 ]
+
+
+
 AUTH_USER_MODEL = 'mi_proyecto.CustomUser'  # Cambia "mi_proyecto" por el nombre real de tu app
 
 WSGI_APPLICATION = "mi_proyecto.wsgi.application"

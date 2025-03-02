@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from mi_proyecto.views import inicio  # Importa la vista correctamente
 from mi_proyecto import views  # Importa las vistas correctamente
 from django.contrib.auth import views as auth_views  # Importar vistas de autenticación
-
+from mi_proyecto.views import editar_perfil , eliminar_cuenta  # Importa las vistas correctamente
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", inicio, name="inicio"),
@@ -17,10 +17,10 @@ urlpatterns = [
     #  Corrección: Cambia "views.login" por "views.login_view"
     path("login/", views.login_view, name="login"),  
     path("logout/", views.logout_view, name="logout"),  # Agrega logout
-
-    path("perfil/", views.perfil, name="perfil"),
+    path("perfil/", editar_perfil, name="perfil"),  # Nombre correcto de la URL
     path("registro/", views.registro_view, name="registro"),  # Cambia "views.registro" por "views.registro_view"
-    
+    path("eliminar-cuenta/", eliminar_cuenta, name="eliminar_cuenta"),  # Añadir esta línea
+
     #  Usar vista de Django para recuperación de contraseña
     path("password_reset/", auth_views.PasswordResetView.as_view(), name="password_reset"),
 ]
