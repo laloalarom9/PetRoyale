@@ -1175,3 +1175,221 @@
 
 /*FIN PAGINA REGISTRO------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------*/
+/* INICIO PAGINA RECUPERAR CONTRASEÑA */
+/*------------------------------------------------------------*/
+
+/* Contenedor principal */
+.password-reset-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Título */
+.password-reset-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+/* Instrucciones */
+.password-reset-instructions {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Input del correo */
+.password-reset-container input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Botón enviar */
+.password-reset-container .btn-primary {
+    background-color: #2c3e50;
+    color: white;
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.password-reset-container .btn-primary:hover {
+    background-color: #f4d03f;
+    color: #2c3e50;
+}
+
+/* Enlace para volver */
+.password-reset-links {
+    margin-top: 15px;
+}
+
+.password-reset-links .btn-link {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.password-reset-links .btn-link:hover {
+    text-decoration: underline;
+}
+
+/*------------------------------------------------------------*/
+/* RESPONSIVE DESIGN */
+/*------------------------------------------------------------*/
+@media screen and (max-width: 768px) {
+    .password-reset-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .password-reset-title {
+        font-size: 22px;
+    }
+
+    .password-reset-instructions {
+        font-size: 14px;
+    }
+
+    .password-reset-container input {
+        font-size: 14px;
+    }
+
+    .password-reset-container .btn-primary {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .password-reset-links .btn-link {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .password-reset-container {
+        width: 95%;
+    }
+
+    .password-reset-title {
+        font-size: 20px;
+    }
+
+    .password-reset-instructions {
+        font-size: 13px;
+    }
+
+    .password-reset-container input {
+        font-size: 13px;
+        padding: 10px;
+    }
+
+    .password-reset-container .btn-primary {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .password-reset-links .btn-link {
+        font-size: 13px;
+    }
+}
+/*FIN PAGINA RECUPERAR CONTRASEÑA------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*INICIO PAGINA password_reset_confirm*/
+
+/* Estilos generales */
+.container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Título */
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Estilos del formulario */
+form {
+    text-align: left;
+}
+
+form p {
+    margin-bottom: 15px;
+}
+
+/* Campos de entrada */
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Botón */
+button.btn-primary {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Mensajes de error */
+.text-danger {
+    color: red;
+    font-weight: bold;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    input[type="password"] {
+        font-size: 14px;
+    }
+
+    button.btn-primary {
+        font-size: 14px;
+    }
+}
+
+/*FIN PAGINA password_reset_confirm------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+

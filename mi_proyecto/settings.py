@@ -95,3 +95,13 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 CSRF_TRUSTED_ORIGINS = ["https://petroyale-ehg7gyadd4h6c7gk.spaincentral-01.azurewebsites.net"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "petroyale55@gmail.com"  # Reemplázalo con tu correo de Gmail
+EMAIL_HOST_PASSWORD = "slem pwdx acny pclb"  # ⚠ Pon tu contraseña aquí (No recomendado)
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
