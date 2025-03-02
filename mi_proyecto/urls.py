@@ -14,6 +14,8 @@ urlpatterns = [
     path('faq/', views.faq, name='faq'),
     path('login/', views.login, name='login'),
     path('perfil/', views.perfil, name='perfil'),
+    path('registro/', views.registro, name='registro'),
+    path('password_reset/', views.password_reset, name='password_reset'),
 ]
 
 # 🔹 Configuración correcta para servir archivos estáticos en desarrollo

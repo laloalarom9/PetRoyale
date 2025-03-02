@@ -15,3 +15,7 @@ def login(request):
     return render(request, "login.html")  # Se usa "login.html" desde templates
 def perfil(request):
     return render(request, "perfil.html")  # Se usa "perfil.html" desde templates
+def registro(request):
+    return render(request, "registro.html")  # Se usa "registro.html" desde templates
+def password_reset(request):
+    return render(request, "password_reset.html")  # Se usa "password_reset.html" desde templates
