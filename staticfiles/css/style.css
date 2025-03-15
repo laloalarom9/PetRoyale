@@ -219,7 +219,27 @@
     background-color: #e1b12c; /* Amarillo más oscuro */
     transform: scale(1.05);
 }
+/* Botón Administrar Productos - Mismo estilo que btn-buy */
+.btn-admin {
+    background-color: #3498db; /* Azul */
+    color: rgb(93, 49, 124);
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease-in-out;
+    display: inline-block;
+    margin-bottom: 20px;
+}
 
+/* Hover effect */
+.btn-admin:hover {
+    background-color: #2980b9; /* Azul más oscuro */
+    transform: scale(1.05);
+}
 /*  Responsive: Tablets */
 @media screen and (max-width: 1024px) {
     .hero-title {
@@ -230,6 +250,10 @@
     }
     .btn-explorar {
         font-size: 22px;
+    }
+    .btn-admin {
+        font-size: 16px;
+        padding: 10px 18px;
     }
 }
 
@@ -245,6 +269,14 @@
         font-size: 20px;
         padding: 12px 20px;
     }
+    .btn-admin {
+        font-size: 14px;
+        padding: 8px 16px;
+        width: 90%; /* Se adapta al ancho de la pantalla */
+        text-align: center;
+        display: block;
+        margin: 0 auto 15px;
+    }
 }
 
 /*  Responsive: Pantallas muy pequeñas */
@@ -258,6 +290,11 @@
     .btn-explorar {
         font-size: 18px;
         padding: 10px 18px;
+    }
+    .btn-admin {
+        font-size: 14px;
+        padding: 8px 14px;
+        width: 100%; /* Se adapta completamente */
     }
 }
 

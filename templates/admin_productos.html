@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}  <!-- Asegurar que se cargue la funcionalidad de static -->
+{% block content %}
+<h2>Administración de Productos</h2>
+<a href="{% url 'agregar_producto' %}" class="btn btn-primary">Añadir Producto</a>
+
+<table class="product-table">
+    <tr>
+        <th>Imagen</th>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th>Acciones</th>
+    </tr>
+    {% for producto in productos %}
+    <tr>
+        <td>
+            {% if producto.imagen %}
+                <img src="{% url 'mostrar_imagen_producto' producto.id %}" alt="{{ producto.nombre }}" width="50">
+            {% else %}
+                <img src="{% static 'img/producto/default.png' %}" alt="Sin imagen" width="50">
+            {% endif %}
+        </td>
+        <td>{{ producto.nombre }}</td>
+        <td>${{ producto.precio }}</td>
+        <td>{{ producto.stock }}</td>
+        <td>
+            <a href="{% url 'editar_producto' producto.id %}" class="btn btn-warning">Editar</a>
+            <a href="{% url 'eliminar_producto' producto.id %}" class="btn btn-danger" onclick="return confirm('¿Eliminar producto?');">Eliminar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

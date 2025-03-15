@@ -6,28 +6,27 @@
 {% block content %}
 <section class="store-section">
     <h1 class="store-title">Nuestros Productos</h1>
-    
+    {% if request.user.is_authenticated and request.user.is_superuser %}
+    <div class="admin-section">
+        <a href="{% url 'lista_productos' %}" class="btn btn-admin">Administrar Productos</a>
+    </div>
+{% endif %}
+
+
     <div class="store-container">
-        <div class="product-card">
-            <img src="{% static 'img/productos/juguete_perro.webp' %}" alt="Juguete para Perros" class="product-img">
-            <h3 class="product-title">Juguete para Perros</h3>
-            <p class="product-price">9.99€</p>
-            <button class="btn-buy">Comprar</button>
-        </div>
-        
-        <div class="product-card">
-            <img src="{% static 'img/productos/rascador_gato.jpg' %}" alt="Rascador para Gatos" class="product-img">
-            <h3 class="product-title">Rascador para Gatos</h3>
-            <p class="product-price">24.99€</p>
-            <button class="btn-buy">Comprar</button>
-        </div>
-        
-        <div class="product-card">
-            <img src="{% static 'img/productos/comedero_automatico.jpg' %}" alt="Comedero Automático" class="product-img">
-            <h3 class="product-title">Comedero Automático</h3>
-            <p class="product-price">39.99€</p>
-            <button class="btn-buy">Comprar</button>
-        </div>
+        {% for producto in productos %}
+    <div class="product-card">
+        {% if producto.imagen %}
+            <img src="{% url 'mostrar_imagen_producto' producto.id %}" alt="{{ producto.nombre }}" class="product-img">
+        {% else %}
+            <img src="{% static 'img/default.png' %}" alt="Imagen no disponible" class="product-img">
+        {% endif %}
+        <h3 class="product-title">{{ producto.nombre }}</h3>
+        <p class="product-price">{{ producto.precio }}€</p>
+        <button class="btn-buy">Comprar</button>
+    </div>
+{% endfor %}
+
     </div>
 </section>
 {% endblock %}

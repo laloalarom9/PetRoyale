@@ -5,6 +5,10 @@ from django.conf.urls.static import static
 from mi_proyecto.views import inicio, editar_perfil, eliminar_cuenta  # Importa solo lo necesario
 from mi_proyecto import views  # Importa vistas correctamente
 from django.contrib.auth import views as auth_views  # Importar vistas de autenticación
+from mi_proyecto.views import lista_productos, agregar_producto, editar_producto, eliminar_producto
+from mi_proyecto import views
+from mi_proyecto.views import lista_productos, agregar_producto, editar_producto, eliminar_producto
+
 
 urlpatterns = [
     # Administrador
@@ -29,8 +33,19 @@ urlpatterns = [
     path("password_reset/done/", auth_views.PasswordResetDoneView.as_view(template_name="password_reset_done.html"), name="password_reset_done"),
     path("reset/<uidb64>/<token>/", auth_views.PasswordResetConfirmView.as_view(template_name="password_reset_confirm.html"), name="password_reset_confirm"),
     path("reset/done/", auth_views.PasswordResetCompleteView.as_view(template_name="password_reset_complete.html"), name="password_reset_complete"),
+
+    # Gestión de productos
+    path("productos/", views.lista_productos, name="lista_productos"),
+    path("productos/agregar/", views.agregar_producto, name="agregar_producto"),
+    path("productos/editar/<int:producto_id>/", views.editar_producto, name="editar_producto"),
+    path("productos/eliminar/<int:producto_id>/", views.eliminar_producto, name="eliminar_producto"),
+
+    # Nueva URL para servir imágenes desde la base de datos
+    path("productos/imagen/<int:producto_id>/", views.mostrar_imagen_producto, name="mostrar_imagen_producto"),
+
 ]
 
-# Configuración correcta para servir archivos estáticos en desarrollo
+# Configuración para servir archivos estáticos y multimedia en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # Asegurar que Django sirva archivos subidos

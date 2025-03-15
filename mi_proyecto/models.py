@@ -27,3 +27,16 @@ class CustomUser(AbstractUser):
     def delete(self, *args, **kwargs):
         logging.info(f"User {self.username} deleted")
         super().delete(*args, **kwargs)
+
+
+
+class Producto(models.Model):
+    nombre = models.CharField(max_length=255)
+    descripcion = models.TextField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.PositiveIntegerField(default=0)
+    imagen = models.BinaryField(null=True, blank=True, editable=False)  # Almacenamos la imagen en binario
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nombre

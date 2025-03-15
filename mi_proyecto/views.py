@@ -10,6 +10,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from mi_proyecto.models import CustomUser
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Producto
+from .forms import ProductoForm
+from django.contrib.auth.decorators import user_passes_test
+from django.http import HttpResponse
+
 
 
 User = get_user_model()  # Obtener el modelo de usuario personalizado
@@ -236,3 +244,54 @@ from django.contrib.auth import views as auth_views
 
 class CustomPasswordResetView(auth_views.PasswordResetView):
     template_name = "password_reset.html"
+
+def es_superusuario(user):
+    return user.is_authenticated and user.is_superuser
+
+@user_passes_test(es_superusuario)
+def agregar_producto(request):
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Producto agregado correctamente.")
+            return redirect('lista_productos')
+    else:
+        form = ProductoForm()
+    return render(request, 'agregar_producto.html', {'form': form})
+
+def mostrar_imagen_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    if producto.imagen:
+        return HttpResponse(producto.imagen, content_type="image/jpeg")
+    else:
+        return HttpResponse(status=404)
+    
+@user_passes_test(es_superusuario)
+def lista_productos(request):
+    productos = Producto.objects.all()
+    return render(request, 'admin_productos.html', {'productos': productos})
+
+@user_passes_test(es_superusuario)
+def editar_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES, instance=producto)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Producto actualizado correctamente.")
+            return redirect('lista_productos')
+    else:
+        form = ProductoForm(instance=producto)
+    return render(request, 'editar_producto.html', {'form': form, 'producto': producto})
+
+@user_passes_test(es_superusuario)
+def eliminar_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    producto.delete()
+    messages.success(request, "Producto eliminado correctamente.")
+    return redirect('lista_productos')
+
+def Tienda(request):
+    productos = Producto.objects.all()  # Obtener todos los productos
+    return render(request, "Tienda.html", {"productos": productos})
