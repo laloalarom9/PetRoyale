@@ -424,6 +424,58 @@
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PRINCIPIO PAGINA ADMINISTRAR TIENDA------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*  Sección de administrar tienda */
+body h2.admin123-title {
+    font-size: 56px;
+    font-weight: bold;
+    margin-top: 70px;
+    margin-bottom: 30px;
+    color: #2c3e50;
+    text-align: center;
+}
+
+
+.admin-section {
+    text-align: center;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/*  Responsive: Tablets */
+@media screen and (max-width: 1024px) {
+    .titulo-administracion {
+        font-size: 48px;
+        margin-top: 30px;
+    }
+}
+
+/*  Responsive: Móviles */
+@media screen and (max-width: 768px) {
+    .titulo-administracion {
+        font-size: 40px;
+        margin-top: 20px;
+    }
+}
+
+/*  Responsive: Pantallas muy pequeñas */
+@media screen and (max-width: 480px) {
+    .titulo-administracion {
+        font-size: 32px;
+        margin-top: 15px;
+    }
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*FIN PAGINA ADMINISTRAR TIENDA------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*  Sección de administrar tienda */
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*PRINCIPIO PAGINA RESEÑAS------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*  Sección de Reseñas */
 .reviews-section {

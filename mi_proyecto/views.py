@@ -256,8 +256,12 @@ def agregar_producto(request):
             form.save()
             messages.success(request, "Producto agregado correctamente.")
             return redirect('lista_productos')
+        else:
+            # Mostrar mensaje de error si el producto ya existe
+            messages.error(request, "Error al agregar el producto. Verifica los datos.")
     else:
         form = ProductoForm()
+
     return render(request, 'agregar_producto.html', {'form': form})
 
 def mostrar_imagen_producto(request, producto_id):

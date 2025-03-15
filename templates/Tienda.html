@@ -8,7 +8,7 @@
     <h1 class="store-title">Nuestros Productos</h1>
     {% if request.user.is_authenticated and request.user.is_superuser %}
     <div class="admin-section">
-        <a href="{% url 'lista_productos' %}" class="btn btn-admin">Administrar Productos</a>
+        <a href="{% url 'lista_productos' %}" class="btn btn-primary">Administrar Productos</a>
     </div>
 {% endif %}
 
@@ -19,7 +19,7 @@
         {% if producto.imagen %}
             <img src="{% url 'mostrar_imagen_producto' producto.id %}" alt="{{ producto.nombre }}" class="product-img">
         {% else %}
-            <img src="{% static 'img/default.png' %}" alt="Imagen no disponible" class="product-img">
+            <img src="{% static 'img/productos/default.png' %}" alt="Imagen no disponible" class="product-img">
         {% endif %}
         <h3 class="product-title">{{ producto.nombre }}</h3>
         <p class="product-price">{{ producto.precio }}€</p>
