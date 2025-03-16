@@ -683,3 +683,4 @@ def procesar_compra(request):
         "numero_pedido": numero_pedido,
         "total_con_iva": f"{total_con_iva:.2f}",
     })
+#
