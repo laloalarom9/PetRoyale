@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Checkout - PetRoyale{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <h2>💳 Checkout</h2>
+    <p style="color: red; font-weight: bold;">Revisa tu pedido antes de finalizar.</p>
+
+    {% if productos %}
+        <table class="checkout-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in productos %}
+                    <tr>
+                        <td>{{ item.producto.nombre }}</td>
+                        <td>{{ item.producto.precio }}€</td>
+                        <td>{{ item.cantidad }}</td>
+                        <td>{{ item.subtotal|floatformat:2 }}€</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="checkout-summary">
+            <p><strong>Total:</strong> {{ total|floatformat:2 }}€</p>
+            <p><strong>IVA (21%):</strong> {{ iva|floatformat:2 }}€</p>
+            <p><strong>Total con IVA:</strong> {{ total_con_iva|floatformat:2 }}€</p>            
+        </div>
+
+        <form action="{% url 'confirmar_compra' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn-confirm">✅ Confirmar Compra</button>
+        </form>
+    {% else %}
+        <p style="text-align: center;">No hay productos en el carrito.</p>
+    {% endif %}
+</div>
+{% endblock %}

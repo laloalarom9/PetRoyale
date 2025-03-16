@@ -1996,4 +1996,347 @@ p {
 /*FIN PAGINA Detalle producto------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
+/* ---------------------------------------------------------------------------------------------------------------- */
+/* ESTILOS PARA CARRITO DE COMPRAS */
+/* ---------------------------------------------------------------------------------------------------------------- */
 
+/* Contenedor principal del carrito */
+.cart-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.cart-container h2 {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Tabla de productos en el carrito */
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.cart-table thead {
+    background-color: #f8f8f8;
+    border-bottom: 2px solid #ddd;
+}
+
+.cart-table th,
+.cart-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.cart-table th {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Imagen del producto en la tabla */
+.cart-product-image img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* Sección de cantidad */
+.cart-quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Botones para aumentar o reducir cantidad */
+.cart-quantity button {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.cart-quantity button:hover {
+    background-color: #e68900;
+}
+
+/* Sección de totales y resumen */
+.cart-summary {
+    margin-top: 20px;
+    font-size: 18px;
+    text-align: center;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.cart-summary strong {
+    color: #333;
+}
+
+.cart-summary p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+/* Botones de acción */
+.cart-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.cart-buttons a {
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.cart-buttons .btn-continue {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.cart-buttons .btn-continue:hover {
+    background-color: #45a049;
+}
+
+.cart-buttons .btn-clear {
+    background-color: #e53935;
+    color: white;
+}
+
+.cart-buttons .btn-clear:hover {
+    background-color: #c62828;
+}
+
+.cart-buttons .btn-buy {
+    background-color: #007bff;
+    color: white;
+}
+
+.cart-buttons .btn-buy:hover {
+    background-color: #0056b3;
+}
+
+/* Mensaje si el carrito está vacío */
+.empty-cart {
+    text-align: center;
+    font-size: 18px;
+    color: #777;
+    margin-top: 20px;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+    .cart-table th,
+    .cart-table td {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .cart-buttons {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .cart-buttons a {
+        width: 80%;
+        text-align: center;
+    }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------- */
+/* FIN CARRITO DE COMPRAS */
+/* ---------------------------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------------------------- */
+/* INICIO CHECKOUT */
+/* ---------------------------------------------------------------------------------------------------------------- */
+
+.checkout-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Estilos del título */
+.checkout-container h2 {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Mensaje de advertencia */
+.checkout-container p {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.checkout-container p strong {
+    color: #d32f2f;
+}
+
+/* Tabla de productos */
+.checkout-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.checkout-table thead {
+    background-color: #f8f8f8;
+    border-bottom: 2px solid #ddd;
+}
+
+.checkout-table th,
+.checkout-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.checkout-table th {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Resumen de costos */
+.checkout-summary {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.checkout-summary strong {
+    color: #333;
+}
+
+/* Botón de Confirmar Compra */
+.btn-confirm {
+    display: block;
+    width: 100%;
+    max-width: 250px;
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 20px auto;
+    transition: background-color 0.3s;
+}
+
+.btn-confirm:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .checkout-container {
+        width: 90%;
+    }
+
+    .checkout-table th,
+    .checkout-table td {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+/* ---------------------------------------------------------------------------------------------------------------- */
+/* FIN CHECKOUT */
+/* ---------------------------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------------------------- */
+/* INICIO CONFIRMACIÓN DE COMPRA */
+/* ---------------------------------------------------------------------------------------------------------------- */
+
+.confirmation-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Icono de éxito */
+.success-icon {
+    font-size: 50px;
+    color: #4CAF50;
+}
+
+/* Mensaje de éxito */
+.confirmation-container h2 {
+    font-size: 26px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Texto de confirmación */
+.confirmation-container p {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* Pedido en negritas */
+.confirmation-container strong {
+    color: #d32f2f;
+}
+
+/* Total pagado */
+.total-paid {
+    font-size: 20px;
+    font-weight: bold;
+    color: #d32f2f;
+    margin-top: 10px;
+}
+
+/* Enlace para volver a la tienda */
+.back-to-store {
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 18px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.back-to-store:hover {
+    color: #0056b3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .confirmation-container {
+        width: 90%;
+    }
+}
+/* ---------------------------------------------------------------------------------------------------------------- */
+/* FIN CONFIRMACIÓN DE COMPRA */
+/* ---------------------------------------------------------------------------------------------------------------- */

@@ -93,8 +93,24 @@ def inicio(request):
 def reseñas(request):
     return render(request, "reseñas.html")
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Pedido, DetallePedido
+
+@login_required
 def pedidos(request):
-    return render(request, "pedidos.html")
+    """
+    Vista para mostrar los pedidos del usuario autenticado con los detalles de productos comprados.
+    """
+    pedidos = Pedido.objects.filter(usuario=request.user).order_by("-fecha")
+    pedidos_con_detalles = []
+
+    for pedido in pedidos:
+        detalles = DetallePedido.objects.filter(pedido=pedido)
+        pedidos_con_detalles.append({"pedido": pedido, "detalles": detalles})
+
+    return render(request, "pedidos.html", {"pedidos_con_detalles": pedidos_con_detalles})
 
 def Tienda(request):
     productos = Producto.objects.all()  # Obtener todos los productos
@@ -347,99 +363,93 @@ def eliminar_producto(request, producto_id):
 
 def producto_detalle(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
-    return render(request, "producto_detalle.html", {"producto": producto})
+    stock_disponible = producto.stock_disponible()  # ✅ Llama al método correctamente
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.utils.timezone import now, timedelta
-from decimal import Decimal
-from .models import Producto
+    return render(request, "producto_detalle.html", {
+        "producto": producto,
+        "stock_disponible": stock_disponible,  # ✅ Pásalo como variable al template
+    })
 
 def agregar_al_carrito(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
     carrito = request.session.get("carrito", {})
 
-    cantidad_en_carrito = carrito.get(str(producto_id), {}).get("cantidad", 0)
+    # Obtener la cantidad deseada del formulario
+    cantidad = int(request.POST.get("cantidad", 1))
+
     stock_disponible = producto.stock_disponible()
 
-    if cantidad_en_carrito >= stock_disponible:
+    if cantidad > stock_disponible:
         messages.error(request, f"Solo puedes añadir {stock_disponible} unidades de {producto.nombre}.")
     else:
         if str(producto_id) in carrito:
-            carrito[str(producto_id)]["cantidad"] += 1
+            carrito[str(producto_id)]["cantidad"] += cantidad
         else:
             carrito[str(producto_id)] = {
                 "nombre": producto.nombre,
                 "precio": str(producto.precio),
-                "cantidad": 1,
+                "cantidad": cantidad,  # ✅ Ahora se suma correctamente la cantidad
                 "agregado_hora": str(now()),
             }
 
-        # ✅ Asegurar que `stock_reservado` no supere `stock`
-        if producto.stock_reservado < producto.stock:
-            producto.stock_reservado += 1
-            producto.stock -= 1  # **Restar del stock real**
-            producto.save()
+        # ✅ SOLO aumentar el stock reservado
+        if producto.stock_reservado + cantidad <= producto.stock:
+            producto.stock_reservado += cantidad
+            producto.save()  # Guardar cambios
 
         request.session["carrito"] = carrito
-        messages.success(request, f"Se añadió {producto.nombre} al carrito.")
+        messages.success(request, f"Se añadieron {cantidad} unidades de {producto.nombre} al carrito.")
 
     return redirect("producto_detalle", producto_id=producto_id)
+
+
+
+
+from decimal import Decimal, ROUND_HALF_UP
+
+from decimal import Decimal, ROUND_HALF_UP
+
+from decimal import Decimal, ROUND_HALF_UP
 
 def carrito(request):
     carrito = request.session.get("carrito", {})
     productos = []
     total = Decimal(0)
-    tiempo_actual = now()
 
     for producto_id, datos in list(carrito.items()):
         producto = Producto.objects.get(id=int(producto_id))
-        agregado_hora = datos.get("agregado_hora", None)
+        cantidad_real = datos["cantidad"]
+        subtotal = Decimal(producto.precio) * cantidad_real
+        productos.append({'producto': producto, 'cantidad': cantidad_real, 'subtotal': subtotal})
+        total += subtotal
 
-        # 🔹 Si han pasado más de 10 minutos, liberar stock
-        if agregado_hora and now() - timedelta(minutes=10) > tiempo_actual:
-            print(f"⏳ Expirando reserva de {producto.nombre}. Liberando {datos['cantidad']} unidades.")
-
-            producto.stock_reservado -= datos["cantidad"]
-            producto.stock += datos["cantidad"]  # ✅ Devolver stock real
-            if producto.stock_reservado < 0:
-                producto.stock_reservado = 0
-            producto.save()
-            del carrito[producto_id]  # **Elimina el producto del carrito**
-        else:
-            cantidad_real = datos["cantidad"]
-            subtotal = Decimal(producto.precio) * cantidad_real
-            productos.append({'producto': producto, 'cantidad': cantidad_real, 'subtotal': subtotal})
-            total += subtotal
-
-    request.session["carrito"] = carrito  # Guardar el carrito actualizado
+    # Calcular IVA y total con redondeo
+    iva = (total * Decimal(0.21)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    total_con_iva = (total + iva).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
     return render(request, 'carrito.html', {
         'productos': productos,
         'total': total,
+        'iva': iva,
+        'total_con_iva': total_con_iva,
     })
-
-
 
 def reducir_cantidad_carrito(request, producto_id):
     carrito = request.session.get("carrito", {})
 
     if str(producto_id) in carrito:
         producto = Producto.objects.get(id=producto_id)
+        cantidad_actual = carrito[str(producto_id)]["cantidad"]
 
-        if carrito[str(producto_id)]["cantidad"] > 1:
+        if cantidad_actual > 1:
             carrito[str(producto_id)]["cantidad"] -= 1
-            producto.stock_reservado -= 1
-            producto.stock += 1  # ✅ **Devolver stock real**
+            producto.stock_reservado -= 1  # ✅ Devolver solo 1 unidad reservada
         else:
-            producto.stock_reservado -= 1
-            producto.stock += 1  # ✅ **Devolver stock real**
-            del carrito[str(producto_id)]
+            producto.stock_reservado -= cantidad_actual  # ✅ Devolver toda la cantidad reservada
+            del carrito[str(producto_id)]  # Eliminar del carrito solo después de ajustar stock
 
-        # ✅ Evitar valores negativos
-        if producto.stock_reservado < 0:
-            producto.stock_reservado = 0
-
+        # ✅ Asegurar que `stock_reservado` no sea negativo
+        producto.stock_reservado = max(producto.stock_reservado, 0)
         producto.save()
 
     request.session["carrito"] = carrito
@@ -447,6 +457,22 @@ def reducir_cantidad_carrito(request, producto_id):
 
     return redirect("carrito")
 
+from decimal import Decimal, ROUND_HALF_UP
+
+def calcular_totales(carrito):
+    total = Decimal(0)
+
+    for producto_id, datos in carrito.items():
+        producto = Producto.objects.get(id=int(producto_id))
+        cantidad = datos["cantidad"]
+        subtotal = Decimal(producto.precio) * cantidad
+        total += subtotal
+
+    # ✅ Redondeo correcto del IVA y total con IVA
+    iva = (total * Decimal(0.21)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    total_con_iva = (total + iva).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    return total, iva, total_con_iva
 
 
 
@@ -456,22 +482,186 @@ def vaciar_carrito(request):
     for producto_id, datos in carrito.items():
         producto = Producto.objects.get(id=int(producto_id))
 
-        # ✅ Asegurar que `stock_reservado` se libere completamente
+        # ✅ Solo devolver lo que realmente estaba reservado
         producto.stock_reservado -= datos["cantidad"]
-        producto.stock += datos["cantidad"]  # ✅ Devolver stock real
-
-        # ✅ Evitar valores negativos
-        if producto.stock_reservado < 0:
-            producto.stock_reservado = 0
-
+        producto.stock_reservado = max(producto.stock_reservado, 0)  # ✅ Evita valores negativos
         producto.save()
 
-    request.session["carrito"] = {}  # Vaciar el carrito
+    request.session["carrito"] = {}  # Vaciar el carrito en sesión
     messages.success(request, "Carrito vaciado correctamente.")
 
     return redirect("carrito")
 
 
+from django.shortcuts import render
+from django.utils.timezone import now
+from decimal import Decimal
+
+from decimal import Decimal, ROUND_HALF_UP
+
 
 def checkout(request):
-    return render(request, "checkout.html")  # Asegúrate de tener "checkout.html" en templates/
+    carrito = request.session.get("carrito", {})
+    productos = []
+    total = Decimal(0)
+
+    for producto_id, datos in carrito.items():
+        producto = Producto.objects.get(id=int(producto_id))
+        cantidad_real = datos["cantidad"]
+        subtotal = Decimal(producto.precio) * cantidad_real
+        productos.append({'producto': producto, 'cantidad': cantidad_real, 'subtotal': subtotal})
+        total += subtotal
+
+    iva = (total * Decimal(0.21)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    total_con_iva = (total + iva).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+    return render(request, "checkout.html", {
+        "productos": productos,
+        "total": total,
+        "iva": iva,
+        "total_con_iva": total_con_iva,
+    })
+import io
+from django.http import FileResponse
+from django.shortcuts import render, redirect
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.utils.timezone import now
+from django.contrib import messages
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from decimal import Decimal
+from .models import Producto
+
+from .models import Pedido, DetallePedido
+
+def procesar_compra(request):
+    carrito = request.session.get("carrito", {})
+
+    if not carrito:
+        messages.error(request, "Tu carrito está vacío.")
+        return redirect("carrito")
+
+    usuario = request.user
+    fecha_compra = now()
+    numero_pedido = f"ORD-{fecha_compra.strftime('%Y%m%d%H%M%S')}"
+
+    total = Decimal(0)
+    productos_comprados = []
+
+    # ✅ Verificar disponibilidad de stock ANTES de procesar la compra
+    for producto_id, datos in carrito.items():
+        try:
+            producto = Producto.objects.get(id=int(producto_id))
+        except Producto.DoesNotExist:
+            messages.error(request, "Uno de los productos en tu carrito ya no está disponible.")
+            return redirect("carrito")
+
+        cantidad = datos["cantidad"]
+
+        if producto.stock < cantidad:
+            messages.error(request, f"Stock insuficiente para {producto.nombre}. Solo quedan {producto.stock} unidades.")
+            return redirect("carrito")
+
+    # ✅ Si todo está bien, proceder con la compra
+    for producto_id, datos in carrito.items():
+        producto = Producto.objects.get(id=int(producto_id))
+        cantidad = datos["cantidad"]
+        subtotal = Decimal(producto.precio) * cantidad
+        total += subtotal
+
+        productos_comprados.append({
+            "nombre": producto.nombre,
+            "cantidad": cantidad,
+            "precio": producto.precio,
+            "subtotal": subtotal,
+        })
+
+        # ✅ Restar correctamente del stock real y reservado
+        producto.stock_reservado = max(producto.stock_reservado - cantidad, 0)
+        producto.stock = max(producto.stock - cantidad, 0)
+        producto.save()
+
+    iva = (total * Decimal(0.21)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    total_con_iva = (total + iva).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    # ✅ Guardar pedido en la base de datos
+    pedido = Pedido.objects.create(
+        usuario=usuario,
+        numero_pedido=numero_pedido,
+        fecha=fecha_compra,
+        total=total,
+        iva=iva,
+        total_con_iva=total_con_iva,
+        estado="pendiente"
+    )
+
+    # ✅ Guardar los productos comprados en el detalle del pedido
+    for item in productos_comprados:
+        producto = Producto.objects.get(nombre=item["nombre"])
+        DetallePedido.objects.create(
+            pedido=pedido,
+            producto=producto,
+            cantidad=item["cantidad"],
+            precio_unitario=item["precio"]
+        )
+
+    # 📄 Generar el PDF del recibo
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+    pdf.setTitle("Recibo de Compra - PetRoyale")
+
+    pdf.drawString(100, 750, f"PetRoyale - Recibo de Compra")
+    pdf.drawString(100, 730, f"Cliente: {usuario.username} ({usuario.email})")
+    pdf.drawString(100, 710, f"Fecha: {fecha_compra.strftime('%d/%m/%Y %H:%M:%S')}")
+    pdf.drawString(100, 690, f"Número de pedido: {numero_pedido}")
+
+    y = 650
+    pdf.drawString(100, y, "Detalle del pedido:")
+    y -= 20
+    pdf.drawString(100, y, "--------------------------------------------")
+
+    for item in productos_comprados:
+        y -= 20
+        pdf.drawString(100, y, f"{item['nombre']} x {item['cantidad']} - {item['precio']:.2f}€ c/u")
+
+    y -= 30
+    pdf.drawString(100, y, f"Subtotal: {total:.2f}€")
+    y -= 20
+    pdf.drawString(100, y, f"IVA (21%): {iva:.2f}€")
+    y -= 20
+    pdf.drawString(100, y, f"Total con IVA: {total_con_iva:.2f}€")
+
+    pdf.save()
+    buffer.seek(0)
+
+    # 📩 Enviar el PDF por correo
+    email_subject = "Tu compra en PetRoyale 🛒"
+    email_body = render_to_string("email_recibo.html", {
+        "usuario": usuario,
+        "fecha_compra": fecha_compra.strftime("%d/%m/%Y %H:%M:%S"),
+        "numero_pedido": numero_pedido,
+        "productos_comprados": productos_comprados,
+        "total": f"{total:.2f}",
+        "iva": f"{iva:.2f}",
+        "total_con_iva": f"{total_con_iva:.2f}",
+    })
+
+    email = EmailMessage(
+        email_subject,
+        email_body,
+        "noreply@petroyale.com",
+        [usuario.email],
+    )
+    email.attach("recibo_petroyale.pdf", buffer.getvalue(), "application/pdf")
+    email.content_subtype = "html"
+    email.send()
+
+    # 🛒 Vaciar el carrito
+    request.session["carrito"] = {}
+    messages.success(request, "Compra realizada con éxito. Recibirás un correo con el recibo.")
+
+    return render(request, "confirmacion_compra.html", {
+        "numero_pedido": numero_pedido,
+        "total_con_iva": f"{total_con_iva:.2f}",
+    })
