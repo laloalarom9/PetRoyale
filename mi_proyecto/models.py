@@ -132,7 +132,7 @@ class Pedido(models.Model):
     numero_pedido = models.CharField(max_length=30, unique=True)
     fecha_pedido = models.DateTimeField(default=now)
     total = models.DecimalField(max_digits=10, decimal_places=2)
-    iva = models.DecimalField(max_digits=10, decimal_places=2)
+    iva = models.DecimalField(max_digits=10, decimal_places=2)  # ✅ CONFIRMAR QUE EXISTE
     total_con_iva = models.DecimalField(max_digits=10, decimal_places=2)
     estado = models.CharField(max_length=30, choices=ESTADOS_PEDIDO, default="pendiente")
 
