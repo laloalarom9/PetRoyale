@@ -103,7 +103,7 @@ def pedidos(request):
     """
     Vista para mostrar los pedidos del usuario autenticado con los detalles de productos comprados.
     """
-    pedidos = Pedido.objects.filter(usuario=request.user).order_by("-fecha")
+    pedidos = Pedido.objects.filter(usuario=request.user).order_by("-fecha_pedido")  # ✅ CORREGIDO
     pedidos_con_detalles = []
 
     for pedido in pedidos:
@@ -534,6 +534,18 @@ from decimal import Decimal
 from .models import Producto
 
 from .models import Pedido, DetallePedido
+import io
+from django.http import FileResponse
+from django.shortcuts import render, redirect
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.utils.timezone import now
+from django.contrib import messages
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from decimal import Decimal, ROUND_HALF_UP
+from .models import Pedido, DetallePedido, Producto
+
 
 def procesar_compra(request):
     carrito = request.session.get("carrito", {})
@@ -545,11 +557,10 @@ def procesar_compra(request):
     usuario = request.user
     fecha_compra = now()
     numero_pedido = f"ORD-{fecha_compra.strftime('%Y%m%d%H%M%S')}"
-
     total = Decimal(0)
     productos_comprados = []
 
-    # ✅ Verificar disponibilidad de stock ANTES de procesar la compra
+    # ✅ Verificar disponibilidad de stock antes de procesar la compra
     for producto_id, datos in carrito.items():
         try:
             producto = Producto.objects.get(id=int(producto_id))
@@ -563,7 +574,7 @@ def procesar_compra(request):
             messages.error(request, f"Stock insuficiente para {producto.nombre}. Solo quedan {producto.stock} unidades.")
             return redirect("carrito")
 
-    # ✅ Si todo está bien, proceder con la compra
+    # ✅ Procesar la compra
     for producto_id, datos in carrito.items():
         producto = Producto.objects.get(id=int(producto_id))
         cantidad = datos["cantidad"]
@@ -571,13 +582,14 @@ def procesar_compra(request):
         total += subtotal
 
         productos_comprados.append({
+            "id": producto.id,
             "nombre": producto.nombre,
             "cantidad": cantidad,
             "precio": producto.precio,
             "subtotal": subtotal,
         })
 
-        # ✅ Restar correctamente del stock real y reservado
+        # ✅ Reducir el stock correctamente
         producto.stock_reservado = max(producto.stock_reservado - cantidad, 0)
         producto.stock = max(producto.stock - cantidad, 0)
         producto.save()
@@ -585,33 +597,38 @@ def procesar_compra(request):
     iva = (total * Decimal(0.21)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     total_con_iva = (total + iva).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
-    # ✅ Guardar pedido en la base de datos
-    pedido = Pedido.objects.create(
-        usuario=usuario,
-        numero_pedido=numero_pedido,
-        fecha=fecha_compra,
-        total=total,
-        iva=iva,
-        total_con_iva=total_con_iva,
-        estado="pendiente"
-    )
-
-    # ✅ Guardar los productos comprados en el detalle del pedido
-    for item in productos_comprados:
-        producto = Producto.objects.get(nombre=item["nombre"])
-        DetallePedido.objects.create(
-            pedido=pedido,
-            producto=producto,
-            cantidad=item["cantidad"],
-            precio_unitario=item["precio"]
+    # ✅ Guardar el pedido en la base de datos
+    try:
+        pedido = Pedido.objects.create(
+            usuario=usuario,
+            numero_pedido=numero_pedido,
+            fecha_pedido=fecha_compra,  # ✅ CAMBIO AQUÍ
+            total=total,
+            iva=iva,
+            total_con_iva=total_con_iva,
+            estado="pendiente"
         )
+
+        # ✅ Guardar los productos comprados en el detalle del pedido
+        for item in productos_comprados:
+            producto = Producto.objects.get(id=item["id"])
+            DetallePedido.objects.create(
+                pedido=pedido,
+                producto=producto,
+                cantidad=item["cantidad"],
+                precio_unitario=item["precio"]
+            )
+
+    except Exception as e:
+        messages.error(request, f"Ocurrió un error al registrar el pedido: {str(e)}")
+        return redirect("carrito")
 
     # 📄 Generar el PDF del recibo
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=letter)
     pdf.setTitle("Recibo de Compra - PetRoyale")
 
-    pdf.drawString(100, 750, f"PetRoyale - Recibo de Compra")
+    pdf.drawString(100, 750, "PetRoyale - Recibo de Compra")
     pdf.drawString(100, 730, f"Cliente: {usuario.username} ({usuario.email})")
     pdf.drawString(100, 710, f"Fecha: {fecha_compra.strftime('%d/%m/%Y %H:%M:%S')}")
     pdf.drawString(100, 690, f"Número de pedido: {numero_pedido}")
@@ -657,10 +674,11 @@ def procesar_compra(request):
     email.content_subtype = "html"
     email.send()
 
-    # 🛒 Vaciar el carrito
+    # 🛒 Vaciar el carrito después de la compra
     request.session["carrito"] = {}
     messages.success(request, "Compra realizada con éxito. Recibirás un correo con el recibo.")
 
+    # ✅ Redirigir correctamente a la confirmación de compra
     return render(request, "confirmacion_compra.html", {
         "numero_pedido": numero_pedido,
         "total_con_iva": f"{total_con_iva:.2f}",
