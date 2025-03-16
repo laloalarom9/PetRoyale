@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
 
     def delete(self, *args, **kwargs):
         logging.info(f"User {self.username} deleted")
-        super().delete(*args, **kwargs)
+        super().delete(*args, **kwargs)#
 
 
 
