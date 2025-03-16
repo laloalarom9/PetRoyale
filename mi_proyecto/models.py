@@ -107,7 +107,7 @@ class Producto(models.Model):
         return disponible
 
     def __str__(self):
-        return f"{self.nombre} ({self.categoria})"
+        return f"{self.nombre} ({self.categoria})"#
 
 
 
