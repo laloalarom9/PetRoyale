@@ -682,4 +682,4 @@ def procesar_compra(request):
     return render(request, "confirmacion_compra.html", {
         "numero_pedido": numero_pedido,
         "total_con_iva": f"{total_con_iva:.2f}",
-    })
+    })#
