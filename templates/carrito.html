@@ -4,11 +4,11 @@
 {% block title %}Carrito - PetRoyale{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="cart-container">
     <h2>🛒 Carrito de Compras</h2>
 
     {% if productos %}
-        <table class="table table-striped">
+        <table class="cart-table">
             <thead>
                 <tr>
                     <th>Producto</th>
@@ -24,27 +24,30 @@
                         <td>{{ item.producto.nombre }}</td>
                         <td>{{ item.producto.precio }}€</td>
                         <td>{{ item.cantidad }}</td>
-                        <td>{{ item.subtotal }}€</td>
+                        <td>{{ item.subtotal|floatformat:2 }}€</td>
                         <td>
-                            <!-- Botón para reducir la cantidad -->
-                            <a href="{% url 'reducir_cantidad_carrito' item.producto.id %}" class="btn btn-warning btn-sm">
-                                -
-                            </a>
+                            <a href="{% url 'reducir_cantidad_carrito' item.producto.id %}" class="btn-reducir">➖</a>
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <p><strong>Total: </strong> {{ total }}€</p>
-        <p><strong>IVA (21%): </strong> {{ iva }}€</p>
-        <p><strong>Total con IVA: </strong> {{ total_con_iva }}€</p>
+        <div class="cart-summary">
+            <p><strong>Total: </strong> {{ total|floatformat:2 }}€</p>
+            <p><strong>IVA (21%): </strong> {{ iva|floatformat:2 }}€</p>
+            <p><strong>Total con IVA: </strong> {{ total_con_iva|floatformat:2 }}€</p>
+            
+        </div>
 
-        <a href="{% url 'Tienda' %}" class="btn btn-primary">Seguir Comprando</a>
-        <a href="{% url 'vaciar_carrito' %}" class="btn btn-danger">Vaciar Carrito</a>
+        <div class="cart-buttons">
+            <a href="{% url 'Tienda' %}" class="btn-continue">🛍️ Seguir Comprando</a>
+            <a href="{% url 'vaciar_carrito' %}" class="btn-clear">🗑️ Vaciar Carrito</a>
+            <a href="{% url 'checkout' %}" class="btn-buy">💳 Comprar</a>
+        </div>
 
     {% else %}
-        <p>El carrito está vacío. <a href="{% url 'Tienda' %}">Ir a la tienda</a></p>
+        <p class="empty-cart">El carrito está vacío. <a href="{% url 'Tienda' %}">Ir a la tienda</a></p>
     {% endif %}
 </div>
 {% endblock %}

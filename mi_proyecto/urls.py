@@ -8,6 +8,7 @@ from django.contrib.auth import views as auth_views  # Importar vistas de autent
 from mi_proyecto.views import lista_productos, agregar_producto, editar_producto, eliminar_producto
 from mi_proyecto import views
 from mi_proyecto.views import lista_productos, agregar_producto, editar_producto, eliminar_producto
+from mi_proyecto.views import checkout, procesar_compra  # ✅ Asegúrate de importar procesar_compra
 
 
 urlpatterns = [
@@ -46,6 +47,9 @@ urlpatterns = [
     path('carrito/reducir/<int:producto_id>/', views.reducir_cantidad_carrito, name='reducir_cantidad_carrito'),
     path('carrito/vaciar/', views.vaciar_carrito, name='vaciar_carrito'),
     path('carrito/agregar/<int:producto_id>/', views.agregar_al_carrito, name='agregar_al_carrito'),  # ✅ Asegurar que existe esta URL
+    path("checkout/procesar/", views.procesar_compra, name="procesar_compra"),
+    path("confirmar_compra/", procesar_compra, name="confirmar_compra"),  # ✅ Agregar esta línea
+    path("pedidos/", views.pedidos, name="pedidos"),  # ✅ Esto es suficiente
 
 ]
 
