@@ -162,10 +162,10 @@
 
 /*  Cambiar color del icono en el enlace activo */
 
-
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*PRINCIPIO PAGINA INICIO------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*  Sección principal */
+
+/* Sección principal */
 .hero-section {
     text-align: center;
     padding: 60px 20px;
@@ -175,7 +175,7 @@
     justify-content: center;
 }
 
-/*  Título principal */
+/* Título principal */
 .hero-title {
     font-size: 56px;
     font-weight: bold;
@@ -183,7 +183,7 @@
     color: #2c3e50; /* Azul oscuro */
 }
 
-/*  Imagen de portada */
+/* Imagen de portada */
 .hero-image {
     width: 100%; /* Ocupa todo el ancho disponible */
     max-width: 1200px; /* Limita el tamaño máximo */
@@ -194,14 +194,14 @@
     margin-bottom: 20px;
 }
 
-/*  Subtítulo */
+/* Subtítulo */
 .hero-subtitle {
     font-size: 26px;
     color: #333;
     margin-bottom: 20px;
 }
 
-/*  Botón de explorar tienda */
+/* Botón de acción */
 .btn-explorar {
     background-color: #f4d03f; /* Amarillo */
     color: #1e2a3a; /* Azul oscuro */
@@ -213,34 +213,46 @@
     display: inline-block;
     margin-top: 15px;
     transition: background 0.3s ease, transform 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
 }
 
 .btn-explorar:hover {
     background-color: #e1b12c; /* Amarillo más oscuro */
     transform: scale(1.05);
 }
-/* Botón Administrar Productos - Mismo estilo que btn-buy */
-.btn-admin {
-    background-color: #3498db; /* Azul */
-    color: rgb(93, 49, 124);
-    padding: 12px 20px;
-    text-decoration: none;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease-in-out;
-    display: inline-block;
-    margin-bottom: 20px;
+
+/* Sección de información */
+.info-section, .donaciones-section, .impacto-section, .ofertas-section {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 1000px;
 }
 
-/* Hover effect */
-.btn-admin:hover {
-    background-color: #2980b9; /* Azul más oscuro */
-    transform: scale(1.05);
+.info-section h2, .donaciones-section h2, .impacto-section h2, .ofertas-section h2 {
+    font-size: 32px;
+    color: #2c3e50;
+    margin-bottom: 15px;
 }
-/*  Responsive: Tablets */
+
+.info-section p, .donaciones-section p, .impacto-section p, .ofertas-section p {
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Estilo para testimonios */
+.testimonios {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* Responsive: Tablets */
 @media screen and (max-width: 1024px) {
     .hero-title {
         font-size: 48px;
@@ -251,13 +263,9 @@
     .btn-explorar {
         font-size: 22px;
     }
-    .btn-admin {
-        font-size: 16px;
-        padding: 10px 18px;
-    }
 }
 
-/*  Responsive: Móviles */
+/* Responsive: Móviles */
 @media screen and (max-width: 768px) {
     .hero-title {
         font-size: 40px;
@@ -269,17 +277,12 @@
         font-size: 20px;
         padding: 12px 20px;
     }
-    .btn-admin {
-        font-size: 14px;
-        padding: 8px 16px;
-        width: 90%; /* Se adapta al ancho de la pantalla */
-        text-align: center;
-        display: block;
-        margin: 0 auto 15px;
+    .info-section, .donaciones-section, .impacto-section, .ofertas-section {
+        padding: 30px 15px;
     }
 }
 
-/*  Responsive: Pantallas muy pequeñas */
+/* Responsive: Pantallas muy pequeñas */
 @media screen and (max-width: 480px) {
     .hero-title {
         font-size: 32px;
@@ -291,20 +294,17 @@
         font-size: 18px;
         padding: 10px 18px;
     }
-    .btn-admin {
-        font-size: 14px;
-        padding: 8px 14px;
-        width: 100%; /* Se adapta completamente */
+    .info-section, .donaciones-section, .impacto-section, .ofertas-section {
+        padding: 20px 10px;
     }
 }
 
-
 /*FIN PAGINA INICIO------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*PRINCIPIO PAGINA TIENDA------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*  Sección de la tienda */
+/* PRINCIPIO PAGINA TIENDA */
+
+/* Sección de la tienda */
 .store-section {
     text-align: center;
     padding: 60px 20px;
@@ -314,7 +314,7 @@
     justify-content: center;
 }
 
-/*  Título de la tienda */
+/* Título de la tienda */
 .store-title {
     font-size: 56px;
     font-weight: bold;
@@ -322,17 +322,19 @@
     color: #2c3e50; /* Azul oscuro */
 }
 
-/*  Contenedor de productos */
+/* Contenedor de productos */
 .store-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Se adapta a cualquier tamaño de pantalla */
+    gap: 20px;
     width: 100%;
     max-width: 1200px;
     margin-top: 20px;
+    justify-content: center;
+    padding: 0 20px;
 }
 
-/*  Tarjeta de producto */
+/* Tarjeta de producto */
 .product-card {
     background: white;
     border-radius: 15px;
@@ -340,43 +342,66 @@
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 280px; /* Evita que crezca más de lo necesario */
 }
 
 .product-card:hover {
     transform: scale(1.05);
 }
 
-/*  Imagen de producto */
-.product-img {
+/* Contenedor de la imagen del producto */
+.product-image-container {
     width: 100%;
-    max-width: 200px;
-    height: auto;
+    max-width: 100%;
+    height: 250px; /* Tamaño fijo para evitar desajustes */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
     border-radius: 10px;
-    margin-bottom: 15px;
+    background-color: #f8f9fa;
 }
 
-/*  Nombre del producto */
+/* Imagen de producto ajustada */
+.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ajusta sin deformar ni salirse */
+    display: block;
+}
+
+/* Contenedor de información */
+.product-info {
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* Nombre del producto */
 .product-title {
-    font-size: 22px;
+    font-size: 20px;
     color: #2c3e50;
     font-weight: bold;
 }
 
-/*  Precio del producto */
+/* Precio del producto */
 .product-price {
-    font-size: 20px;
-    color: #e67e22; /* Naranja */
+    font-size: 18px;
+    color: #e67e22;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
-/*  Botón de compra */
+/* Botón de compra */
 .btn-buy {
-    background-color: #f4d03f; /* Amarillo */
-    color: #1e2a3a; /* Azul oscuro */
-    padding: 12px 20px;
+    background-color: #f4d03f;
+    color: #1e2a3a;
+    padding: 12px 18px;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     border-radius: 8px;
     border: none;
@@ -385,95 +410,142 @@
 }
 
 .btn-buy:hover {
-    background-color: #e1b12c; /* Amarillo más oscuro */
+    background-color: #e1b12c;
     transform: scale(1.05);
 }
 
-/*  Responsive: Tablets */
+/* Responsive: Tablets */
 @media screen and (max-width: 1024px) {
-    .store-title {
-        font-size: 48px;
-    }
     .store-container {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets */
+    }
+    .product-image-container {
+        height: 220px; /* Ajusta el tamaño en tablets */
     }
 }
 
-/*  Responsive: Móviles */
+/* Responsive: Móviles */
 @media screen and (max-width: 768px) {
-    .store-title {
-        font-size: 40px;
-    }
     .store-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* 1 columna en móviles */
+        padding: 0 10px;
+    }
+    .product-image-container {
+        height: 200px;
     }
 }
 
-/*  Responsive: Pantallas muy pequeñas */
+/* Responsive: Pantallas muy pequeñas */
 @media screen and (max-width: 480px) {
     .store-title {
         font-size: 32px;
     }
     .btn-buy {
-        font-size: 16px;
-        padding: 10px 16px;
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+    .product-image-container {
+        height: 180px;
     }
 }
-/*FIN PAGINA TIENDA------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* ESTILOS PARA LOS FILTROS DE LA TIENDA */
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-
-/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*PRINCIPIO PAGINA ADMINISTRAR TIENDA------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*  Sección de administrar tienda */
-body h2.admin123-title {
-    font-size: 56px;
-    font-weight: bold;
-    margin-top: 70px;
-    margin-bottom: 30px;
-    color: #2c3e50;
-    text-align: center;
-}
-
-
-.admin-section {
-    text-align: center;
-    padding: 60px 20px;
+/* Contenedor de los filtros */
+.filters {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 15px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 1200px;
 }
 
+/* Estilo general para los select y inputs */
+.filters select,
+.filters input {
+    font-size: 18px;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    transition: all 0.3s ease-in-out;
+}
 
-/*  Responsive: Tablets */
+/* Aumenta el tamaño del select en dispositivos grandes */
+.filters select {
+    min-width: 180px;
+}
+
+/* Input de precio */
+.filters input {
+    width: 140px;
+}
+
+/* Hover y focus en los select e inputs */
+.filters select:hover, 
+.filters input:hover, 
+.filters select:focus, 
+.filters input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Botón de filtrar */
+.filters button {
+    background-color: #007bff;
+    color: white;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover del botón */
+.filters button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Responsive: Tablets */
 @media screen and (max-width: 1024px) {
-    .titulo-administracion {
-        font-size: 48px;
-        margin-top: 30px;
+    .filters {
+        flex-direction: column;
+        align-items: center;
+    }
+    .filters select,
+    .filters input {
+        width: 90%;
     }
 }
 
-/*  Responsive: Móviles */
+/* Responsive: Móviles */
 @media screen and (max-width: 768px) {
-    .titulo-administracion {
-        font-size: 40px;
-        margin-top: 20px;
+    .filters {
+        padding: 15px;
+    }
+    .filters button {
+        width: 100%;
     }
 }
-
-/*  Responsive: Pantallas muy pequeñas */
-@media screen and (max-width: 480px) {
-    .titulo-administracion {
-        font-size: 32px;
-        margin-top: 15px;
-    }
-}
-
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*FIN PAGINA ADMINISTRAR TIENDA------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*  Sección de administrar tienda */
+/* FIN DE ESTILOS PARA LOS FILTROS */
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*FIN PAGINA TIENDAa------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*PRINCIPIO PAGINA RESEÑAS------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -1481,4 +1553,312 @@ button.btn-primary:hover {
 /*FIN PAGINA password_reset_confirm------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*INICIO PAGINA administrar productos------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* Estilos generales de la página de administración */
+/* 🔹 Contenedor principal */
+.admin-container {
+    text-align: center;
+    padding: 50px 20px;
+}
 
+.admin-title, .store-title {
+    font-size: 36px;
+    font-weight: bold;
+    color: #2c3e50; /* 🔹 CAMBIO: Azul más elegante */
+    margin-bottom: 20px;
+}
+
+
+/* 🔹 Botón para añadir productos */
+.btn-add {
+    background-color: #284864; /* 🔹 CAMBIO: Azul pastel moderno */
+    color: white;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-add:hover {
+    background-color: #2980b9; /* 🔹 CAMBIO: Azul más vibrante al pasar el cursor */
+}
+
+
+/* 🔹 Tabla responsiva */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* 🔹 Tabla de productos */
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.product-table th, .product-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+/* 🔹 Encabezados */
+.product-table th {
+    background-color: #284864; /* 🔹 CAMBIO: Azul vibrante */
+    color: white;
+    font-size: 18px;
+    padding: 12px;
+    text-align: center;
+}
+
+
+/* 🔹 Contenedor de imagen */
+.admin-product-image-container {
+    width: 80px;
+    height: 80px; /* Mantiene un tamaño uniforme */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+/* 🔹 Imagen de producto */
+.admin-product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen ocupe todo el espacio sin distorsionarse */
+    display: block;
+}
+
+/* 🔹 Botones de acción */
+.btn-edit, .btn-delete {
+    padding: 8px 12px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.btn-edit {
+    background-color: #ffc107;
+    color: black;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* 🔹 Responsividad */
+@media screen and (max-width: 768px) {
+    .product-table th, .product-table td {
+        padding: 8px;
+    }
+
+    .admin-product-image-container {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/*FIN PAGINA administrar productos------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*INICIO PAGINA crear producto------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/* Contenedor del formulario */
+.form-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Título del formulario */
+.form-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Estilos del formulario */
+.product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Campos del formulario */
+.product-form input,
+.product-form select,
+.product-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Botón de enviar */
+.btn-submit {
+    background-color: #28a745;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: #218838;
+}
+
+/* Mensajes de alerta */
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Responsividad */
+@media screen and (max-width: 768px) {
+    .form-container {
+        width: 90%;
+    }
+
+    .btn-submit {
+        font-size: 16px;
+        padding: 10px;
+    }
+}
+/*FIN PAGINA crear producto------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*INICIO PAGINA editar producto------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* Contenedor del formulario */
+.form-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+/* Título del formulario */
+.form-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilos del formulario */
+.product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Agrupar cada campo en un div */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Etiquetas */
+.form-group label {
+    font-weight: bold;
+    color: #34495e;
+}
+
+/* Inputs y textareas */
+.product-form input,
+.product-form select,
+.product-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+/* Imagen de previsualización */
+.preview-image {
+    max-width: 150px;
+    height: auto;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
+/* Ocultar el checkbox de "Clear" */
+input[type="checkbox"] {
+    display: none; /* Oculta el checkbox */
+}
+
+/* Botón de guardar cambios */
+.btn-submit {
+    background-color: #28a745;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-align: center;
+}
+
+.btn-submit:hover {
+    background-color: #218838;
+}
+
+/* Responsividad */
+@media screen and (max-width: 768px) {
+    .form-container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .btn-submit {
+        font-size: 16px;
+        padding: 10px;
+    }
+}
+/*FIN PAGINA editar producto------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/

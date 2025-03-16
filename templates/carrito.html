@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Carrito - PetRoyale{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>🛒 Carrito de Compras</h2>
+
+    {% if productos %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in productos %}
+                    <tr>
+                        <td>{{ item.producto.nombre }}</td>
+                        <td>{{ item.producto.precio }}€</td>
+                        <td>{{ item.cantidad }}</td>
+                        <td>{{ item.subtotal }}€</td>
+                        <td>
+                            <!-- Botón para reducir la cantidad -->
+                            <a href="{% url 'reducir_cantidad_carrito' item.producto.id %}" class="btn btn-warning btn-sm">
+                                -
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p><strong>Total: </strong> {{ total }}€</p>
+        <p><strong>IVA (21%): </strong> {{ iva }}€</p>
+        <p><strong>Total con IVA: </strong> {{ total_con_iva }}€</p>
+
+        <a href="{% url 'Tienda' %}" class="btn btn-primary">Seguir Comprando</a>
+        <a href="{% url 'vaciar_carrito' %}" class="btn btn-danger">Vaciar Carrito</a>
+
+    {% else %}
+        <p>El carrito está vacío. <a href="{% url 'Tienda' %}">Ir a la tienda</a></p>
+    {% endif %}
+</div>
+{% endblock %}

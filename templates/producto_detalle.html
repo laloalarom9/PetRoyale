@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ producto.nombre }} - PetRoyale{% endblock %}
+
+{% block content %}
+<div class="product-detail-container">
+    <div class="product-image">
+        {% if producto.imagen %}
+            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+        {% else %}
+            <img src="{% static 'img/productos/default.png' %}" alt="Imagen no disponible">
+        {% endif %}
+    </div>
+
+    <div class="product-info">
+        <h2>{{ producto.nombre }}</h2>
+        <p class="product-price">{{ producto.precio }}€</p>
+        
+        <!-- Descripción del producto -->
+        <p class="product-description">{{ producto.descripcion|safe }}</p>
+
+        <!-- Verificación de disponibilidad de stock -->
+        {% if producto.stock_disponible > 0 %}
+    <form method="POST" action="{% url 'agregar_al_carrito' producto.id %}">
+        {% csrf_token %}
+        <label for="cantidad">Cantidad:</label>
+        <input type="number" name="cantidad" value="1" min="1" max="{{ producto.stock_disponible }}">
+
+        <div class="buttons">
+            {% if request.user.is_authenticated %}
+                <button type="submit" class="btn-buy">Añadir al carrito</button>
+            {% else %}
+                <p style="color: red;">Debes iniciar sesión para comprar</p>
+            {% endif %}
+        </div>
+    </form>
+{% else %}
+    <p style="color: red; font-weight: bold;">Este producto está agotado.</p>
+{% endif %}
+
+    
+    </div>
+</div>
+{% endblock %}

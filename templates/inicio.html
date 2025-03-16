@@ -1,13 +1,42 @@
 {% extends "base.html" %}
 
 {% block title %}Inicio - PetRoyale{% endblock %}
-{% load static %} 
+{% load static %}
 
 {% block content %}
 <section class="hero-section">
     <h1 class="hero-title">Bienvenido a PetRoyale</h1>
-    <img src="{% static 'img/mascotas.jpg' %}" id="imagenPortada" alt="Imagen de portada" class="hero-image">
-    <p class="hero-subtitle">Encuentra el mejor alimento y accesorios para tu mascota</p>
-    <a href="{% url 'Tienda' %}" class="btn-explorar">Explorar Tienda</a>
+    <img src="{% static 'img/mascotas.jpg' %}" alt="Imagen de portada" class="hero-image">
+    <p class="hero-subtitle">Facilitamos la alimentación de tu mascota con suscripciones personalizadas.</p>
+    <button href="{% url 'Tienda' %}" class="btn-explorar">Suscríbete ahora</button>
+</section>
+
+<section class="info-section">
+    <h2>¿Por qué elegir PetRoyale?</h2>
+        <p>✅ Comodidad: Recibe alimento sin preocuparte por reabastecer.</p>
+        <p>✅ Ahorro: Descuentos exclusivos para suscriptores.</p>
+        <p>✅ Personalización: Planes adaptados a cada mascota.</p>
+</section>
+
+<section class="donaciones-section">
+    <h2>Ayuda a otros peludos</h2>
+    <p>Colabora donando pienso o accesorios a refugios y asociaciones.</p>
+    <p>Gracias a las donaciones, cientos de mascotas han recibido alimento.</p>
+    <button href="{% url 'Tienda' %}" class="btn-explorar">Dona ahora</button>
+    <br></br>
+    <div class="testimonios">
+        <img src="{% static 'img/inicio/mascotaFeliz.webp' %}" alt="Mascotas felices" class="hero-image">
+    </div>
+</section>
+
+<section class="impacto-section">
+    <h2>Compromiso con el Medio Ambiente</h2>
+    <p>Reciclamos los sacos de pienso y usamos transporte sostenible.</p>
+</section>
+
+<section class="ofertas-section">
+    <h2>Ofertas y Promociones</h2>
+    <p>Descubre descuentos exclusivos y los productos más populares.</p>
+    <a href="{% url 'Tienda' %}" class="btn-explorar">Explora nuestra tienda</a>
 </section>
 {% endblock %}

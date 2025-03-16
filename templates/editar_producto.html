@@ -1,9 +1,70 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Editar Producto: {{ producto.nombre }}</h2>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Guardar Cambios</button>
-</form>
+<div class="form-container">
+    <h2 class="form-title">Editar Producto: {{ producto.nombre }}</h2>
+    
+    <form method="POST" enctype="multipart/form-data" class="product-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            {{ form.nombre.label_tag }}
+            {{ form.nombre }}
+        </div>
+
+        <div class="form-group">
+            {{ form.descripcion.label_tag }}
+            {{ form.descripcion }}
+        </div>
+
+        <div class="form-group">
+            {{ form.precio.label_tag }}
+            {{ form.precio }}
+        </div>
+
+        <div class="form-group">
+            {{ form.stock.label_tag }}
+            {{ form.stock }}
+        </div>
+
+        <!-- 🔹 Campos añadidos para filtros -->
+        <div class="form-group">
+            {{ form.categoria.label_tag }}
+            {{ form.categoria }}
+        </div>
+
+        <div class="form-group">
+            {{ form.marca.label_tag }}
+            {{ form.marca }}
+        </div>
+
+        <div class="form-group">
+            {{ form.edad_recomendada.label_tag }}
+            {{ form.edad_recomendada }}
+        </div>
+
+        <div class="form-group">
+            {{ form.tamano_mascota.label_tag }}
+            {{ form.tamano_mascota }}
+        </div>
+
+        <!-- Mostrar imagen actual sin link ni texto extra -->
+        <div class="form-group">
+            <label><strong>Imagen actual:</strong></label>
+            {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" alt="Imagen actual" class="preview-image">
+            {% else %}
+                <p>No hay imagen</p>
+            {% endif %}
+        </div>
+
+        <!-- Subida de nueva imagen sin el texto "Currently" ni "Clear" -->
+        <div class="form-group">
+            <label for="id_imagen"><strong>Subir nueva imagen:</strong></label>
+            <input type="file" name="imagen" id="id_imagen">
+        </div>
+
+        <button type="submit" class="btn-submit">Guardar Cambios</button>
+    </form>
+</div>
 {% endblock %}

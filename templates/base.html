@@ -52,35 +52,55 @@
                     </li>
                     
                     <!-- 🔹 SOLO MOSTRAR PERFIL SI EL USUARIO ESTÁ AUTENTICADO -->
-{% if user.is_authenticated %}
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/perfil/' %}active{% endif %}" href="{% url 'perfil' %}">
+                            <img src="{% static 'img/iconos/user.png' %}" alt="Perfil" class="icon"> Perfil
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{% static avatar_path %}" alt="Avatar" class="icon"> {{ user.first_name }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <!-- 🔹 MOSTRAR "INICIAR SESIÓN" SI EL USUARIO NO ESTÁ AUTENTICADO -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'login' %}">
+                            <img src="{% static 'img/iconos/login.png' %}" alt="Iniciar sesión" class="icon"> Iniciar sesión
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- 🔹 ICONO DE CARRITO CON CONTADOR -->
+<!-- Icono del carrito con contador -->
 <li class="nav-item">
-    <a class="nav-link {% if request.path == '/perfil/' %}active{% endif %}" href="{% url 'perfil' %}">
-        <img src="{% static 'img/iconos/user.png' %}" alt="Perfil" class="icon"> Perfil
+    <a class="nav-link {% if request.path == '/carrito/' %}active{% endif %}" href="{% url 'carrito' %}">
+        <i class="fas fa-shopping-cart"></i> <!-- Icono del carrito -->
+        {% with request.session.carrito as carrito %}
+            {% if carrito %}
+                <span class="cart-count">
+                    <img src="{% static 'img/iconos/cart.png' %}" alt="Carrito" class="cart-icon-img">
+                    {{ carrito|length }}
+                </span> <!-- Contador de productos -->
+            {% else %}
+                <span class="cart-count">
+                    <img src="{% static 'img/iconos/cart.png' %}" alt="Carrito" class="cart-icon-img">
+                    0
+                </span> <!-- Si no hay productos, mostrar 0 -->
+            {% endif %}
+        {% endwith %}
     </a>
 </li>
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <img src="{% static avatar_path %}" alt="Avatar" class="icon"> {{ user.first_name }}
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión</a></li>
-    </ul>
-</li>
-{% else %}
-<!-- 🔹 MOSTRAR "INICIAR SESIÓN" SI EL USUARIO NO ESTÁ AUTENTICADO -->
-<li class="nav-item">
-    <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'login' %}">
-        <img src="{% static 'img/iconos/login.png' %}" alt="Iniciar sesión" class="icon"> Iniciar sesión
-    </a>
-</li>
-{% endif %}
 
                     
-                    
                 </ul>
-            </dACiv>
+            </div>
         </div>
     </header>
 

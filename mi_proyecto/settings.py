@@ -105,3 +105,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "petroyale55@gmail.com"  # Reemplázalo con tu correo de Gmail
 EMAIL_HOST_PASSWORD = "slem pwdx acny pclb"  # ⚠ Pon tu contraseña aquí (No recomendado)
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+

@@ -39,9 +39,13 @@ urlpatterns = [
     path("productos/agregar/", views.agregar_producto, name="agregar_producto"),
     path("productos/editar/<int:producto_id>/", views.editar_producto, name="editar_producto"),
     path("productos/eliminar/<int:producto_id>/", views.eliminar_producto, name="eliminar_producto"),
-
-    # Nueva URL para servir imágenes desde la base de datos
-    path("productos/imagen/<int:producto_id>/", views.mostrar_imagen_producto, name="mostrar_imagen_producto"),
+    path("producto/<int:producto_id>/", views.producto_detalle, name="producto_detalle"),
+    path('carrito/', views.carrito, name='carrito'),  # Esta es la URL para el carrito
+    path('carrito/', views.carrito, name='carrito'),  # ✅ Esta es la URL para el carrito
+    path('checkout/', views.checkout, name='checkout'),  # ✅ Nueva ruta para checkout
+    path('carrito/reducir/<int:producto_id>/', views.reducir_cantidad_carrito, name='reducir_cantidad_carrito'),
+    path('carrito/vaciar/', views.vaciar_carrito, name='vaciar_carrito'),
+    path('carrito/agregar/<int:producto_id>/', views.agregar_al_carrito, name='agregar_al_carrito'),  # ✅ Asegurar que existe esta URL
 
 ]
 

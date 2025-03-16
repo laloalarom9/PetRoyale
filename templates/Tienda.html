@@ -4,29 +4,88 @@
 {% block title %}Tienda - PetRoyale{% endblock %}
 
 {% block content %}
+
 <section class="store-section">
-    <h1 class="store-title">Nuestros Productos</h1>
+    <h1 class="store-title" style="text-align: center; font-size: 42px; color: #2c3e50;">Nuestros Productos</h1>
+
     {% if request.user.is_authenticated and request.user.is_superuser %}
-    <div class="admin-section">
-        <a href="{% url 'lista_productos' %}" class="btn btn-primary">Administrar Productos</a>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a href="{% url 'lista_productos' %}" style="background-color: #007bff; color: white; padding: 12px 20px; text-decoration: none; border-radius: 8px; display: inline-block;">
+            Administrar Productos
+        </a>
     </div>
-{% endif %}
+    {% endif %}
 
+    <!-- Filtros -->
+    <div class="filters">
+        <form method="GET" action="{% url 'Tienda' %}">
+            <select name="categoria">
+                <option value="">Todas las categorías</option>
+                {% for cat in categorias_disponibles %}
+                    <option value="{{ cat }}" {% if request.GET.categoria == cat %}selected{% endif %}>{{ cat|capfirst }}</option>
+                {% endfor %}
+            </select>
 
+            <select name="marca">
+                <option value="">Todas las marcas</option>
+                {% for mar in marcas_disponibles %}
+                    <option value="{{ mar }}" {% if request.GET.marca == mar %}selected{% endif %}>{{ mar|capfirst }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="edad_recomendada">
+                <option value="">Todas las edades</option>
+                {% for edad in edades_disponibles %}
+                    <option value="{{ edad }}" {% if request.GET.edad_recomendada == edad %}selected{% endif %}>{{ edad|capfirst }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="tamano_mascota">
+                <option value="">Todos los tamaños</option>
+                {% for tam in tamanos_disponibles %}
+                    <option value="{{ tam }}" {% if request.GET.tamano_mascota == tam %}selected{% endif %}>{{ tam|capfirst }}</option>
+                {% endfor %}
+            </select>
+
+            <input type="number" name="min_precio" placeholder="Precio mínimo" value="{{ request.GET.min_precio }}">
+            <input type="number" name="max_precio" placeholder="Precio máximo" value="{{ request.GET.max_precio }}">
+
+            <button type="submit">Filtrar</button>
+        </form>
+    </div>
+
+    <!-- Contenedor de productos -->
     <div class="store-container">
-        {% for producto in productos %}
-    <div class="product-card">
-        {% if producto.imagen %}
-            <img src="{% url 'mostrar_imagen_producto' producto.id %}" alt="{{ producto.nombre }}" class="product-img">
-        {% else %}
-            <img src="{% static 'img/productos/default.png' %}" alt="Imagen no disponible" class="product-img">
-        {% endif %}
-        <h3 class="product-title">{{ producto.nombre }}</h3>
-        <p class="product-price">{{ producto.precio }}€</p>
-        <button class="btn-buy">Comprar</button>
-    </div>
-{% endfor %}
+        {% if productos %}
+            {% for producto in productos %}
+            <div class="product-card">
+                <div class="product-image-container">
+                    {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="product-img">
+                    {% else %}
+                        <img src="{% static 'img/productos/default.png' %}" alt="Imagen no disponible" class="product-img">
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">{{ producto.nombre }}</h3>
+                    <p class="product-price">{{ producto.precio }}€</p>
 
+                    <a href="{% url 'producto_detalle' producto.id %}" class="btn-buy">Más Detalles</a>
+
+                    {% if not request.user.is_authenticated %}
+                        <p style="color: red; margin-top: 10px;">Debes registrarte para comprar</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Mensaje cuando no hay productos -->
+            <div class="no-products-message">
+                <h2>No hay productos con esas características</h2>
+                <p>Prueba con otros filtros o revisa más tarde.</p>
+            </div>
+        {% endif %}
     </div>
 </section>
+
 {% endblock %}

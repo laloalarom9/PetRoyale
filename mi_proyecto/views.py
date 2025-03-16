@@ -17,6 +17,9 @@ from .models import Producto
 from .forms import ProductoForm
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
+from decimal import Decimal
+import pprint
+from django.utils.timezone import now, timedelta
 
 
 
@@ -94,10 +97,49 @@ def pedidos(request):
     return render(request, "pedidos.html")
 
 def Tienda(request):
-    return render(request, "Tienda.html")
+    productos = Producto.objects.all()  # Obtener todos los productos
 
+    # Obtener valores de los filtros de la URL
+    categoria = request.GET.get("categoria", "")
+    marca = request.GET.get("marca", "")
+    min_precio = request.GET.get("min_precio", "")
+    max_precio = request.GET.get("max_precio", "")
+    edad = request.GET.get("edad_recomendada", "")
+    tamano = request.GET.get("tamano_mascota", "")
+
+    # Aplicar filtros dinámicamente
+    if categoria:
+        productos = productos.filter(categoria=categoria)
+    if marca:
+        productos = productos.filter(marca=marca)
+    if min_precio:
+        productos = productos.filter(precio__gte=min_precio)
+    if max_precio:
+        productos = productos.filter(precio__lte=max_precio)
+    if edad:
+        productos = productos.filter(edad_recomendada=edad)
+    if tamano:
+        productos = productos.filter(tamano_mascota=tamano)
+
+    # 🔹 Obtener opciones dinámicas de la base de datos para los filtros
+    categorias_disponibles = Producto.objects.values_list("categoria", flat=True).distinct()
+    marcas_disponibles = Producto.objects.values_list("marca", flat=True).distinct()
+    edades_disponibles = Producto.objects.values_list("edad_recomendada", flat=True).distinct()
+    tamanos_disponibles = Producto.objects.values_list("tamano_mascota", flat=True).distinct()
+
+    return render(
+        request,
+        "Tienda.html",
+        {
+            "productos": productos,
+            "categorias_disponibles": categorias_disponibles,
+            "marcas_disponibles": marcas_disponibles,
+            "edades_disponibles": edades_disponibles,
+            "tamanos_disponibles": tamanos_disponibles,
+        },
+    )
 def faq(request):
-    return render(request, "faq.html")
+    return render(request, "faq.html")  # Asegúrate de que tienes el archivo "faq.html"
 
 
 def login_view(request):
@@ -264,12 +306,7 @@ def agregar_producto(request):
 
     return render(request, 'agregar_producto.html', {'form': form})
 
-def mostrar_imagen_producto(request, producto_id):
-    producto = get_object_or_404(Producto, id=producto_id)
-    if producto.imagen:
-        return HttpResponse(producto.imagen, content_type="image/jpeg")
-    else:
-        return HttpResponse(status=404)
+
     
 @user_passes_test(es_superusuario)
 def lista_productos(request):
@@ -279,14 +316,25 @@ def lista_productos(request):
 @user_passes_test(es_superusuario)
 def editar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
+
     if request.method == 'POST':
+        print("✅ Se recibió un POST para editar el producto.")  
         form = ProductoForm(request.POST, request.FILES, instance=producto)
+
         if form.is_valid():
+            print("✅ El formulario es válido. Guardando cambios.")  
             form.save()
-            messages.success(request, "Producto actualizado correctamente.")
-            return redirect('lista_productos')
+            messages.success(request, "✅ Producto actualizado correctamente.")
+            return redirect('/productos/')  # 🔹 Redirigir manualmente a la lista de productos
+        else:
+            print("❌ Error en el formulario. No se guardaron los cambios.")  
+            print("🔴 Errores del formulario:", form.errors)  # 🔥 Mostrar errores en consola
+            messages.error(request, "❌ Error al actualizar el producto. Verifica los datos ingresados.")
+
     else:
+        print("📌 Se accedió a la página de edición de producto.")  
         form = ProductoForm(instance=producto)
+
     return render(request, 'editar_producto.html', {'form': form, 'producto': producto})
 
 @user_passes_test(es_superusuario)
@@ -296,6 +344,134 @@ def eliminar_producto(request, producto_id):
     messages.success(request, "Producto eliminado correctamente.")
     return redirect('lista_productos')
 
-def Tienda(request):
-    productos = Producto.objects.all()  # Obtener todos los productos
-    return render(request, "Tienda.html", {"productos": productos})
+
+def producto_detalle(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    return render(request, "producto_detalle.html", {"producto": producto})
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.utils.timezone import now, timedelta
+from decimal import Decimal
+from .models import Producto
+
+def agregar_al_carrito(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    carrito = request.session.get("carrito", {})
+
+    cantidad_en_carrito = carrito.get(str(producto_id), {}).get("cantidad", 0)
+    stock_disponible = producto.stock_disponible()
+
+    if cantidad_en_carrito >= stock_disponible:
+        messages.error(request, f"Solo puedes añadir {stock_disponible} unidades de {producto.nombre}.")
+    else:
+        if str(producto_id) in carrito:
+            carrito[str(producto_id)]["cantidad"] += 1
+        else:
+            carrito[str(producto_id)] = {
+                "nombre": producto.nombre,
+                "precio": str(producto.precio),
+                "cantidad": 1,
+                "agregado_hora": str(now()),
+            }
+
+        # ✅ Asegurar que `stock_reservado` no supere `stock`
+        if producto.stock_reservado < producto.stock:
+            producto.stock_reservado += 1
+            producto.stock -= 1  # **Restar del stock real**
+            producto.save()
+
+        request.session["carrito"] = carrito
+        messages.success(request, f"Se añadió {producto.nombre} al carrito.")
+
+    return redirect("producto_detalle", producto_id=producto_id)
+
+def carrito(request):
+    carrito = request.session.get("carrito", {})
+    productos = []
+    total = Decimal(0)
+    tiempo_actual = now()
+
+    for producto_id, datos in list(carrito.items()):
+        producto = Producto.objects.get(id=int(producto_id))
+        agregado_hora = datos.get("agregado_hora", None)
+
+        # 🔹 Si han pasado más de 10 minutos, liberar stock
+        if agregado_hora and now() - timedelta(minutes=10) > tiempo_actual:
+            print(f"⏳ Expirando reserva de {producto.nombre}. Liberando {datos['cantidad']} unidades.")
+
+            producto.stock_reservado -= datos["cantidad"]
+            producto.stock += datos["cantidad"]  # ✅ Devolver stock real
+            if producto.stock_reservado < 0:
+                producto.stock_reservado = 0
+            producto.save()
+            del carrito[producto_id]  # **Elimina el producto del carrito**
+        else:
+            cantidad_real = datos["cantidad"]
+            subtotal = Decimal(producto.precio) * cantidad_real
+            productos.append({'producto': producto, 'cantidad': cantidad_real, 'subtotal': subtotal})
+            total += subtotal
+
+    request.session["carrito"] = carrito  # Guardar el carrito actualizado
+
+    return render(request, 'carrito.html', {
+        'productos': productos,
+        'total': total,
+    })
+
+
+
+def reducir_cantidad_carrito(request, producto_id):
+    carrito = request.session.get("carrito", {})
+
+    if str(producto_id) in carrito:
+        producto = Producto.objects.get(id=producto_id)
+
+        if carrito[str(producto_id)]["cantidad"] > 1:
+            carrito[str(producto_id)]["cantidad"] -= 1
+            producto.stock_reservado -= 1
+            producto.stock += 1  # ✅ **Devolver stock real**
+        else:
+            producto.stock_reservado -= 1
+            producto.stock += 1  # ✅ **Devolver stock real**
+            del carrito[str(producto_id)]
+
+        # ✅ Evitar valores negativos
+        if producto.stock_reservado < 0:
+            producto.stock_reservado = 0
+
+        producto.save()
+
+    request.session["carrito"] = carrito
+    messages.success(request, "Cantidad actualizada correctamente.")
+
+    return redirect("carrito")
+
+
+
+
+def vaciar_carrito(request):
+    carrito = request.session.get("carrito", {})
+
+    for producto_id, datos in carrito.items():
+        producto = Producto.objects.get(id=int(producto_id))
+
+        # ✅ Asegurar que `stock_reservado` se libere completamente
+        producto.stock_reservado -= datos["cantidad"]
+        producto.stock += datos["cantidad"]  # ✅ Devolver stock real
+
+        # ✅ Evitar valores negativos
+        if producto.stock_reservado < 0:
+            producto.stock_reservado = 0
+
+        producto.save()
+
+    request.session["carrito"] = {}  # Vaciar el carrito
+    messages.success(request, "Carrito vaciado correctamente.")
+
+    return redirect("carrito")
+
+
+
+def checkout(request):
+    return render(request, "checkout.html")  # Asegúrate de tener "checkout.html" en templates/

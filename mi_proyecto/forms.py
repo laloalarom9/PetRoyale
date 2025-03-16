@@ -2,16 +2,23 @@ from django import forms
 from .models import Producto
 
 class ProductoForm(forms.ModelForm):
-    imagen_subida = forms.ImageField(required=False)  # Creamos un campo para subir imágenes
+    imagen = forms.ImageField(required=False)  # ✅ Ahora coincide con el modelo
 
     class Meta:
         model = Producto
-        fields = ['nombre', 'descripcion', 'precio', 'stock']  # No incluimos imagen
+        fields = ['nombre', 'descripcion', 'precio', 'stock', 'imagen', 'categoria', 'marca', 'edad_recomendada', 'tamano_mascota']  # ✅ Incluimos nuevos campos
 
-    def save(self, commit=True):
-        producto = super().save(commit=False)
-        if self.cleaned_data['imagen_subida']:
-            producto.imagen = self.cleaned_data['imagen_subida'].read()  # Guardamos la imagen en binario
-        if commit:
-            producto.save()
-        return producto
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get("nombre")
+        if Producto.objects.filter(nombre=nombre).exists():
+            raise forms.ValidationError("⚠️ Ya existe un producto con este nombre. Intenta con otro.")
+        return nombre
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get("nombre")
+        producto_id = self.instance.id  # Obtener el ID del producto actual
+
+        # Si hay otro producto con el mismo nombre, excepto el que se está editando
+        if Producto.objects.filter(nombre=nombre).exclude(id=producto_id).exists():
+            raise forms.ValidationError("⚠️ Ya existe un producto con este nombre. Intenta con otro.")
+
+        return nombre
