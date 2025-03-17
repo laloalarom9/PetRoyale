@@ -86,7 +86,7 @@ DATABASES = {
         "HOST": os.getenv("PGHOST", "petroyalebd.postgres.database.azure.com"),  # Servidor en Azure
         "PORT": os.getenv("PGPORT", "5432"),  # Puerto de PostgreSQL
         "OPTIONS": {"sslmode": "require"},  # Azure requiere SSL
-    }
+    }#
 }
 
 
