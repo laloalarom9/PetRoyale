@@ -68,6 +68,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 # 🚀 Poner DEBUG en True temporalmente
 DEBUG = True  # Cambiar a False solo en producción
 

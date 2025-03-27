@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicia sesión - PetRoyale{% endblock %}
+
+{% block content %}
+<section class="orders-section">
+    <h1 class="orders-title"> Acceso restringido</h1>
+    <p class="orders-text">Debes iniciar sesión para acceder a tus pedidos.</p>
+    <a href="{% url 'login' %}?next={% url 'pedidos' %}" class="btn-create"> Iniciar sesión</a>
+</section>
+{% endblock %}
+

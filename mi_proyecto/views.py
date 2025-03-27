@@ -98,8 +98,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Pedido, DetallePedido
 
-@login_required
+
 def pedidos(request):
+    if not request.user.is_authenticated:
+        return render(request, "requiere_login.html")
     """
     Vista para mostrar los pedidos del usuario autenticado con los detalles de productos comprados.
     """

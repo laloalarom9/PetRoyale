@@ -7,9 +7,10 @@
 <div class="product-detail-container">
     <div class="product-image">
         {% if producto.imagen %}
-            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="product-img">
+
         {% else %}
-            <img src="{% static 'img/productos/default.png' %}" alt="Imagen no disponible">
+            <img src="{% static 'img/productos/default.png' %}" alt="Imagen no disponible" class="product-img">
         {% endif %}
     </div>
 

@@ -49,7 +49,7 @@ urlpatterns = [
     path('carrito/agregar/<int:producto_id>/', views.agregar_al_carrito, name='agregar_al_carrito'),  # ✅ Asegurar que existe esta URL
     path("checkout/procesar/", views.procesar_compra, name="procesar_compra"),
     path("confirmar_compra/", procesar_compra, name="confirmar_compra"),  # ✅ Agregar esta línea
-    path("pedidos/", views.pedidos, name="pedidos"),  # ✅ Esto es suficiente
+   
 
 ]
 

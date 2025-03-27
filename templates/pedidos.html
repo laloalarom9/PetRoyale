@@ -14,27 +14,28 @@
                     <th>Número de Pedido</th>
                     <th>Fecha</th>
                     <th>Estado</th>
-                    <th>Total</th>
-                    <th>Productos Comprados</th>
+                    <th>Total con IVA</th>
+                    <th>Producto/s</th>
+                    <th>Precio Unitario</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in pedidos_con_detalles %}
-                    <tr>
-                        <td>{{ item.pedido.numero_pedido }}</td>
-                        <td>{{ item.pedido.fecha }}</td>
-                        <td>{{ item.pedido.estado }}</td>
-                        <td>{{ item.pedido.total_con_iva }}€</td>
-                        <td>
-                            <ul>
-                                {% for detalle in item.detalles %}
-                                    <li>{{ detalle.cantidad }} x {{ detalle.producto.nombre }} - {{ detalle.precio_unitario }}€ c/u</li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                    </tr>
+                    {% for detalle in item.detalles %}
+                        <tr>
+                            {% if forloop.first %}
+                                <td rowspan="{{ item.detalles|length }}">{{ item.pedido.numero_pedido }}</td>
+                                <td rowspan="{{ item.detalles|length }}">{{ item.pedido.fecha_pedido|date:"d/m/Y H:i" }}</td>
+                                <td rowspan="{{ item.detalles|length }}">{{ item.pedido.estado }}</td>
+                                <td rowspan="{{ item.detalles|length }}">{{ item.pedido.total_con_iva }}€</td>
+                            {% endif %}
+                            <td>{{ detalle.cantidad }} x {{ detalle.producto.nombre }}</td>
+                            <td>{{ detalle.precio_unitario }}€ c/u</td>                            
+                        </tr>
+                    {% endfor %}
                 {% endfor %}
             </tbody>
+                                   
         </table>
     {% else %}
         <p class="orders-text">No hay ningún pedido.</p>

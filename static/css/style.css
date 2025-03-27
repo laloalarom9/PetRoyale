@@ -163,7 +163,7 @@
 /*  Cambiar color del icono en el enlace activo */
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*PRINCIPIO PAGINA INICIO------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*PRINCIPIO PÁGINA DE INICIO------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 /* Sección principal */
 .hero-section {
@@ -185,6 +185,7 @@
 
 /* Imagen de portada */
 .hero-image {
+    
     width: 100%; /* Ocupa todo el ancho disponible */
     max-width: 1200px; /* Limita el tamaño máximo */
     height: auto; /* Mantiene la proporción */
@@ -192,6 +193,11 @@
     object-fit: cover; /* Evita distorsiones */
     border-radius: 15px; /* Esquinas redondeadas */
     margin-bottom: 20px;
+}
+
+.centered-image {
+    display: block;
+    margin: 0 auto;
 }
 
 /* Subtítulo */
@@ -657,6 +663,39 @@
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*PRINCIPIO PAGINA PEDIDOS------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
+/* Espacio Horizontal entre columnas */
+.orders-table th,
+.orders-table td {
+    vertical-align: top;
+    padding: 10px 15px;
+}
+
+/* Número de pedido */
+.orders-table th:nth-child(1),
+.orders-table td:nth-child(1) {
+    min-width: 160px;  
+}
+/* Fecha */
+.orders-table th:nth-child(2),
+.orders-table td:nth-child(2) {
+    min-width: 140px;  
+}
+/* Estado */
+.orders-table th:nth-child(3),
+.orders-table td:nth-child(3) {
+    min-width: 100px;  
+}
+/* Total */
+.orders-table th:nth-child(4),
+.orders-table td:nth-child(4) {
+    min-width: 80px;  
+}
+/* Productos Comprados */
+.orders-table th:nth-child(5),
+.orders-table td:nth-child(5) {
+    min-width: 220px;  
+}
+
 /*  Sección de Pedidos */
 .orders-section {
     text-align: center;
@@ -688,6 +727,21 @@
     font-size: 26px;
     color: #555;
     margin-bottom: 20px;
+}
+
+/* Contenedor para nombre del producto y precio */
+.producto-linea {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+/* Estilo precio unitario */
+.precio-unitario {
+    color: #333;
+    font-weight: bold;
+    margin-left: 10px;
 }
 
 /*  Botón Hacer Nuevo Pedido */
@@ -1897,7 +1951,7 @@ input[type="checkbox"] {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    margin-top: 30px;
+    margin-top: 80px;
 }
 
 /* Product Image */
@@ -1905,6 +1959,7 @@ input[type="checkbox"] {
     flex: 1;
     max-width: 400px;
     text-align: center;
+    
 }
 
 .product-image img {
