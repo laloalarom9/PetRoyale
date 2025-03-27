@@ -113,10 +113,7 @@ class Producto(models.Model):
 
 
 User = get_user_model()
-from django.utils.timezone import now
-import uuid
-
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.timezone import now
 import uuid
 
@@ -151,3 +148,13 @@ class DetallePedido(models.Model):
     def __str__(self):
         return f"{self.cantidad} x {self.producto.nombre} en Pedido {self.pedido.id}"
 
+class Reseña(models.Model):
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name="reseñas")
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Opcional
+    nombre = models.CharField(max_length=100, blank=True, help_text="Tu nombre (opcional)")
+    contenido = models.TextField(verbose_name="Reseña")
+    valoracion = models.PositiveSmallIntegerField(default=5,validators=[MinValueValidator(1), MaxValueValidator(5)])  # 1 a 5 estrellas por ejemplo
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Reseña para {self.producto.nombre} - {self.valoracion}★"

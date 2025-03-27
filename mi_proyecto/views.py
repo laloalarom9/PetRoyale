@@ -685,3 +685,27 @@ def procesar_compra(request):
         "numero_pedido": numero_pedido,
         "total_con_iva": f"{total_con_iva:.2f}",
     })
+
+
+from django.contrib.auth.decorators import login_required
+from .models import Producto, Reseña  
+from .forms import ReseñaForm  
+
+
+def crear_reseña(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+
+    if request.method == "POST":
+        form = ReseñaForm(request.POST)
+        if form.is_valid():
+            reseña = form.save(commit=False)
+            reseña.producto = producto
+            if request.user.is_authenticated:
+                reseña.usuario = request.user         
+            reseña.save()
+            messages.success(request, "¡Tu reseña ha sido guardada!")
+            return redirect('producto_detalle', producto_id=producto.id)
+    else:
+        form = ReseñaForm()
+
+    return render(request, 'crear_reseña.html', {'form': form, 'producto': producto})

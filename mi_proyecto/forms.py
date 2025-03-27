@@ -1,5 +1,6 @@
 from django import forms
 from .models import Producto
+from .models import Reseña
 
 class ProductoForm(forms.ModelForm):
     imagen = forms.ImageField(required=False)  # ✅ Ahora coincide con el modelo
@@ -22,3 +23,14 @@ class ProductoForm(forms.ModelForm):
             raise forms.ValidationError("⚠️ Ya existe un producto con este nombre. Intenta con otro.")
 
         return nombre
+    
+class ReseñaForm(forms.ModelForm):
+    class Meta:
+        model = Reseña
+        fields = ['contenido', 'valoracion']  
+        widgets = {
+            'valoracion': forms.NumberInput(attrs={
+                'min': 1,
+                'max': 5
+            }),
+        }

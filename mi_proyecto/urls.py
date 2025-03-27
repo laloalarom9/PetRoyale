@@ -50,7 +50,8 @@ urlpatterns = [
     path("checkout/procesar/", views.procesar_compra, name="procesar_compra"),
     path("confirmar_compra/", procesar_compra, name="confirmar_compra"),  # ✅ Agregar esta línea
    
-
+    #Reseñas
+    path('producto/<int:producto_id>/reseña/', views.crear_reseña, name='crear_reseña'),
 ]
 
 # Configuración para servir archivos estáticos y multimedia en desarrollo

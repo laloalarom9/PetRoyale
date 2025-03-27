@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Añadir Reseña - {{ producto.nombre }}{% endblock %}
+
+{% block content %}
+<section class="review-form">
+    <h1> Reseñar {{ producto.nombre }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-create">Guardar reseña</button>
+    </form>
+</section>
+{% endblock %}
