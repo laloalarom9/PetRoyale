@@ -5,21 +5,24 @@
 
 {% block content %}
 <section class="subscription-section">
-    <h1 class="store-title">Elige tu plan de suscripción</h1>
+    <h1 class="store-title">Elige tus productos de suscripción</h1>
 
+    <!-- Cambiado el método a GET -->
     <form method="GET" action="{% url 'seleccionar_suscripcion' %}" class="subscription-form">
+        {% csrf_token %}
         <div class="plans-grid">
             {% for producto in productos %}
                 <div class="plan-card">
-                    <h2 class="plan-title">{{ producto.nombre }}</h2>
-                    <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/default.png' %}{% endif %}" class="plan-img" alt="{{ producto.nombre }}">
-                    <p class="plan-price">Desde {{ producto.precio }} €/mes</p>
-    
-                    <a href="{% url 'seleccionar_suscripcion' %}?producto_id={{ producto.id }}" class="btn-buy">Elegir este producto</a>
+                    <input type="checkbox" id="producto_{{ producto.id }}" name="producto_id" value="{{ producto.id }}" class="product-checkbox">
+                    <label for="producto_{{ producto.id }}" class="plan-label">
+                        <h2 class="plan-title">{{ producto.nombre }}</h2>
+                        <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/default.png' %}{% endif %}" class="plan-img" alt="{{ producto.nombre }}">
+                        <p class="plan-price">Desde {{ producto.precio }} €/mes</p>
+                    </label>
                 </div>
             {% endfor %}
         </div>
+        <button type="submit" class="btn-buy">Suscribirse</button>
     </form>
-    
 </section>
 {% endblock %}

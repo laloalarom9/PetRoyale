@@ -5,21 +5,32 @@
 
 {% block content %}
 <section class="subscription-section">
-    <h1 class="store-title">Suscribirse a {{ producto.nombre }}</h1>
+    <h1 class="store-title">Selecciona la duración de cada suscripción</h1>
 
     <form method="POST" action="{% url 'agregar_suscripcion_al_carrito' %}">
         {% csrf_token %}
-        <input type="hidden" name="producto_id" value="{{ producto.id }}">
-        
-        <label for="duracion">Duración:</label>
-        <select name="duracion" id="duracion" required>
-            <option value="">-- Elegir duración --</option>
-            <option value="3">3 meses</option>
-            <option value="6">6 meses</option>
-            <option value="12">12 meses</option>
-        </select>
 
-        <button type="submit" class="btn-buy">Confirmar suscripción</button>
+        <div class="product-list">
+            {% for producto in productos %}
+                <div class="product-item product-container">
+                    <h2 class="product-name">{{ producto.nombre }}</h2>
+                    <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/default.png' %}{% endif %}" class="product-img" alt="{{ producto.nombre }}">
+                    <p class="product-price">Precio: {{ producto.precio }} €/mes</p>
+
+                    <label for="duracion_{{ producto.id }}">Duración de la suscripción:</label>
+                    <select name="duraciones[]" id="duracion_{{ producto.id }}" required>
+                        <option value="">-- Elegir duración --</option>
+                        <option value="3">3 meses</option>
+                        <option value="6">6 meses</option>
+                        <option value="12">12 meses</option>
+                    </select>
+
+                    <input type="hidden" name="productos[]" value="{{ producto.id }}">
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn-buy">Suscribirse</button>
     </form>
 </section>
 {% endblock %}

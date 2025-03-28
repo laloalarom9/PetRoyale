@@ -57,10 +57,11 @@ urlpatterns = [
     path('producto/<int:producto_id>/reseña/', views.crear_reseña, name='crear_reseña'),
 
     #Suscripciones
+    # Suscripciones
     path("suscripciones/", views.suscripciones, name="suscripciones"),
     path("suscripciones/seleccionar/", views.seleccionar_suscripcion, name="seleccionar_suscripcion"),
     path("suscripcion/agregar/", views.agregar_suscripcion_al_carrito, name="agregar_suscripcion_al_carrito"),
-    
+
 ]
 
 # Configuración para servir archivos estáticos y multimedia en desarrollo

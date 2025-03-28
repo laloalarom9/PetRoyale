@@ -559,46 +559,55 @@ from decimal import Decimal, ROUND_HALF_UP
 
 
 
+
+from decimal import Decimal, ROUND_HALF_UP
+from django.shortcuts import render
+from .models import Producto
+
 def checkout(request):
     carrito = request.session.get("carrito", {})
     productos = []
     total = Decimal(0)
 
     for key, datos in carrito.items():
-        if isinstance(datos, dict) and datos.get("tipo") == "suscripcion":
-            try:
+        try:
+            # Verificar si es una suscripción
+            if isinstance(datos, dict) and datos.get("tipo") == "suscripcion":
                 producto = Producto.objects.get(id=datos["producto_id"])
-                duracion = int(datos["duracion"])
-                subtotal = Decimal(producto.precio) * duracion
+                duracion = int(datos.get("duracion", 1))
+                precio = Decimal(producto.precio)
+                subtotal = precio * duracion
 
                 productos.append({
-                    "producto": producto,  # ← Pasamos el objeto real
-                    "tipo": "suscripcion",  # ← Para detectar en el template
-                    "precio": producto.precio,
+                    "producto": producto,
+                    "tipo": "suscripcion",
+                    "precio": precio,  # Correcto uso de precio decimal
                     "cantidad": f"{duracion} mes(es)",
                     "subtotal": subtotal
                 })
-
                 total += subtotal
-            except (KeyError, Producto.DoesNotExist):
-                continue  # Silenciosamente ignorar si falla
 
-        elif key.isdigit():
-            producto = Producto.objects.get(id=int(key))
-            cantidad = datos["cantidad"]
-            subtotal = Decimal(producto.precio) * cantidad
+            # Verificar si es un producto normal
+            elif key.isdigit():
+                producto = Producto.objects.get(id=int(key))
+                cantidad = int(datos.get("cantidad", 1))
+                precio = Decimal(producto.precio)
+                subtotal = precio * cantidad
 
-            productos.append({
-                "producto": producto,  # ← También aquí
-                "tipo": "compra",      # ← Para que sea consistente
-                "precio": producto.precio,
-                "cantidad": cantidad,
-                "subtotal": subtotal
-            })
+                productos.append({
+                    "producto": producto,
+                    "tipo": "compra",
+                    "precio": precio,  # Correcto uso de precio decimal
+                    "cantidad": cantidad,
+                    "subtotal": subtotal
+                })
+                total += subtotal
 
-            total += subtotal
+        except (KeyError, Producto.DoesNotExist, ValueError) as e:
+            print(f"Error al procesar el producto: {e}")
+            continue
 
-    # Totales
+    # Calcular IVA y total con IVA
     iva = (total * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     total_con_iva = (total + iva).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
@@ -608,6 +617,7 @@ def checkout(request):
         "iva": iva,
         "total_con_iva": total_con_iva
     })
+
 
 
 
@@ -841,63 +851,53 @@ def crear_reseña(request, producto_id):
 
     return render(request, 'crear_reseña.html', {'form': form, 'producto': producto})
 
-from .forms import SuscripcionForm
-from django.shortcuts import redirect, get_object_or_404
+
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Producto
+from django.contrib.auth.decorators import login_required
 
 @login_required
-def suscribirse(request):
-    if request.method == 'POST':
-        form = SuscripcionForm(request.POST)
-        if form.is_valid():
-            suscripcion = form.save(commit=False)
-            suscripcion.usuario = request.user
-            suscripcion.save()
-            return redirect('inicio')
-    else:
-        form = SuscripcionForm()
-
-    return render(request, 'suscripciones.html', {'form': form})
-
 def suscripciones(request):
     productos = Producto.objects.all()
     return render(request, "suscripciones.html", {"productos": productos})
 
-from django.shortcuts import render, get_object_or_404
-from .models import Producto
-
+@login_required
 def seleccionar_suscripcion(request):
-    producto_id = request.GET.get("producto_id")
-    producto = get_object_or_404(Producto, id=producto_id)
-    return render(request, "seleccionar_suscripcion.html", {"producto": producto})
+    # Obtener los IDs de los productos seleccionados
+    producto_ids = request.GET.getlist("producto_id")
+    productos = Producto.objects.filter(id__in=producto_ids)
+    return render(request, "seleccionar_suscripcion.html", {"productos": productos})
 
-
-
+@login_required
 
 def agregar_suscripcion_al_carrito(request):
     if request.method == "POST":
-        producto_id = request.POST.get("producto_id")
-        duracion = request.POST.get("duracion")
-
-        try:
-            producto = Producto.objects.get(id=producto_id)
-        except Producto.DoesNotExist:
-            return redirect("suscripciones")
+        productos = request.POST.getlist("productos[]")
+        duraciones = request.POST.getlist("duraciones[]")
 
         carrito = request.session.get("carrito", {})
 
-        clave = f"suscripcion-{producto_id}-{duracion}"
-        if clave in carrito:
-            carrito[clave]["cantidad"] += 1
-        else:
-            carrito[clave] = {
-                "tipo": "suscripcion",
-                "producto_id": producto.id,
-                "nombre": producto.nombre,
-                "precio": float(producto.precio),
-                "duracion": duracion,
-                "cantidad": 1,
-            }
+        for producto_id, duracion in zip(productos, duraciones):
+            try:
+                producto = Producto.objects.get(id=producto_id)
+                clave = f"suscripcion-{producto_id}-{duracion}"
+                if clave in carrito:
+                    carrito[clave]["cantidad"] += 1
+                else:
+                    carrito[clave] = {
+                        "tipo": "suscripcion",
+                        "producto_id": producto.id,
+                        "nombre": producto.nombre,
+                        "precio": float(producto.precio),
+                        "duracion": int(duracion),
+                        "cantidad": 1,
+                    }
+            except Producto.DoesNotExist:
+                continue  # Si el producto no existe, lo omitimos
 
         request.session["carrito"] = carrito
         return redirect("checkout")
+    else:
+        return redirect("suscripciones")
+
+
