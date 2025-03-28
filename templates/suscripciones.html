@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Suscripciones - PetRoyale{% endblock %}
+
+{% block content %}
+<section class="subscription-section">
+    <h1 class="store-title">Elige tu plan de suscripción</h1>
+
+    <form method="GET" action="{% url 'seleccionar_suscripcion' %}" class="subscription-form">
+        <div class="plans-grid">
+            {% for producto in productos %}
+                <div class="plan-card">
+                    <h2 class="plan-title">{{ producto.nombre }}</h2>
+                    <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/default.png' %}{% endif %}" class="plan-img" alt="{{ producto.nombre }}">
+                    <p class="plan-price">Desde {{ producto.precio }} €/mes</p>
+    
+                    <a href="{% url 'seleccionar_suscripcion' %}?producto_id={{ producto.id }}" class="btn-buy">Elegir este producto</a>
+                </div>
+            {% endfor %}
+        </div>
+    </form>
+    
+</section>
+{% endblock %}

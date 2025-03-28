@@ -63,7 +63,7 @@
                     {% if producto.imagen %}
                         <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="product-img">
                     {% else %}
-                        <img src="{% static '/productos/default.png' %}" alt="Imagen no disponible" class="product-img">
+                        <img src="{% static 'img/productos/default.png' %}" alt="Imagen no disponible" class="product-img">
                     {% endif %}
                 </div>
                 <div class="product-info">

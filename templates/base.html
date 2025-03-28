@@ -36,6 +36,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/suscripciones/' %}active{% endif %}" href="{% url 'suscripciones' %}">
+                            <img src="{% static 'img/iconos/plan.png' %}" alt="Suscripciones" class="icon"> Suscripciones
+                        </a>
+                    </li>                    
+                    <li class="nav-item">
                         <a class="nav-link {% if request.path == '/reseñas/' %}active{% endif %}" href="{% url 'reseñas' %}">
                             <img src="{% static 'img/iconos/review.png' %}" alt="Reseñas" class="icon"> Reseñas
                         </a>

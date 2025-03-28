@@ -45,13 +45,22 @@ urlpatterns = [
     path('carrito/', views.carrito, name='carrito'),  # ✅ Esta es la URL para el carrito
     path('checkout/', views.checkout, name='checkout'),  # ✅ Nueva ruta para checkout
     path('carrito/reducir/<int:producto_id>/', views.reducir_cantidad_carrito, name='reducir_cantidad_carrito'),
+    path('carrito/reducir-suscripcion/<str:producto_id>/', views.reducir_suscripcion_carrito, name='reducir_suscripcion_carrito'),
     path('carrito/vaciar/', views.vaciar_carrito, name='vaciar_carrito'),
     path('carrito/agregar/<int:producto_id>/', views.agregar_al_carrito, name='agregar_al_carrito'),  # ✅ Asegurar que existe esta URL
     path("checkout/procesar/", views.procesar_compra, name="procesar_compra"),
     path("confirmar_compra/", procesar_compra, name="confirmar_compra"),  # ✅ Agregar esta línea
    
+
+   
     #Reseñas
     path('producto/<int:producto_id>/reseña/', views.crear_reseña, name='crear_reseña'),
+
+    #Suscripciones
+    path("suscripciones/", views.suscripciones, name="suscripciones"),
+    path("suscripciones/seleccionar/", views.seleccionar_suscripcion, name="seleccionar_suscripcion"),
+    path("suscripcion/agregar/", views.agregar_suscripcion_al_carrito, name="agregar_suscripcion_al_carrito"),
+    
 ]
 
 # Configuración para servir archivos estáticos y multimedia en desarrollo

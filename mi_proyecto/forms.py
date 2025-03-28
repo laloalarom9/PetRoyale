@@ -34,3 +34,10 @@ class ReseñaForm(forms.ModelForm):
                 'max': 5
             }),
         }
+        
+class SuscripcionForm(forms.Form):
+    producto_id = forms.IntegerField(widget=forms.HiddenInput())
+    duracion = forms.ChoiceField(
+        choices=[("3", "3 meses"), ("6", "6 meses"), ("12", "12 meses")],
+        widget=forms.Select()
+    )

@@ -418,14 +418,43 @@ def carrito(request):
     productos = []
     total = Decimal(0)
 
-    for producto_id, datos in list(carrito.items()):
-        producto = Producto.objects.get(id=int(producto_id))
-        cantidad_real = datos["cantidad"]
-        subtotal = Decimal(producto.precio) * cantidad_real
-        productos.append({'producto': producto, 'cantidad': cantidad_real, 'subtotal': subtotal})
-        total += subtotal
+    
+    for key, datos in carrito.items():
+        if isinstance(datos, dict) and datos.get("tipo") == "suscripcion":
+            try:
+                producto = Producto.objects.get(id=datos["producto_id"])
+                duracion = int(datos["duracion"])
+                subtotal = Decimal(producto.precio) * duracion
 
-    # Calcular IVA y total con redondeo
+                productos.append({
+                    "clave": key,  # Necesario para el botón
+                    "producto": producto,  # ← Pasamos el objeto real
+                    "tipo": "suscripcion",  # ← Para detectar en el template
+                    "precio": producto.precio,
+                    "cantidad": f"{duracion} mes(es)",
+                    "subtotal": subtotal
+                })
+
+                total += subtotal
+            except (KeyError, Producto.DoesNotExist):
+                continue  # Silenciosamente ignorar si falla
+
+        elif key.isdigit():
+            producto = Producto.objects.get(id=int(key))
+            cantidad = datos["cantidad"]
+            subtotal = Decimal(producto.precio) * cantidad
+
+            productos.append({
+                "producto": producto,  # ← También aquí
+                "tipo": "compra",      # ← Para que sea consistente
+                "precio": producto.precio,
+                "cantidad": cantidad,
+                "subtotal": subtotal
+            })
+
+            total += subtotal
+
+    # Calcular IVA y total
     iva = (total * Decimal(0.21)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     total_con_iva = (total + iva).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
@@ -435,6 +464,7 @@ def carrito(request):
         'iva': iva,
         'total_con_iva': total_con_iva,
     })
+
 
 def reducir_cantidad_carrito(request, producto_id):
     carrito = request.session.get("carrito", {})
@@ -459,6 +489,26 @@ def reducir_cantidad_carrito(request, producto_id):
 
     return redirect("carrito")
 
+def reducir_suscripcion_carrito(request, producto_id):
+    carrito = request.session.get("carrito", {})
+
+    # Buscamos una clave que empiece por "suscripcion-" y termine en el ID del producto
+    for clave in list(carrito.keys()):
+        if clave.startswith("suscripcion-") and clave.endswith(str(producto_id)):
+            try:
+                del carrito[clave]
+                messages.info(request, "Suscripción eliminada del carrito.")
+            except KeyError:
+                messages.error(request, "No se pudo eliminar la suscripción.")
+            break  # Ya encontramos y eliminamos, no seguimos buscando
+
+    request.session["carrito"] = carrito
+    return redirect("carrito")
+
+
+
+
+
 from decimal import Decimal, ROUND_HALF_UP
 
 def calcular_totales(carrito):
@@ -482,12 +532,17 @@ def vaciar_carrito(request):
     carrito = request.session.get("carrito", {})
 
     for producto_id, datos in carrito.items():
-        producto = Producto.objects.get(id=int(producto_id))
+        if not str(producto_id).isdigit():
+            continue  # Ignorar claves como 'tipo' o 'suscripcion-32-6'
+        try:
+            producto = Producto.objects.get(id=int(producto_id))
 
-        # ✅ Solo devolver lo que realmente estaba reservado
-        producto.stock_reservado -= datos["cantidad"]
-        producto.stock_reservado = max(producto.stock_reservado, 0)  # ✅ Evita valores negativos
-        producto.save()
+            # ✅ Solo devolver lo que realmente estaba reservado
+            producto.stock_reservado -= datos["cantidad"]
+            producto.stock_reservado = max(producto.stock_reservado, 0)  # ✅ Evita valores negativos
+            producto.save()
+        except Producto.DoesNotExist:
+            continue  # Por si el producto fue eliminado
 
     request.session["carrito"] = {}  # Vaciar el carrito en sesión
     messages.success(request, "Carrito vaciado correctamente.")
@@ -502,27 +557,61 @@ from decimal import Decimal
 from decimal import Decimal, ROUND_HALF_UP
 
 
+
+
 def checkout(request):
     carrito = request.session.get("carrito", {})
     productos = []
     total = Decimal(0)
 
-    for producto_id, datos in carrito.items():
-        producto = Producto.objects.get(id=int(producto_id))
-        cantidad_real = datos["cantidad"]
-        subtotal = Decimal(producto.precio) * cantidad_real
-        productos.append({'producto': producto, 'cantidad': cantidad_real, 'subtotal': subtotal})
-        total += subtotal
+    for key, datos in carrito.items():
+        if isinstance(datos, dict) and datos.get("tipo") == "suscripcion":
+            try:
+                producto = Producto.objects.get(id=datos["producto_id"])
+                duracion = int(datos["duracion"])
+                subtotal = Decimal(producto.precio) * duracion
 
-    iva = (total * Decimal(0.21)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-    total_con_iva = (total + iva).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+                productos.append({
+                    "producto": producto,  # ← Pasamos el objeto real
+                    "tipo": "suscripcion",  # ← Para detectar en el template
+                    "precio": producto.precio,
+                    "cantidad": f"{duracion} mes(es)",
+                    "subtotal": subtotal
+                })
+
+                total += subtotal
+            except (KeyError, Producto.DoesNotExist):
+                continue  # Silenciosamente ignorar si falla
+
+        elif key.isdigit():
+            producto = Producto.objects.get(id=int(key))
+            cantidad = datos["cantidad"]
+            subtotal = Decimal(producto.precio) * cantidad
+
+            productos.append({
+                "producto": producto,  # ← También aquí
+                "tipo": "compra",      # ← Para que sea consistente
+                "precio": producto.precio,
+                "cantidad": cantidad,
+                "subtotal": subtotal
+            })
+
+            total += subtotal
+
+    # Totales
+    iva = (total * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    total_con_iva = (total + iva).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     return render(request, "checkout.html", {
         "productos": productos,
         "total": total,
         "iva": iva,
-        "total_con_iva": total_con_iva,
+        "total_con_iva": total_con_iva
     })
+
+
+
+    
 import io
 from django.http import FileResponse
 from django.shortcuts import render, redirect
@@ -555,7 +644,43 @@ def procesar_compra(request):
     if not carrito:
         messages.error(request, "Tu carrito está vacío.")
         return redirect("carrito")
+    #Si es suscripcion
+    if carrito.get("tipo") == "suscripcion":
+        try:
+            producto = Producto.objects.get(id=carrito["producto_id"])
+            duracion = int(carrito["duracion"])
+            total = Decimal(producto.precio) * duracion
+            iva = (total * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            total_con_iva = (total + iva).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
+            pedido = Pedido.objects.create(
+                usuario=request.user,
+                numero_pedido=f"SUS-{now().strftime('%Y%m%d%H%M%S')}",
+                fecha_pedido=now(),
+                total=total,
+                iva=iva,
+                total_con_iva=total_con_iva,
+                estado="pendiente"
+            )
+
+            DetallePedido.objects.create(
+                pedido=pedido,
+                producto=producto,
+                cantidad=duracion,
+                precio_unitario=producto.precio
+            )
+
+            request.session["carrito"] = {}
+            return render(request, "confirmacion_compra.html", {
+                "numero_pedido": pedido.numero_pedido,
+                "total_con_iva": total_con_iva
+            })
+
+        except Producto.DoesNotExist:
+            messages.error(request, "Producto no encontrado para la suscripción.")
+            return redirect("carrito")
+
+    
     usuario = request.user
     fecha_compra = now()
     numero_pedido = f"ORD-{fecha_compra.strftime('%Y%m%d%H%M%S')}"
@@ -565,7 +690,11 @@ def procesar_compra(request):
     # ✅ Verificar disponibilidad de stock antes de procesar la compra
     for producto_id, datos in carrito.items():
         try:
+            if not str(producto_id).isdigit():
+                continue
             producto = Producto.objects.get(id=int(producto_id))
+  
+            
         except Producto.DoesNotExist:
             messages.error(request, "Uno de los productos en tu carrito ya no está disponible.")
             return redirect("carrito")
@@ -578,6 +707,8 @@ def procesar_compra(request):
 
     # ✅ Procesar la compra
     for producto_id, datos in carrito.items():
+        if not str(producto_id).isdigit():
+                continue
         producto = Producto.objects.get(id=int(producto_id))
         cantidad = datos["cantidad"]
         subtotal = Decimal(producto.precio) * cantidad
@@ -709,3 +840,64 @@ def crear_reseña(request, producto_id):
         form = ReseñaForm()
 
     return render(request, 'crear_reseña.html', {'form': form, 'producto': producto})
+
+from .forms import SuscripcionForm
+from django.shortcuts import redirect, get_object_or_404
+from .models import Producto
+
+@login_required
+def suscribirse(request):
+    if request.method == 'POST':
+        form = SuscripcionForm(request.POST)
+        if form.is_valid():
+            suscripcion = form.save(commit=False)
+            suscripcion.usuario = request.user
+            suscripcion.save()
+            return redirect('inicio')
+    else:
+        form = SuscripcionForm()
+
+    return render(request, 'suscripciones.html', {'form': form})
+
+def suscripciones(request):
+    productos = Producto.objects.all()
+    return render(request, "suscripciones.html", {"productos": productos})
+
+from django.shortcuts import render, get_object_or_404
+from .models import Producto
+
+def seleccionar_suscripcion(request):
+    producto_id = request.GET.get("producto_id")
+    producto = get_object_or_404(Producto, id=producto_id)
+    return render(request, "seleccionar_suscripcion.html", {"producto": producto})
+
+
+
+
+def agregar_suscripcion_al_carrito(request):
+    if request.method == "POST":
+        producto_id = request.POST.get("producto_id")
+        duracion = request.POST.get("duracion")
+
+        try:
+            producto = Producto.objects.get(id=producto_id)
+        except Producto.DoesNotExist:
+            return redirect("suscripciones")
+
+        carrito = request.session.get("carrito", {})
+
+        clave = f"suscripcion-{producto_id}-{duracion}"
+        if clave in carrito:
+            carrito[clave]["cantidad"] += 1
+        else:
+            carrito[clave] = {
+                "tipo": "suscripcion",
+                "producto_id": producto.id,
+                "nombre": producto.nombre,
+                "precio": float(producto.precio),
+                "duracion": duracion,
+                "cantidad": 1,
+            }
+
+        request.session["carrito"] = carrito
+        return redirect("checkout")

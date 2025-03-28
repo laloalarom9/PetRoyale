@@ -21,7 +21,10 @@
             <tbody>
                 {% for item in productos %}
                     <tr>
-                        <td>{{ item.producto.nombre }}</td>
+                        <td>
+                            {{ item.producto.nombre }}
+                            {% if item.tipo == "suscripcion" %}(suscripción){% endif %}
+                        </td>                          
                         <td>{{ item.producto.precio }}€</td>
                         <td>{{ item.cantidad }}</td>
                         <td>{{ item.subtotal|floatformat:2 }}€</td>
