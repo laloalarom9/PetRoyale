@@ -12,6 +12,9 @@ DEBUG = False  # 🔹 Cambiar a False en producción
 
 ALLOWED_HOSTS = ["petroyale-ehg7gyadd4h6c7gk.spaincentral-01.azurewebsites.net", "127.0.0.1"]
 
+LOGIN_URL = '/login/'
+
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",

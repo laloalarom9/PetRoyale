@@ -1107,10 +1107,11 @@ def crear_perfil(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Perfil creado exitosamente.")
-            return redirect("lista_perfiles")
+            return redirect("lista_perfiles")  # <-- Esto es importante
     else:
         form = CrearPerfilForm()
     return render(request, "crear_perfil.html", {"form": form})
+
 
 
 from django.contrib.auth.decorators import login_required
@@ -1124,3 +1125,72 @@ def eliminar_suscripcion(request, pedido_id):
     if request.method == "POST":
         pedido.delete()
         return redirect('gestionar_suscripcion')
+    
+from django.contrib.auth.decorators import user_passes_test
+from .models import CustomUser
+
+@user_passes_test(es_superusuario)
+def lista_perfiles(request):
+    perfiles = CustomUser.objects.all().order_by('username')
+    return render(request, "lista_perfiles.html", {"perfiles": perfiles})
+
+
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import get_object_or_404
+from .models import CustomUser
+
+@user_passes_test(es_superusuario)
+def editar_rol_usuario(request, user_id):
+    usuario = get_object_or_404(CustomUser, id=user_id)
+
+    if request.method == "POST":
+        nuevo_rol = request.POST.get("rol")
+
+        # Limpiar roles anteriores
+        usuario.groups.clear()
+
+        # Resetear superuser/staff si fuera necesario
+        if nuevo_rol == "administrador":
+            usuario.is_superuser = True
+            usuario.is_staff = True
+        else:
+            usuario.is_superuser = False
+            usuario.is_staff = False
+            grupo, _ = Group.objects.get_or_create(name=nuevo_rol)
+            usuario.groups.add(grupo)
+
+        usuario.save()
+        messages.success(request, "Rol actualizado correctamente.")
+
+        # Si el usuario editado es el mismo que está autenticado, cerrar sesión
+        if request.user.id == usuario.id:
+            logout(request)
+            messages.info(request, "Tu sesión ha sido cerrada porque cambiaste tu rol.")
+            return redirect("login")
+
+        return redirect("lista_perfiles")
+
+
+    return render(request, "editar_rol.html", {"usuario": usuario})
+
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+
+User = get_user_model()
+
+@user_passes_test(es_superusuario)
+def eliminar_perfil(request, user_id):
+    usuario = get_object_or_404(User, id=user_id)
+
+    # Evitar que se borre a sí mismo
+    if usuario == request.user:
+        messages.error(request, "No puedes eliminar tu propia cuenta desde aquí.")
+    else:
+        usuario.delete()
+        messages.success(request, "Perfil eliminado correctamente.")
+
+    return redirect("lista_perfiles")

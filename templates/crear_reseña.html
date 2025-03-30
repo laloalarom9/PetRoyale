@@ -4,10 +4,71 @@
 {% block content %}
 <section class="review-form">
     <h1> Reseñar {{ producto.nombre }}</h1>
-    <form method="POST">
+    <form method="POST" class="form-perfil">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn-create">Guardar reseña</button>
+    
+        <p>
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {% if form.username.errors %}
+                <span class="form-error">{{ form.username.errors.0 }}</span>
+            {% endif %}
+        </p>
+    
+        <p>
+            {{ form.first_name.label_tag }}
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <span class="form-error">{{ form.first_name.errors.0 }}</span>
+            {% endif %}
+        </p>
+    
+        <p>
+            {{ form.last_name.label_tag }}
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+                <span class="form-error">{{ form.last_name.errors.0 }}</span>
+            {% endif %}
+        </p>
+    
+        <p>
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {% if form.email.errors %}
+                <span class="form-error">{{ form.email.errors.0 }}</span>
+            {% endif %}
+        </p>
+    
+        <p>
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {% if form.password.errors %}
+                <span class="form-error">{{ form.password.errors.0 }}</span>
+            {% endif %}
+        </p>
+    
+        <p>
+            {{ form.confirmar_password.label_tag }}
+            {{ form.confirmar_password }}
+            {% if form.confirmar_password.errors %}
+                <span class="form-error">{{ form.confirmar_password.errors.0 }}</span>
+            {% endif %}
+        </p>
+    
+        <p>
+            {{ form.rol.label_tag }}
+            {{ form.rol }}
+            {% if form.rol.errors %}
+                <span class="form-error">{{ form.rol.errors.0 }}</span>
+            {% endif %}
+        </p>
+    
+        {% if form.non_field_errors %}
+            <div class="form-error">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+    
+        <button type="submit" class="btn btn-primary">Crear Perfil</button>
     </form>
+    
 </section>
 {% endblock %}

@@ -6,7 +6,12 @@
 {% block content %}
 <div class="profile-container">
     <h2 class="profile-title">Mi Perfil</h2>
-    
+    {% if user.is_superuser %}
+    <div class="gestion-perfiles">
+        <a href="{% url 'lista_perfiles' %}" class="btn btn-info">👥 Gestionar Perfiles</a>
+    </div>
+    {% endif %}
+
     <form method="POST" action="{% url 'perfil' %}">
         {% csrf_token %}
         <div class="profile-info">

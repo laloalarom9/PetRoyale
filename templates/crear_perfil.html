@@ -1,15 +1,156 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Crear Perfil de Usuario</h2>
 
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Crear Perfil</button>
-</form>
+<style>
+    body {
+        padding-top: 100px; /* Evita que el navbar tape el contenido */
+        background-color: #f4f4f4;
+        margin: 0;
+    }
 
-{% for message in messages %}
-    <p>{{ message }}</p>
-{% endfor %}
+    .form-wrapper {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 30px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-wrapper h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 24px;
+    }
+
+    .form-wrapper p {
+        margin-bottom: 15px;
+    }
+
+    .form-wrapper label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    .form-wrapper input,
+    .form-wrapper select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+    }
+
+    .form-error {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    @media (max-width: 600px) {
+        .form-wrapper {
+            padding: 20px;
+            margin: 10px;
+        }
+
+        .form-wrapper h2 {
+            font-size: 20px;
+        }
+
+        .btn-primary {
+            font-size: 15px;
+        }
+    }
+</style>
+
+
+<div class="form-wrapper">
+    <h2>Crear Perfil de Usuario</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <p>
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {% if form.username.errors %}
+                <span class="form-error">{{ form.username.errors.0 }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            {{ form.first_name.label_tag }}
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <span class="form-error">{{ form.first_name.errors.0 }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            {{ form.last_name.label_tag }}
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+                <span class="form-error">{{ form.last_name.errors.0 }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {% if form.email.errors %}
+                <span class="form-error">{{ form.email.errors.0 }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {% if form.password.errors %}
+                <span class="form-error">{{ form.password.errors.0 }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            {{ form.confirmar_password.label_tag }}
+            {{ form.confirmar_password }}
+            {% if form.confirmar_password.errors %}
+                <span class="form-error">{{ form.confirmar_password.errors.0 }}</span>
+            {% endif %}
+        </p>
+
+        <p>
+            {{ form.rol.label_tag }}
+            {{ form.rol }}
+            {% if form.rol.errors %}
+                <span class="form-error">{{ form.rol.errors.0 }}</span>
+            {% endif %}
+        </p>
+
+        {% if form.non_field_errors %}
+            <div class="form-error">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary">Crear Perfil</button>
+    </form>
+</div>
 {% endblock %}

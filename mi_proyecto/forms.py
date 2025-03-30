@@ -57,8 +57,6 @@ class MascotaForm(forms.ModelForm):
         model = Mascota
         fields = ["nombre", "especie", "raza", "fecha_nacimiento", "foto"]
 
-
-####CREAR USUARIOS
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -66,43 +64,61 @@ from django.contrib.auth.models import Group
 User = get_user_model()
 
 class CrearPerfilForm(forms.ModelForm):
-    role = forms.ChoiceField(choices=[
-        ("usuario", "Usuario"),
+    ROL_CHOICES = [
+        ("administrador", "Administrador"),
+        ("operador", "Operador"),
         ("repartidor", "Repartidor"),
-        ("operador", "Operador")
-    ], label="Tipo de Perfil")
+        ("cliente", "Cliente"),
+    ]
+
+    rol = forms.ChoiceField(choices=ROL_CHOICES, label="Tipo de Perfil")
+    password = forms.CharField(widget=forms.PasswordInput, label="Contraseña")
+    confirmar_password = forms.CharField(widget=forms.PasswordInput, label="Confirmar Contraseña")
 
     class Meta:
         model = User
-        fields = ["username", "first_name", "last_name", "email", "password"]
+        fields = ["username", "first_name", "last_name", "email", "password", "rol"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirmar = cleaned_data.get("confirmar_password")
+
+        if password and confirmar and password != confirmar:
+            raise forms.ValidationError("Las contraseñas no coinciden.")
+        return cleaned_data
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("⚠️ El nombre de usuario ya está en uso. Elige otro.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("⚠️ Este correo electrónico ya está registrado.")
+        return email
+
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        role = self.cleaned_data["role"]
+        user.set_password(self.cleaned_data["password"])
+        rol = self.cleaned_data["rol"]
+
+        if rol == "administrador":
+            user.is_superuser = True
+            user.is_staff = True
+        else:
+            user.is_superuser = False
+            user.is_staff = False
 
         if commit:
-            user.set_password(self.cleaned_data["password"])
             user.save()
-
-            # Asegúrate de que el nombre del grupo esté correctamente escrito
-            group_name = ""
-            if role == "usuario":
-                group_name = "Usuarios"
-            elif role == "repartidor":
-                group_name = "Repartidores"
-            elif role == "operador":
-                group_name = "Operadores"
-
-            # Verifica si el grupo existe antes de asignarlo
-            try:
-                group = Group.objects.get(name=group_name)
-                user.groups.add(group)
-                print(f"Grupo '{group_name}' encontrado y asignado.")
-            except Group.DoesNotExist:
-                print(f"Grupo '{group_name}' no existe. Creándolo...")
-                group = Group.objects.create(name=group_name)
+            if rol != "administrador":
+                group, _ = Group.objects.get_or_create(name=rol)
                 user.groups.add(group)
 
         return user
+
 
 

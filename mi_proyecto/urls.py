@@ -18,6 +18,9 @@ from mi_proyecto.views import (
     editar_mascota,         # ⬅️ ESTA es la que falta
     eliminar_mascota,
 )
+from .views import lista_perfiles, crear_perfil
+from .views import lista_perfiles, crear_perfil, editar_rol_usuario
+from .views import lista_perfiles, crear_perfil, editar_rol_usuario, eliminar_perfil
 
 
 urlpatterns = [
@@ -82,6 +85,10 @@ urlpatterns = [
 
     #CREAR PERFILES
     path("crear_perfil/", crear_perfil, name="crear_perfil"),
+    path("perfiles/", lista_perfiles, name="lista_perfiles"),
+    path("perfiles/<int:user_id>/editar/", editar_rol_usuario, name="editar_rol_usuario"),
+    path("perfiles/<int:user_id>/eliminar/", eliminar_perfil, name="eliminar_perfil"),
+
 ]
 
 # Configuración para servir archivos estáticos y multimedia en desarrollo
