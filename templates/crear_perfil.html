@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Crear Perfil de Usuario</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Crear Perfil</button>
+</form>
+
+{% for message in messages %}
+    <p>{{ message }}</p>
+{% endfor %}
+{% endblock %}

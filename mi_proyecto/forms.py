@@ -56,3 +56,38 @@ class MascotaForm(forms.ModelForm):
     class Meta:
         model = Mascota
         fields = ["nombre", "especie", "raza", "fecha_nacimiento", "foto"]
+
+
+####CREAR USUARIOS
+from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+
+User = get_user_model()
+
+class CrearPerfilForm(forms.ModelForm):
+    role = forms.ChoiceField(choices=[
+        ("usuario", "Usuario"),
+        ("repartidor", "Repartidor"),
+        ("operador", "Operador")
+    ], label="Tipo de Perfil")
+
+    class Meta:
+        model = User
+        fields = ["username", "first_name", "last_name", "email", "password"]
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        role = self.cleaned_data["role"]
+
+        if commit:
+            user.set_password(self.cleaned_data["password"])
+            user.save()
+
+            # Asignar el grupo según el rol seleccionado
+            group = Group.objects.get(name=role.capitalize())
+            user.groups.add(group)
+
+        return user
+
+

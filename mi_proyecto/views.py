@@ -1088,3 +1088,31 @@ def cambiar_mascota(request, pedido_id):
             messages.error(request, "Selecciona una mascota válida.")
 
     return redirect("gestionar_suscripcion")
+
+
+
+
+
+
+
+#####CREAR USUARIOS
+
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import CrearPerfilForm
+
+def es_superusuario(user):
+    return user.is_authenticated and user.is_superuser
+
+@user_passes_test(es_superusuario)
+def crear_perfil(request):
+    if request.method == "POST":
+        form = CrearPerfilForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Perfil creado exitosamente.")
+            return redirect("lista_perfiles")
+    else:
+        form = CrearPerfilForm()
+    return render(request, "crear_perfil.html", {"form": form})

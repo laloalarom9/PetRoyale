@@ -9,6 +9,7 @@ from mi_proyecto.views import lista_productos, agregar_producto, editar_producto
 from mi_proyecto import views
 from mi_proyecto.views import lista_productos, agregar_producto, editar_producto, eliminar_producto
 from mi_proyecto.views import checkout, procesar_compra  # ✅ Asegúrate de importar procesar_compra
+from .views import crear_perfil#####CREAR USUARIO
 from mi_proyecto.views import (
     inicio,
     editar_perfil,
@@ -78,6 +79,8 @@ urlpatterns = [
     path("perfil/mascota/agregar/", agregar_mascota, name="agregar_mascota"),
     path("desvincular-mascota/<int:pedido_id>/", views.desvincular_mascota, name="desvincular_mascota"),
 
+    #CREAR PERFILES
+    path("crear_perfil/", crear_perfil, name="crear_perfil"),
 ]
 
 # Configuración para servir archivos estáticos y multimedia en desarrollo
