@@ -11,14 +11,14 @@
         margin-right: auto;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
+
     h1 {
         text-align: center;
         font-size: 2rem;
         margin-bottom: 30px;
         color: #333;
     }
-    
+
     .bloque-mascota, .suscripcion-card {
         background-color: #fff;
         border-radius: 12px;
@@ -27,109 +27,145 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
         transition: all 0.3s ease;
     }
-    
+
     .bloque-mascota:hover, .suscripcion-card:hover {
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
-    
+
     .bloque-mascota img {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
-        border: 2px solid #ddd;
+        border: 3px solid #ddd;
         background: #fafafa;
     }
-    
+
+    .bloque-mascota .nombre-mascota {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #444;
+    }
+
     .estado-suscripcion {
         margin-top: 10px;
         font-size: 1rem;
     }
-    
+
     .estado-activa {
         color: #2b9348;
         font-weight: bold;
     }
-    
+
     .estado-pendiente {
         color: #d00000;
         font-weight: bold;
     }
-    
+
     .mascota-no-asociada {
         color: #888;
         font-style: italic;
         margin-top: 10px;
+        text-align: center;
     }
-    
+
     label {
         font-weight: bold;
         margin-top: 10px;
         display: block;
     }
-    
+
     select, button {
         padding: 8px 12px;
         border-radius: 6px;
         border: 1px solid #ccc;
         font-size: 14px;
     }
-    
-    select {
-        min-width: 200px;
+
+    .acciones-mascota,
+    .selector-mascota {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
     }
-    
-    button.btn-sm,
-    a.btn-sm {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        text-decoration: none;
-        cursor: pointer;
+
+    .btn-sm {
         font-size: 14px;
+        padding: 8px 16px;
+        font-weight: bold;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
     }
-    
-    button.btn-sm:hover,
-    a.btn-sm:hover {
-        background-color: #0056b3;
-    }
-    
-    button.btn-cancelar {
+
+    .btn-desvincular {
         background-color: #ff6b6b;
         color: white;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
     }
-    
-    button.btn-cancelar:hover {
+
+    .btn-desvincular:hover {
         background-color: #e63946;
     }
-    
-    button.btn-reactivar {
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .botones-suscripcion {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .boton-accion {
+        width: 200px;
+        text-align: center;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .boton-cancelar {
+        background-color: #ff6b6b;
+        color: white;
+    }
+
+    .boton-cancelar:hover {
+        background-color: #e63946;
+    }
+
+    .boton-borrar {
+        background-color: #9d0208;
+        color: white;
+    }
+
+    .boton-borrar:hover {
+        background-color: #6a040f;
+    }
+
+    .boton-reactivar {
         background-color: #38b000;
         color: white;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
     }
-    
-    button.btn-reactivar:hover {
+
+    .boton-reactivar:hover {
         background-color: #2b9348;
     }
-    
-    button.btn-danger {
-        background-color: #d00000;
-        color: white;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-    }
-    
-    button.btn-danger:hover {
-        background-color: #9d0208;
-    }
-    
-    /* Modal */
+
     .modal {
         display: none;
         position: fixed;
@@ -138,7 +174,7 @@
         width: 100%; height: 100%;
         background-color: rgba(0, 0, 0, 0.6);
     }
-    
+
     .modal-contenido {
         background-color: white;
         margin: 10% auto;
@@ -148,14 +184,14 @@
         max-width: 400px;
         text-align: center;
     }
-    
+
     .modal-botones {
         margin-top: 20px;
         display: flex;
         justify-content: center;
         gap: 15px;
     }
-    
+
     .btn-cancelar-modal,
     .btn-confirmar-modal {
         padding: 10px 20px;
@@ -165,216 +201,109 @@
         cursor: pointer;
         font-size: 16px;
     }
-    
+
     .btn-cancelar-modal {
         background-color: #ccc;
         color: #333;
     }
-    
+
     .btn-cancelar-modal:hover {
         background-color: #bbb;
     }
-    
+
     .btn-confirmar-modal {
         background-color: #e84141;
         color: white;
     }
-    
+
     .btn-confirmar-modal:hover {
         background-color: #d12e2e;
     }
-    
-    /* Responsive */
-    @media screen and (max-width: 768px) {
-        .gestion-suscripcion-wrapper {
-            margin-top: 100px;
-            padding: 15px;
-        }
-    
-        .bloque-mascota, .suscripcion-card {
-            padding: 15px;
-        }
-    
-        h1 {
-            font-size: 1.6rem;
-        }
-    
-        select, button {
-            width: 100%;
-        }
-    
-        .modal-contenido {
-            width: 95%;
-        }
-    }
-    
+
     @media screen and (max-width: 480px) {
-        .gestion-suscripcion-wrapper {
-            margin-top: 110px;
-            padding: 10px;
-        }
-    
-        h1 {
-            font-size: 1.4rem;
-        }
-    
-        select {
-            min-width: unset;
-        }
-    
-        .bloque-mascota img {
-            width: 50px;
-            height: 50px;
-        }
-    }
-    .botones-suscripcion {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-top: 20px;
-        text-align: center;
-    }
-    
-    .boton-accion {
-        width: 180px;
-        text-align: center;
-        padding: 10px 0;
-        border-radius: 8px;
-        font-weight: bold;
-        font-size: 15px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: none;
-    }
-    
-    .boton-cancelar {
-        background-color: #ff6b6b;
-        color: white;
-    }
-    
-    .boton-cancelar:hover {
-        background-color: #e63946;
-    }
-    
-    .boton-borrar {
-        background-color: #9d0208;
-        color: white;
-    }
-    
-    .boton-borrar:hover {
-        background-color: #6a040f;
-    }
-    @media (max-width: 480px) {
         .botones-suscripcion {
             flex-direction: column;
         }
-    
+
         .boton-accion {
             width: 100% !important;
         }
     }
-       
-    </style>
-    
+</style>
 
-<section class="gestion-suscripcion gestion-suscripcion-wrapper">
+<section class="gestion-suscripcion-wrapper">
     <h1>🛠️ Gestión de tus suscripciones</h1>
 
     {% for item in suscripciones %}
-    <div class="bloque-mascota" style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 12px;">
+    <div class="bloque-mascota">
         {% if item.pedido.mascota %}
-            <p><strong>🐾 Mascota asociada:</strong></p>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <img src="{{ item.pedido.mascota.get_foto_url }}" alt="{{ item.pedido.mascota.nombre }}" class="mascota-miniatura" style="width: 60px; height: 60px; border-radius: 50%;">
-                <span>{{ item.pedido.mascota.nombre }}</span>
+            <div style="text-align:center">
+                <img src="{{ item.pedido.mascota.get_foto_url }}" alt="{{ item.pedido.mascota.nombre }}">
+                <div class="nombre-mascota">{{ item.pedido.mascota.nombre }}</div>
             </div>
-    
-            <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;">
+            <div class="acciones-mascota">
                 <form method="POST" action="{% url 'desvincular_mascota' item.pedido.id %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn-cancelar btn-sm">❌ Desvincular</button>
+                    <button type="submit" class="btn-sm btn-desvincular">❌ Desvincular</button>
                 </form>
             </div>
         {% else %}
             <p class="mascota-no-asociada">⚠️ No hay mascota asociada.</p>
         {% endif %}
-    
+
         {% if mascotas %}
-            <form method="POST" action="{% url 'cambiar_mascota' item.pedido.id %}" style="margin-top: 15px;">
+            <form method="POST" action="{% url 'cambiar_mascota' item.pedido.id %}" class="selector-mascota">
                 {% csrf_token %}
-                <label for="nueva_mascota_id"><strong>Cambiar o vincular mascota:</strong></label>
-                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                    <select name="nueva_mascota_id" required>
-                        <option value="">-- Selecciona una mascota --</option>
-                        {% for mascota in mascotas %}
-                            <option value="{{ mascota.id }}">{{ mascota.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit" class="btn btn-sm">Guardar</button>
-                </div>
+                <select name="nueva_mascota_id" required>
+                    <option value="">-- Selecciona una mascota --</option>
+                    {% for mascota in mascotas %}
+                        <option value="{{ mascota.id }}">{{ mascota.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn-sm btn-primary">Guardar</button>
             </form>
         {% else %}
             <p class="mascota-no-asociada">🐾 Aún no tienes mascotas registradas.</p>
-            <a href="{% url 'agregar_mascota' %}" class="btn btn-sm btn-primary">Registrar una mascota</a>
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="{% url 'agregar_mascota' %}" class="btn-sm btn-primary">Registrar una mascota</a>
+            </div>
         {% endif %}
     </div>
-    
 
-    <div class="suscripcion-card" style="margin-bottom: 40px; padding: 20px; background: #fdfdfd; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+    <div class="suscripcion-card">
         <h3 style="margin-bottom: 10px;">🧾 Pedido: {{ item.pedido.numero_pedido }}</h3>
-        <p style="margin: 0;">📅 Fecha de inicio: <span style="color: #e84141;">{{ item.pedido.fecha_pedido|date:"d/m/Y" }}</span></p>
-    
+        <p>📅 Fecha de inicio: <span style="color: #e84141;">{{ item.pedido.fecha_pedido|date:"d/m/Y" }}</span></p>
         {% for detalle in item.detalles %}
-            <p style="margin: 0;"><strong>🛒 Producto:</strong> {{ detalle.producto.nombre }}</p>
-            <p style="margin: 0 0 10px 0;"><strong>⏳ Duración:</strong> {{ detalle.cantidad }} mes(es)</p>
+            <p><strong>🛒 Producto:</strong> {{ detalle.producto.nombre }}</p>
+            <p><strong>⏳ Duración:</strong> {{ detalle.cantidad }} mes(es)</p>
         {% endfor %}
-    
+
         {% if item.pedido.estado_suscripcion == "activa" %}
             <p class="estado-suscripcion estado-activa">🟢 <strong>Estado: Activa</strong></p>
             <div class="botones-suscripcion">
                 <form id="form-cancelar-{{ item.pedido.id }}" method="POST" action="{% url 'cancelar_suscripcion' item.pedido.id %}">
                     {% csrf_token %}
-                    <button type="button" class="boton-accion boton-cancelar" onclick="abrirModalConfirmacion(
-                        'Cancelar suscripción',
-                        '¿Deseas cancelar esta suscripción?',
-                        'form-cancelar-{{ item.pedido.id }}'
-                    )">Cancelar suscripción</button>
+                    <button type="button" class="boton-accion boton-cancelar" onclick="abrirModalConfirmacion('Cancelar suscripción','¿Deseas cancelar esta suscripción?','form-cancelar-{{ item.pedido.id }}')">Cancelar suscripción</button>
                 </form>
                 <form id="form-eliminar-suscripcion-{{ item.pedido.id }}" method="POST" action="{% url 'eliminar_suscripcion' item.pedido.id %}">
                     {% csrf_token %}
                 </form>
-                <button type="button" class="boton-accion boton-borrar" onclick="abrirModalConfirmacion(
-                    'Eliminar suscripción',
-                    '¿Estás seguro de que quieres eliminar esta suscripción permanentemente?',
-                    'form-eliminar-suscripcion-{{ item.pedido.id }}'
-                )">🗑️ Borrar definitivamente</button>
+                <button type="button" class="boton-accion boton-borrar" onclick="abrirModalConfirmacion('Eliminar suscripción','¿Estás seguro de que quieres eliminar esta suscripción permanentemente?','form-eliminar-suscripcion-{{ item.pedido.id }}')">🗑️ Borrar definitivamente</button>
             </div>
-            
         {% elif item.pedido.estado_suscripcion == "pendiente_cancelacion" %}
             <p class="estado-suscripcion estado-pendiente">🔴 <strong>Estado: Pendiente de cancelación</strong></p>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+            <div class="botones-suscripcion">
                 <form id="form-reactivar-{{ item.pedido.id }}" method="POST" action="{% url 'reactivar_suscripcion' item.pedido.id %}">
                     {% csrf_token %}
-                    <button type="button" class="btn-reactivar" onclick="abrirModalConfirmacion(
-                        'Reactivar suscripción',
-                        '¿Deseas reactivar esta suscripción?',
-                        'form-reactivar-{{ item.pedido.id }}'
-                    )">Reactivar suscripción</button>
+                    <button type="button" class="boton-accion boton-reactivar" onclick="abrirModalConfirmacion('Reactivar suscripción','¿Deseas reactivar esta suscripción?','form-reactivar-{{ item.pedido.id }}')">Reactivar suscripción</button>
                 </form>
                 <form id="form-eliminar-suscripcion-{{ item.pedido.id }}" method="POST" action="{% url 'eliminar_suscripcion' item.pedido.id %}">
                     {% csrf_token %}
                 </form>
-                <button type="button" class="btn btn-danger btn-sm" onclick="abrirModalConfirmacion(
-                    'Eliminar suscripción',
-                    '¿Estás seguro de que quieres eliminar esta suscripción permanentemente?',
-                    'form-eliminar-suscripcion-{{ item.pedido.id }}'
-                )">🗑️ Borrar definitivamente</button>
+                <button type="button" class="boton-accion boton-borrar" onclick="abrirModalConfirmacion('Eliminar suscripción','¿Estás seguro de que quieres eliminar esta suscripción permanentemente?','form-eliminar-suscripcion-{{ item.pedido.id }}')">🗑️ Borrar definitivamente</button>
             </div>
         {% endif %}
     </div>
-    
     {% empty %}
         <p>No tienes suscripciones activas.</p>
     {% endfor %}
