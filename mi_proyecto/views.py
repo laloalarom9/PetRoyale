@@ -1090,12 +1090,6 @@ def cambiar_mascota(request, pedido_id):
 
     return redirect("gestionar_suscripcion")
 
-<<<<<<< HEAD
-
-
-
-
-
 
 #####CREAR USUARIOS
 
@@ -1130,4 +1124,4 @@ def eliminar_suscripcion(request, pedido_id):
     if request.method == "POST":
         pedido.delete()
         return redirect('gestionar_suscripcion')
->>>>>>> 2ce04b1c2967965dde666525a9f5db588a7dbd3b
+
