@@ -84,9 +84,24 @@ class CrearPerfilForm(forms.ModelForm):
             user.set_password(self.cleaned_data["password"])
             user.save()
 
-            # Asignar el grupo según el rol seleccionado
-            group = Group.objects.get(name=role.capitalize())
-            user.groups.add(group)
+            # Asegúrate de que el nombre del grupo esté correctamente escrito
+            group_name = ""
+            if role == "usuario":
+                group_name = "Usuarios"
+            elif role == "repartidor":
+                group_name = "Repartidores"
+            elif role == "operador":
+                group_name = "Operadores"
+
+            # Verifica si el grupo existe antes de asignarlo
+            try:
+                group = Group.objects.get(name=group_name)
+                user.groups.add(group)
+                print(f"Grupo '{group_name}' encontrado y asignado.")
+            except Group.DoesNotExist:
+                print(f"Grupo '{group_name}' no existe. Creándolo...")
+                group = Group.objects.create(name=group_name)
+                user.groups.add(group)
 
         return user
 
