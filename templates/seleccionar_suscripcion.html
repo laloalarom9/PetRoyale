@@ -8,29 +8,63 @@
     <h1 class="store-title">Selecciona la duración de cada suscripción</h1>
 
     <form method="POST" action="{% url 'agregar_suscripcion_al_carrito' %}">
-        {% csrf_token %}
+    {% csrf_token %}
 
-        <div class="product-list">
-            {% for producto in productos %}
-                <div class="product-item product-container">
-                    <h2 class="product-name">{{ producto.nombre }}</h2>
-                    <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/default.png' %}{% endif %}" class="product-img" alt="{{ producto.nombre }}">
-                    <p class="product-price">Precio: {{ producto.precio }} €/mes</p>
+    <div class="product-list">
+        {% for producto in productos %}
+            <div class="product-item product-container">
+                <h2 class="product-name">{{ producto.nombre }}</h2>
+                <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/default.png' %}{% endif %}" class="product-img" alt="{{ producto.nombre }}">
+                <p class="product-description">{{ producto.descripcion }}</p>
+                <p class="product-price">Precio: {{ producto.precio }} €/mes</p>
 
-                    <label for="duracion_{{ producto.id }}">Duración de la suscripción:</label>
-                    <select name="duraciones[]" id="duracion_{{ producto.id }}" required>
-                        <option value="">-- Elegir duración --</option>
-                        <option value="3">3 meses</option>
-                        <option value="6">6 meses</option>
-                        <option value="12">12 meses</option>
-                    </select>
+                <label for="duracion_{{ producto.id }}">Duración de la suscripción:</label>
+                <select name="duraciones[]" id="duracion_{{ producto.id }}" required>
+                    <option value="">-- Elegir duración --</option>
+                    <option value="3">3 meses</option>
+                    <option value="6">6 meses</option>
+                    <option value="12">12 meses</option>
+                </select>
 
-                    <input type="hidden" name="productos[]" value="{{ producto.id }}">
-                </div>
-            {% endfor %}
-        </div>
+                <input type="hidden" name="productos[]" value="{{ producto.id }}">
+            </div>
+        {% endfor %}
+    </div>
 
-        <button type="submit" class="btn-buy">Suscribirse</button>
-    </form>
+    <!-- 🔗 Asociación a mascota -->
+    <div class="asociar-mascota-section">
+        <label for="asociar_mascota">¿Deseas asociar esta suscripción a una mascota?</label>
+        <select id="asociar_mascota" name="asociar_mascota" onchange="toggleSelectorMascota()" class="form-control">
+            <option value="no">No</option>
+            <option value="si">Sí</option>
+        </select>
+    </div>
+
+    <div id="selector-mascota" style="display: none;" class="form-group">
+        {% if user.mascotas.all %}
+            <label for="mascota_id">Selecciona tu mascota:</label>
+            <select name="mascota_id" id="mascota_id" class="form-control">
+                {% for mascota in user.mascotas.all %}
+                    <option value="{{ mascota.id }}">{{ mascota.nombre }} ({{ mascota.especie }})</option>
+                {% endfor %}
+            </select>
+        {% else %}
+            <p class="alert alert-warning">
+                ⚠️ No tienes mascotas registradas. <a href="{% url 'agregar_mascota' %}">Registra una desde tu perfil</a>.
+            </p>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn-buy">Suscribirse</button>
+</form>
+
+<script>
+    function toggleSelectorMascota() {
+        const select = document.getElementById("asociar_mascota");
+        const div = document.getElementById("selector-mascota");
+        div.style.display = select.value === "si" ? "block" : "none";
+    }
+</script>
+
 </section>
 {% endblock %}

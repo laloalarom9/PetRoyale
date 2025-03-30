@@ -9,6 +9,14 @@ from mi_proyecto.views import lista_productos, agregar_producto, editar_producto
 from mi_proyecto import views
 from mi_proyecto.views import lista_productos, agregar_producto, editar_producto, eliminar_producto
 from mi_proyecto.views import checkout, procesar_compra  # ✅ Asegúrate de importar procesar_compra
+from mi_proyecto.views import (
+    inicio,
+    editar_perfil,
+    eliminar_cuenta,
+    agregar_mascota,        # Asegúrate de tener estas también
+    editar_mascota,         # ⬅️ ESTA es la que falta
+    eliminar_mascota,
+)
 
 
 urlpatterns = [
@@ -61,6 +69,12 @@ urlpatterns = [
     path("suscripciones/", views.suscripciones, name="suscripciones"),
     path("suscripciones/seleccionar/", views.seleccionar_suscripcion, name="seleccionar_suscripcion"),
     path("suscripcion/agregar/", views.agregar_suscripcion_al_carrito, name="agregar_suscripcion_al_carrito"),
+    path('suscripciones/gestionar/', views.gestionar_suscripcion, name='gestionar_suscripcion'),
+    path("suscripciones/cancelar/<int:pedido_id>/", views.cancelar_suscripcion, name="cancelar_suscripcion"),
+    path("suscripciones/reactivar/<int:pedido_id>/", views.reactivar_suscripcion, name="reactivar_suscripcion"),
+    path("perfil/mascota/editar/<int:pk>/", editar_mascota, name="editar_mascota"),
+    path("perfil/mascota/eliminar/<int:pk>/", eliminar_mascota, name="eliminar_mascota"),
+    path("perfil/mascota/agregar/", agregar_mascota, name="agregar_mascota"),
 
 ]
 

@@ -9,34 +9,14 @@
     
     <form method="POST" action="{% url 'perfil' %}">
         {% csrf_token %}
-        
-        <!-- Información del usuario -->
         <div class="profile-info">
             <table class="profile-table">
-                <tr>
-                    <th>Nombre de Usuario:</th>
-                    <td><input type="text" value="{{ user.username }}" class="form-control" disabled></td>
-                </tr>
-                <tr>
-                    <th>Correo Electrónico:</th>
-                    <td><input type="email" name="email" value="{{ user.email|default:'' }}" class="form-control" required></td>
-                </tr>
-                <tr>
-                    <th>Nombre:</th>
-                    <td><input type="text" name="first_name" value="{{ user.first_name|default:'' }}" class="form-control"></td>
-                </tr>
-                <tr>
-                    <th>Primer Apellido:</th>
-                    <td><input type="text" name="last_name" value="{{ user.last_name|default:'' }}" class="form-control"></td>
-                </tr>
-                <tr>
-                    <th>Segundo Apellido:</th>
-                    <td><input type="text" name="apellido2" value="{{ user.apellido2|default:'' }}" class="form-control"></td>
-                </tr>
-                <tr>
-                    <th>Número de Teléfono:</th>
-                    <td><input type="text" name="num_tel" value="{{ user.num_tel|default:'' }}" class="form-control"></td>
-                </tr>
+                <tr><th>Nombre de Usuario:</th><td><input type="text" value="{{ user.username }}" class="form-control" disabled></td></tr>
+                <tr><th>Correo Electrónico:</th><td><input type="email" name="email" value="{{ user.email|default:'' }}" class="form-control" required></td></tr>
+                <tr><th>Nombre:</th><td><input type="text" name="first_name" value="{{ user.first_name|default:'' }}" class="form-control"></td></tr>
+                <tr><th>Primer Apellido:</th><td><input type="text" name="last_name" value="{{ user.last_name|default:'' }}" class="form-control"></td></tr>
+                <tr><th>Segundo Apellido:</th><td><input type="text" name="apellido2" value="{{ user.apellido2|default:'' }}" class="form-control"></td></tr>
+                <tr><th>Número de Teléfono:</th><td><input type="text" name="num_tel" value="{{ user.num_tel|default:'' }}" class="form-control"></td></tr>
                 <tr>
                     <th>Género:</th>
                     <td>
@@ -48,12 +28,76 @@
                 </tr>
             </table>
         </div>
-
-        <!-- Botones de acciones -->
         <div class="profile-actions">
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
             <a href="{% url 'eliminar_cuenta' %}" class="btn btn-danger">Eliminar Cuenta</a>
         </div>
     </form>
+
+    <!-- 🐾 Sección de mascotas -->
+    <div class="mascotas-section">
+        <h2 class="mascotas-title">🐾 Mis Mascotas</h2>
+
+        {% if user.mascotas.all %}
+        <div class="mascotas-grid">
+            {% for mascota in user.mascotas.all %}
+            <div class="mascota-card">
+                <img src="{{ mascota.get_foto_url }}" alt="{{ mascota.nombre }}" class="mascota-foto">
+                <h4>{{ mascota.nombre }}</h4>
+                <p>{{ mascota.especie|title }}{% if mascota.raza %} - {{ mascota.raza }}{% endif %}</p>
+                {% if mascota.fecha_nacimiento %}
+                    <p>Nacido el {{ mascota.fecha_nacimiento|date:"d/m/Y" }}</p>
+                {% endif %}
+
+                <div class="mascota-actions">
+                    <a href="{% url 'editar_mascota' mascota.id %}" class="btn-editar">✏️ Editar</a>
+                    <form method="POST" action="{% url 'eliminar_mascota' mascota.id %}" class="form-eliminar" data-id="{{ mascota.id }}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-eliminar">🗑️ Eliminar</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p class="no-mascotas">No has registrado ninguna mascota aún.</p>
+        {% endif %}
+
+        <div class="mascota-add-btn">
+            <a href="{% url 'agregar_mascota' %}" class="btn btn-success">➕ Añadir Mascota</a>
+        </div>
+    </div>
 </div>
+
+<!-- Modal personalizado -->
+<div id="modal-eliminar" class="modal">
+    <div class="modal-contenido">
+        <h2>¿Estás seguro?</h2>
+        <p>¿Seguro que deseas eliminar esta mascota?</p>
+        <div class="modal-botones">
+            <button id="cancelarModal" class="btn-cancelar-modal">Cancelar</button>
+            <button id="confirmarModal" class="btn-confirmar-modal">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let formSeleccionado = null;
+
+    document.querySelectorAll('.form-eliminar').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            formSeleccionado = form;
+            document.getElementById('modal-eliminar').style.display = 'flex';
+        });
+    });
+
+    document.getElementById('cancelarModal').addEventListener('click', () => {
+        document.getElementById('modal-eliminar').style.display = 'none';
+    });
+
+    document.getElementById('confirmarModal').addEventListener('click', () => {
+        if (formSeleccionado) formSeleccionado.submit();
+    });
+</script>
 {% endblock %}

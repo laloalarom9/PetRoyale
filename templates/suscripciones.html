@@ -6,7 +6,13 @@
 {% block content %}
 <section class="subscription-section">
     <h1 class="store-title">Elige tus productos de suscripción</h1>
+    {% if tiene_suscripcion %}
+    <a href="{% url 'gestionar_suscripcion' %}" class="btn-gestionar-suscripcion">
+        🛠️ Gestionar mi suscripción
+    </a>
+    {% endif %}
 
+    
     <!-- Cambiado el método a GET -->
     <form method="GET" action="{% url 'seleccionar_suscripcion' %}" class="subscription-form">
         {% csrf_token %}
@@ -22,7 +28,31 @@
                 </div>
             {% endfor %}
         </div>
+    
+        <!-- 💡 Aquí va el mensaje de error -->
+        <div id="mensaje-error" class="mensaje-error" style="display: none;">
+            ⚠️ Por favor, selecciona al menos un producto antes de continuar con la suscripción.
+        </div>
+    
         <button type="submit" class="btn-buy">Suscribirse</button>
     </form>
+    
+
+    <!-- 💡 JavaScript después del formulario -->
+    <script>
+        document.querySelector('.subscription-form').addEventListener('submit', function(event) {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            const algunoSeleccionado = Array.from(checkboxes).some(checkbox => checkbox.checked);
+    
+            const mensaje = document.getElementById('mensaje-error');
+            if (!algunoSeleccionado) {
+                event.preventDefault();
+                mensaje.style.display = 'block';
+            } else {
+                mensaje.style.display = 'none';
+            }
+        });
+    </script>
+    
 </section>
 {% endblock %}

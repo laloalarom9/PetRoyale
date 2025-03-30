@@ -655,40 +655,60 @@ def procesar_compra(request):
         messages.error(request, "Tu carrito está vacío.")
         return redirect("carrito")
     #Si es suscripcion
-    if carrito.get("tipo") == "suscripcion":
-        try:
-            producto = Producto.objects.get(id=carrito["producto_id"])
-            duracion = int(carrito["duracion"])
-            total = Decimal(producto.precio) * duracion
-            iva = (total * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-            total_con_iva = (total + iva).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+# ✅ Verificar si el carrito contiene alguna suscripción
+    suscripciones = [datos for datos in carrito.values() if isinstance(datos, dict) and datos.get("tipo") == "suscripcion"]
 
-            pedido = Pedido.objects.create(
-                usuario=request.user,
-                numero_pedido=f"SUS-{now().strftime('%Y%m%d%H%M%S')}",
-                fecha_pedido=now(),
-                total=total,
-                iva=iva,
-                total_con_iva=total_con_iva,
-                estado="pendiente"
-            )
+    if suscripciones:
+        for datos in suscripciones:
+            try:
+                producto = Producto.objects.get(id=datos["producto_id"])
+                duracion = int(datos["duracion"])
+                total = Decimal(producto.precio) * duracion
+                iva = (total * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                total_con_iva = (total + iva).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
-            DetallePedido.objects.create(
-                pedido=pedido,
-                producto=producto,
-                cantidad=duracion,
-                precio_unitario=producto.precio
-            )
+                mascota_id = datos.get("mascota_id")
+                mascota = Mascota.objects.filter(id=mascota_id, propietario=request.user).first() if mascota_id else None
 
-            request.session["carrito"] = {}
-            return render(request, "confirmacion_compra.html", {
-                "numero_pedido": pedido.numero_pedido,
-                "total_con_iva": total_con_iva
-            })
+                pedido = Pedido.objects.create(
+                    usuario=request.user,
+                    numero_pedido=f"SUS-{now().strftime('%Y%m%d%H%M%S')}",
+                    fecha_pedido=now(),
+                    total=total,
+                    iva=iva,
+                    total_con_iva=total_con_iva,
+                    estado="pendiente",
+                    es_suscripcion=True,
+                    estado_suscripcion="activa",
+                    mascota=mascota,  # ⬅️ Se asocia aquí
+                )
+                mascota = None
+                mascota_id = datos.get("mascota_id")
+                if mascota_id:
+                    try:
+                        mascota = Mascota.objects.get(id=mascota_id, propietario=request.user)
+                    except Mascota.DoesNotExist:
+                        mascota = None  # Por si acaso
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    producto=producto,
+                    cantidad=duracion,
+                    precio_unitario=producto.precio
+                )
 
-        except Producto.DoesNotExist:
-            messages.error(request, "Producto no encontrado para la suscripción.")
-            return redirect("carrito")
+            except Producto.DoesNotExist:
+                messages.error(request, "Producto no encontrado para la suscripción.")
+                return redirect("carrito")
+
+        # 🧼 Vaciar el carrito tras procesar suscripciones
+        request.session["carrito"] = {}
+
+        # ✅ Redirigir a confirmación
+        return render(request, "confirmacion_compra.html", {
+            "numero_pedido": pedido.numero_pedido,
+            "total_con_iva": total_con_iva
+        })
+
 
     
     usuario = request.user
@@ -856,10 +876,23 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Producto
 from django.contrib.auth.decorators import login_required
 
+from .models import Pedido, DetallePedido
+
 @login_required
 def suscripciones(request):
     productos = Producto.objects.all()
-    return render(request, "suscripciones.html", {"productos": productos})
+
+    # ✅ Verifica si el usuario tiene alguna suscripción (número de pedido que empieza con 'SUS-')
+    tiene_suscripcion = DetallePedido.objects.filter(
+        pedido__usuario=request.user,
+        pedido__numero_pedido__startswith="SUS-"
+    ).exists()
+
+    return render(request, "suscripciones.html", {
+        "productos": productos,
+        "tiene_suscripcion": tiene_suscripcion,
+    })
+
 
 @login_required
 def seleccionar_suscripcion(request):
@@ -869,11 +902,11 @@ def seleccionar_suscripcion(request):
     return render(request, "seleccionar_suscripcion.html", {"productos": productos})
 
 @login_required
-
 def agregar_suscripcion_al_carrito(request):
     if request.method == "POST":
         productos = request.POST.getlist("productos[]")
         duraciones = request.POST.getlist("duraciones[]")
+        mascota_id = request.POST.get("mascota_id") if request.POST.get("asociar_mascota") == "si" else None
 
         carrito = request.session.get("carrito", {})
 
@@ -881,19 +914,17 @@ def agregar_suscripcion_al_carrito(request):
             try:
                 producto = Producto.objects.get(id=producto_id)
                 clave = f"suscripcion-{producto_id}-{duracion}"
-                if clave in carrito:
-                    carrito[clave]["cantidad"] += 1
-                else:
-                    carrito[clave] = {
-                        "tipo": "suscripcion",
-                        "producto_id": producto.id,
-                        "nombre": producto.nombre,
-                        "precio": float(producto.precio),
-                        "duracion": int(duracion),
-                        "cantidad": 1,
-                    }
+                carrito[clave] = {
+                    "tipo": "suscripcion",
+                    "producto_id": producto.id,
+                    "nombre": producto.nombre,
+                    "precio": float(producto.precio),
+                    "duracion": int(duracion),
+                    "cantidad": 1,
+                    "mascota_id": mascota_id,  # ✅ Aquí guardamos el id
+                }
             except Producto.DoesNotExist:
-                continue  # Si el producto no existe, lo omitimos
+                continue
 
         request.session["carrito"] = carrito
         return redirect("checkout")
@@ -901,3 +932,115 @@ def agregar_suscripcion_al_carrito(request):
         return redirect("suscripciones")
 
 
+from django.contrib.auth.decorators import login_required
+from .models import Pedido, DetallePedido
+
+@login_required
+def gestionar_suscripcion(request):
+    pedidos = Pedido.objects.filter(
+        usuario=request.user,
+        es_suscripcion=True
+    ).order_by("-fecha_pedido")
+
+    detalles = []
+    for pedido in pedidos:
+        detalles_por_pedido = DetallePedido.objects.filter(pedido=pedido)
+        detalles.append({
+            "pedido": pedido,
+            "detalles": detalles_por_pedido
+        })
+
+    return render(request, "gestionar_suscripcion.html", {"suscripciones": detalles})
+
+@login_required
+def cancelar_suscripcion(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user)
+    pedido.estado_suscripcion = "pendiente_cancelacion"
+    pedido.save()
+    messages.success(request, "Suscripción marcada como pendiente de cancelación.")
+    return redirect("gestionar_suscripcion")
+
+@login_required
+def reactivar_suscripcion(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user)
+    pedido.estado_suscripcion = "activa"
+    pedido.save()
+    messages.success(request, "Suscripción reactivada.")
+    return redirect("gestionar_suscripcion")
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from .forms import MascotaForm
+from django.contrib import messages
+
+@login_required
+def agregar_mascota(request):
+    if request.method == "POST":
+        form = MascotaForm(request.POST, request.FILES)  # 👈 request.FILES es clave para subir imágenes
+        if form.is_valid():
+            mascota = form.save(commit=False)
+            mascota.propietario = request.user
+            mascota.save()
+            messages.success(request, "🐾 Mascota añadida correctamente.")
+            return redirect("perfil")  # o a donde quieras redirigir
+    else:
+        form = MascotaForm()
+    
+    return render(request, "perfil/mascotas/agregar_mascota.html", {"form": form})
+
+
+from django.shortcuts import get_object_or_404, redirect, render
+from .forms import MascotaForm
+from django.contrib.auth.decorators import login_required
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Mascota
+from .forms import MascotaForm
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def editar_mascota(request, pk):  # 👈 Asegúrate de incluir pk aquí
+    mascota = get_object_or_404(Mascota, pk=pk, propietario=request.user)
+
+    if request.method == "POST":
+        form = MascotaForm(request.POST, request.FILES, instance=mascota)
+        if form.is_valid():
+            form.save()
+            return redirect("perfil")
+    else:
+        form = MascotaForm(instance=mascota)
+
+    return render(request, "editar_mascota.html", {"form": form, "mascota": mascota})
+
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Mascota
+
+@login_required
+def eliminar_mascota(request, pk):
+    mascota = get_object_or_404(Mascota, pk=pk, propietario=request.user)
+    mascota.delete()
+    return redirect('perfil')
+
+from django.shortcuts import render, redirect
+from .forms import MascotaForm
+from django.contrib.auth.decorators import login_required
+
+from django.shortcuts import redirect
+
+from django.shortcuts import render, redirect
+from .forms import MascotaForm
+
+def agregar_mascota(request):
+    if request.method == "POST":
+        form = MascotaForm(request.POST, request.FILES)
+        if form.is_valid():
+            mascota = form.save(commit=False)
+            mascota.propietario = request.user
+            mascota.save()
+            return redirect("perfil")  # ✅ Esto debe ejecutarse si el formulario es válido
+    else:
+        form = MascotaForm()
+    
+    return render(request, "agregar_mascota.html", {"form": form})

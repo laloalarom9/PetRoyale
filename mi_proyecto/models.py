@@ -4,6 +4,7 @@ from django.db import models
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.apps import apps
+from django.conf import settings
 
 
 class CustomUser(AbstractUser):
@@ -125,14 +126,30 @@ class Pedido(models.Model):
         ("entregado", "Entregado"),
     ]
 
+    ESTADOS_SUSCRIPCION = [
+        ("activa", "Activa"),
+        ("pendiente_cancelacion", "Pendiente de cancelación"),
+    ]
+
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name="pedidos")
     numero_pedido = models.CharField(max_length=30, unique=True)
     fecha_pedido = models.DateTimeField(default=now)
     total = models.DecimalField(max_digits=10, decimal_places=2)
-    iva = models.DecimalField(max_digits=10, decimal_places=2)  # ✅ CONFIRMAR QUE EXISTE
+    iva = models.DecimalField(max_digits=10, decimal_places=2)
     total_con_iva = models.DecimalField(max_digits=10, decimal_places=2)
     estado = models.CharField(max_length=30, choices=ESTADOS_PEDIDO, default="pendiente")
 
+    es_suscripcion = models.BooleanField(default=False)
+    estado_suscripcion = models.CharField(max_length=30, choices=ESTADOS_SUSCRIPCION, default="activa")
+
+    # 👇 NUEVO: mascota vinculada a la suscripción
+    mascota = models.ForeignKey(
+        "Mascota",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="suscripciones"
+    )
     def __str__(self):
         return f"Pedido {self.numero_pedido} - {self.usuario.username}"
 
@@ -158,3 +175,32 @@ class Reseña(models.Model):
 
     def __str__(self):
         return f"Reseña para {self.producto.nombre} - {self.valoracion}★"
+
+
+
+class Mascota(models.Model):
+    ESPECIES = [
+        ("perro", "Perro"),
+        ("gato", "Gato"),
+        ("otro", "Otro"),
+    ]
+
+    nombre = models.CharField(max_length=100)
+    especie = models.CharField(max_length=20, choices=ESPECIES)
+    raza = models.CharField(max_length=100, blank=True, null=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
+    foto = models.ImageField(upload_to="mascotas/", blank=True, null=True)  # Nueva imagen opcional
+    propietario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="mascotas")
+
+    def get_foto_url(self):
+        if self.foto:
+            return self.foto.url
+        if self.especie == "perro":
+            return "/static/img/defaults/perro.png"
+        elif self.especie == "gato":
+            return "/static/img/defaults/gato.png"
+        else:
+            return "/static/img/defaults/otro.png"
+
+    def __str__(self):
+        return f"{self.nombre} ({self.especie})"

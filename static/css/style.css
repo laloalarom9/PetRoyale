@@ -1111,6 +1111,177 @@
     }
 }
 
+/* 🐾 Estilo para la sección de mascotas en el perfil */
+.mascotas-section {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.mascotas-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.mascotas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    justify-items: center;
+}
+
+.mascota-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    width: 100%;
+    max-width: 250px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.mascota-card:hover {
+    transform: translateY(-3px);
+}
+
+.mascota-foto {
+    width: 100%;
+    height: auto;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.mascota-card h4 {
+    margin: 10px 0 5px;
+    font-size: 20px;
+    color: #333;
+}
+
+.mascota-card p {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+}
+
+.no-mascotas {
+    text-align: center;
+    color: #888;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+.mascota-add-btn {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.btn-editar, .btn-eliminar {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-editar {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-editar:hover {
+    background-color: #2980b9;
+}
+
+.btn-eliminar {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-eliminar:hover {
+    background-color: #c0392b;
+}
+
+/* 📱 Responsive ajustes para móviles */
+@media screen and (max-width: 600px) {
+    .mascota-card {
+        padding: 10px;
+    }
+
+    .mascota-card h4 {
+        font-size: 18px;
+    }
+
+    .mascota-foto {
+        max-height: 150px;
+    }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-contenido {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.25);
+}
+
+.modal-botones {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.btn-cancelar-modal {
+    background-color: #ccc;
+    color: #333;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-confirmar-modal {
+    background-color: #e84141;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-cancelar-modal:hover {
+    background-color: #bbb;
+}
+
+.btn-confirmar-modal:hover {
+    background-color: #c0392b;
+}
+
 
 /*FIN PAGINA PERFIL------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -2541,6 +2712,32 @@ p {
     border: 2px solid #ff9800;
     background-color: #f5f5f5;
 }
+.mensaje-error {
+    background-color: #ffe5e5;
+    border: 1px solid #cc0000;
+    color: #990000;
+    padding: 1em;
+    margin: 1em auto;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    max-width: 90%;
+    box-sizing: border-box;
+}
+.btn-gestionar-suscripcion {
+    display: inline-block;
+    background-color: #ffcc00;
+    color: #333;
+    padding: 0.75em 1.5em;
+    font-weight: bold;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-bottom: 1em;
+}
+.btn-gestionar-suscripcion:hover {
+    background-color: #ffb700;
+}
+
 
 /* Ajuste para asegurar la visibilidad de los checkboxes */
 .checkbox-input {
@@ -2812,6 +3009,12 @@ p {
     border-radius: 6px;
     width: 60%;
 }
+.product-description {
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0;
+    text-align: justify;
+}
 
 .btn-buy {
     margin-top: 1rem;
@@ -2846,3 +3049,269 @@ p {
 /*--------------------------------------*/
 /* Fin de Seleccionar Suscripcion  */
 /*--------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*INICIO GESTIÓN DE SUSCRIPCIONES -------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+.mascota-suscripcion {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f0f8ff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mascota-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mascota-miniatura {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+}
+
+.mascota-no-asociada {
+    font-style: italic;
+    color: #999;
+}
+
+.suscripcion-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 30px 40px;
+    margin: 20px auto;
+    border-radius: 15px;
+    max-width: 1000px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.suscripcion-card h3 {
+    font-size: 26px;
+    color: #1e2a3a;
+    margin-bottom: 10px;
+}
+
+.suscripcion-card p {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.estado-suscripcion {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.estado-activa {
+    color: green;
+}
+
+.estado-pendiente {
+    color: red;
+}
+
+.btn-cancelar,
+.btn-reactivar {
+    margin-top: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease-in-out;
+}
+
+.btn-cancelar {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.btn-cancelar:hover {
+    background-color: #e84141;
+    transform: scale(1.03);
+}
+
+.btn-reactivar {
+    background-color: #4cd137;
+    color: white;
+}
+
+.btn-reactivar:hover {
+    background-color: #44bd32;
+    transform: scale(1.03);
+}
+
+/* Responsive: Tablets */
+@media screen and (max-width: 768px) {
+    .suscripcion-card {
+        padding: 20px;
+        font-size: 16px;
+    }
+
+    .suscripcion-card h3 {
+        font-size: 22px;
+    }
+
+    .btn-cancelar,
+    .btn-reactivar {
+        font-size: 15px;
+        padding: 10px 18px;
+    }
+}
+
+/* Responsive: Móviles */
+@media screen and (max-width: 480px) {
+    .suscripcion-card {
+        padding: 15px;
+        font-size: 15px;
+    }
+
+    .suscripcion-card h3 {
+        font-size: 20px;
+    }
+
+    .btn-cancelar,
+    .btn-reactivar {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*FIN GESTIÓN DE SUSCRIPCIONES--------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*INICIO EDITAR MASCOTA--------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+.mascota-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-editar {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-editar:hover {
+    background-color: #2980b9;
+}
+
+.btn-eliminar {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-eliminar:hover {
+    background-color: #c0392b;
+}
+
+/* Contenedor general del formulario */
+.form-container {
+    max-width: 600px;
+    margin: 100px auto 40px auto; /* margen superior para no tapar con navbar */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Título del formulario */
+.form-container h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 25px;
+}
+
+/* Campos del formulario */
+.form-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Inputs y selects */
+.form-container input,
+.form-container select,
+.form-container textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+/* Botones */
+.form-container .btn {
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.form-container .btn-primary {
+    background-color: #27ae60;
+    color: white;
+}
+
+.form-container .btn-primary:hover {
+    background-color: #219150;
+}
+
+.form-container .btn-secondary {
+    background-color: #bdc3c7;
+    color: #2c3e50;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.form-container .btn-secondary:hover {
+    background-color: #95a5a6;
+}
+
+/* Responsive para móviles */
+@media screen and (max-width: 600px) {
+    .form-container {
+        padding: 20px;
+        margin-top: 110px;
+    }
+
+    .form-container h2 {
+        font-size: 22px;
+    }
+
+    .form-container .btn {
+        font-size: 15px;
+    }
+}
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*FIN EDITAR MASCOTA--------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
