@@ -79,55 +79,74 @@
 <section class="gestion-suscripcion gestion-suscripcion-wrapper">
     <h1>🛠️ Gestión de tus suscripciones</h1>
 
-    {% if suscripciones %}
-        {% for item in suscripciones %}
+    {% for item in suscripciones %}
         {% if item.pedido.mascota %}
-    <div class="mascota-suscripcion">
-        <p>🐾 Mascota asociada:</p>
-        <div class="mascota-info">
-            <img src="{{ item.pedido.mascota.get_foto_url }}" alt="{{ item.pedido.mascota.nombre }}" class="mascota-miniatura">
-            <span>{{ item.pedido.mascota.nombre }}</span>
-        </div>
-    </div>
-{% else %}
-    <p class="mascota-no-asociada">⚠️ No hay mascota asociada.</p>
-{% endif %}
-
-            <div class="suscripcion-card">
-                <h3>Pedido: {{ item.pedido.numero_pedido }}</h3>
-                <p>Fecha de inicio: {{ item.pedido.fecha_pedido|date:"d/m/Y" }}</p>
-
-                {% for detalle in item.detalles %}
-                    <p><strong>Producto:</strong> {{ detalle.producto.nombre }}</p>
-                    <p><strong>Duración:</strong> {{ detalle.cantidad }} mes(es)</p>
-                {% endfor %}
-
-                {% if item.pedido.estado_suscripcion == "activa" %}
-                    <p class="estado-suscripcion estado-activa">🟢 Estado: Activa</p>
-                    <form id="form-cancelar-{{ item.pedido.id }}" method="POST" action="{% url 'cancelar_suscripcion' item.pedido.id %}">
-                        {% csrf_token %}
-                        <button type="button" class="btn-cancelar" onclick="abrirModalConfirmacion(
-                            'Cancelar suscripción',
-                            '¿Deseas cancelar esta suscripción?',
-                            'form-cancelar-{{ item.pedido.id }}'
-                        )">Cancelar suscripción</button>
-                    </form>
-                {% elif item.pedido.estado_suscripcion == "pendiente_cancelacion" %}
-                    <p class="estado-suscripcion estado-pendiente">🔴 Estado: Pendiente de cancelación</p>
-                    <form id="form-reactivar-{{ item.pedido.id }}" method="POST" action="{% url 'reactivar_suscripcion' item.pedido.id %}">
-                        {% csrf_token %}
-                        <button type="button" class="btn-reactivar" onclick="abrirModalConfirmacion(
-                            'Reactivar suscripción',
-                            '¿Deseas reactivar esta suscripción?',
-                            'form-reactivar-{{ item.pedido.id }}'
-                        )">Reactivar suscripción</button>
-                    </form>
-                {% endif %}
+        <div class="mascota-suscripcion">
+            <p>🐾 Mascota asociada:</p>
+            <div class="mascota-info">
+                <img src="{{ item.pedido.mascota.get_foto_url }}" alt="{{ item.pedido.mascota.nombre }}" class="mascota-miniatura">
+                <span>{{ item.pedido.mascota.nombre }}</span>
             </div>
-        {% endfor %}
-    {% else %}
+        </div>
+        <form method="POST" action="{% url 'desvincular_mascota' item.pedido.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-cancelar btn-sm">❌ Desvincular mascota</button>
+        </form>
+        {% else %}
+        <p class="mascota-no-asociada">⚠️ No hay mascota asociada.</p>
+        {% endif %}
+
+        {% if mascotas %}
+        <form method="POST" action="{% url 'cambiar_mascota' item.pedido.id %}" style="margin-top: 10px;">
+            {% csrf_token %}
+            <label for="nueva_mascota_id">Cambiar o vincular mascota:</label>
+            <select name="nueva_mascota_id" required>
+                <option value="">-- Selecciona una mascota --</option>
+                {% for mascota in mascotas %}
+                    <option value="{{ mascota.id }}">{{ mascota.nombre }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-sm">Guardar</button>
+        </form>
+        {% else %}
+        <p class="mascota-no-asociada">🐾 Aún no tienes mascotas registradas.</p>
+        <a href="{% url 'agregar_mascota' %}" class="btn btn-sm btn-primary">Registrar una mascota</a>
+        {% endif %}
+
+        <div class="suscripcion-card">
+            <h3>Pedido: {{ item.pedido.numero_pedido }}</h3>
+            <p>Fecha de inicio: {{ item.pedido.fecha_pedido|date:"d/m/Y" }}</p>
+
+            {% for detalle in item.detalles %}
+                <p><strong>Producto:</strong> {{ detalle.producto.nombre }}</p>
+                <p><strong>Duración:</strong> {{ detalle.cantidad }} mes(es)</p>
+            {% endfor %}
+
+            {% if item.pedido.estado_suscripcion == "activa" %}
+                <p class="estado-suscripcion estado-activa">🟢 Estado: Activa</p>
+                <form id="form-cancelar-{{ item.pedido.id }}" method="POST" action="{% url 'cancelar_suscripcion' item.pedido.id %}">
+                    {% csrf_token %}
+                    <button type="button" class="btn-cancelar" onclick="abrirModalConfirmacion(
+                        'Cancelar suscripción',
+                        '¿Deseas cancelar esta suscripción?',
+                        'form-cancelar-{{ item.pedido.id }}'
+                    )">Cancelar suscripción</button>
+                </form>
+            {% elif item.pedido.estado_suscripcion == "pendiente_cancelacion" %}
+                <p class="estado-suscripcion estado-pendiente">🔴 Estado: Pendiente de cancelación</p>
+                <form id="form-reactivar-{{ item.pedido.id }}" method="POST" action="{% url 'reactivar_suscripcion' item.pedido.id %}">
+                    {% csrf_token %}
+                    <button type="button" class="btn-reactivar" onclick="abrirModalConfirmacion(
+                        'Reactivar suscripción',
+                        '¿Deseas reactivar esta suscripción?',
+                        'form-reactivar-{{ item.pedido.id }}'
+                    )">Reactivar suscripción</button>
+                </form>
+            {% endif %}
+        </div>
+    {% empty %}
         <p>No tienes suscripciones activas.</p>
-    {% endif %}
+    {% endfor %}
 </section>
 
 <!-- ✅ Modal de confirmación -->

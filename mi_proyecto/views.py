@@ -896,17 +896,22 @@ def suscripciones(request):
 
 @login_required
 def seleccionar_suscripcion(request):
-    # Obtener los IDs de los productos seleccionados
     producto_ids = request.GET.getlist("producto_id")
     productos = Producto.objects.filter(id__in=producto_ids)
-    return render(request, "seleccionar_suscripcion.html", {"productos": productos})
+    mascotas = Mascota.objects.filter(propietario=request.user)  # 🔹 Obtener mascotas del usuario
+
+    return render(request, "seleccionar_suscripcion.html", {
+        "productos": productos,
+        "mascotas": mascotas,
+    })
 
 @login_required
 def agregar_suscripcion_al_carrito(request):
     if request.method == "POST":
         productos = request.POST.getlist("productos[]")
         duraciones = request.POST.getlist("duraciones[]")
-        mascota_id = request.POST.get("mascota_id") if request.POST.get("asociar_mascota") == "si" else None
+        asociar_mascota = request.POST.get("asociar_mascota")
+        mascota_id = request.POST.get("mascota_id") if asociar_mascota == "si" else None
 
         carrito = request.session.get("carrito", {})
 
@@ -914,15 +919,18 @@ def agregar_suscripcion_al_carrito(request):
             try:
                 producto = Producto.objects.get(id=producto_id)
                 clave = f"suscripcion-{producto_id}-{duracion}"
-                carrito[clave] = {
-                    "tipo": "suscripcion",
-                    "producto_id": producto.id,
-                    "nombre": producto.nombre,
-                    "precio": float(producto.precio),
-                    "duracion": int(duracion),
-                    "cantidad": 1,
-                    "mascota_id": mascota_id,  # ✅ Aquí guardamos el id
-                }
+                if clave in carrito:
+                    carrito[clave]["cantidad"] += 1
+                else:
+                    carrito[clave] = {
+                        "tipo": "suscripcion",
+                        "producto_id": producto.id,
+                        "nombre": producto.nombre,
+                        "precio": float(producto.precio),
+                        "duracion": int(duracion),
+                        "cantidad": 1,
+                        "mascota_id": mascota_id,  # 👈 ✅ ¡Aquí se guarda!
+                    }
             except Producto.DoesNotExist:
                 continue
 
@@ -950,7 +958,12 @@ def gestionar_suscripcion(request):
             "detalles": detalles_por_pedido
         })
 
-    return render(request, "gestionar_suscripcion.html", {"suscripciones": detalles})
+    mascotas = Mascota.objects.filter(propietario=request.user)
+
+    return render(request, "gestionar_suscripcion.html", {
+        "suscripciones": detalles,
+        "mascotas": mascotas,  # 👈 Añadimos esto para el formulario en el template
+    })
 
 @login_required
 def cancelar_suscripcion(request, pedido_id):
@@ -1044,3 +1057,34 @@ def agregar_mascota(request):
         form = MascotaForm()
     
     return render(request, "agregar_mascota.html", {"form": form})
+
+
+@login_required
+def desvincular_mascota(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user)
+
+    if pedido.es_suscripcion and pedido.mascota:
+        pedido.mascota = None
+        pedido.save()
+        messages.success(request, "Mascota desvinculada correctamente.")
+
+    return redirect("gestionar_suscripcion")
+
+@login_required
+def cambiar_mascota(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user)
+
+    if request.method == "POST":
+        mascota_id = request.POST.get("nueva_mascota_id")
+        if mascota_id:
+            try:
+                mascota = Mascota.objects.get(id=mascota_id, propietario=request.user)
+                pedido.mascota = mascota
+                pedido.save()
+                messages.success(request, "Mascota actualizada correctamente.")
+            except Mascota.DoesNotExist:
+                messages.error(request, "La mascota seleccionada no existe o no te pertenece.")
+        else:
+            messages.error(request, "Selecciona una mascota válida.")
+
+    return redirect("gestionar_suscripcion")

@@ -58,7 +58,8 @@ urlpatterns = [
     path('carrito/agregar/<int:producto_id>/', views.agregar_al_carrito, name='agregar_al_carrito'),  # ✅ Asegurar que existe esta URL
     path("checkout/procesar/", views.procesar_compra, name="procesar_compra"),
     path("confirmar_compra/", procesar_compra, name="confirmar_compra"),  # ✅ Agregar esta línea
-   
+    path("cambiar-mascota/<int:pedido_id>/", views.cambiar_mascota, name="cambiar_mascota"),
+
 
    
     #Reseñas
@@ -75,6 +76,7 @@ urlpatterns = [
     path("perfil/mascota/editar/<int:pk>/", editar_mascota, name="editar_mascota"),
     path("perfil/mascota/eliminar/<int:pk>/", eliminar_mascota, name="eliminar_mascota"),
     path("perfil/mascota/agregar/", agregar_mascota, name="agregar_mascota"),
+    path("desvincular-mascota/<int:pedido_id>/", views.desvincular_mascota, name="desvincular_mascota"),
 
 ]
 
