@@ -1090,7 +1090,6 @@ def cambiar_mascota(request, pedido_id):
 
     return redirect("gestionar_suscripcion")
 
-
 #####CREAR USUARIOS
 
 from django.contrib.auth.decorators import user_passes_test
@@ -1112,7 +1111,8 @@ def crear_perfil(request):
     else:
         form = CrearPerfilForm()
     return render(request, "crear_perfil.html", {"form": form})
-=======
+
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, get_object_or_404
 from .models import Pedido
@@ -1124,4 +1124,3 @@ def eliminar_suscripcion(request, pedido_id):
     if request.method == "POST":
         pedido.delete()
         return redirect('gestionar_suscripcion')
-
