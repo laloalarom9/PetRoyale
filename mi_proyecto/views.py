@@ -1034,7 +1034,8 @@ from .models import Mascota
 def eliminar_mascota(request, pk):
     mascota = get_object_or_404(Mascota, pk=pk, propietario=request.user)
     mascota.delete()
-    return redirect('perfil')
+    return redirect('gestionar_suscripcion')
+
 
 from django.shortcuts import render, redirect
 from .forms import MascotaForm
@@ -1089,6 +1090,7 @@ def cambiar_mascota(request, pedido_id):
 
     return redirect("gestionar_suscripcion")
 
+<<<<<<< HEAD
 
 
 
@@ -1116,3 +1118,16 @@ def crear_perfil(request):
     else:
         form = CrearPerfilForm()
     return render(request, "crear_perfil.html", {"form": form})
+=======
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, get_object_or_404
+from .models import Pedido
+
+@login_required
+def eliminar_suscripcion(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user, es_suscripcion=True)
+    
+    if request.method == "POST":
+        pedido.delete()
+        return redirect('gestionar_suscripcion')
+>>>>>>> 2ce04b1c2967965dde666525a9f5db588a7dbd3b

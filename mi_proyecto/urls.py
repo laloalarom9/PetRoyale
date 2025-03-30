@@ -78,6 +78,7 @@ urlpatterns = [
     path("perfil/mascota/eliminar/<int:pk>/", eliminar_mascota, name="eliminar_mascota"),
     path("perfil/mascota/agregar/", agregar_mascota, name="agregar_mascota"),
     path("desvincular-mascota/<int:pedido_id>/", views.desvincular_mascota, name="desvincular_mascota"),
+    path('eliminar/<int:pedido_id>/', views.eliminar_suscripcion, name='eliminar_suscripcion'),
 
     #CREAR PERFILES
     path("crear_perfil/", crear_perfil, name="crear_perfil"),
