@@ -25,6 +25,7 @@
             <!-- Enlaces de navegación -->
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <ul class="navbar-nav">
+                    <!-- Siempre visibles -->
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'inicio' %}">
                             <img src="{% static 'img/iconos/casa.png' %}" alt="Inicio" class="icon"> Inicio
@@ -35,75 +36,69 @@
                             <img src="{% static 'img/iconos/store.png' %}" alt="Tienda" class="icon"> Tienda
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/suscripciones/' %}active{% endif %}" href="{% url 'suscripciones' %}">
-                            <img src="{% static 'img/iconos/plan.png' %}" alt="Suscripciones" class="icon"> Suscripciones
-                        </a>
-                    </li>                    
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/reseñas/' %}active{% endif %}" href="{% url 'reseñas' %}">
-                            <img src="{% static 'img/iconos/review.png' %}" alt="Reseñas" class="icon"> Reseñas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/pedidos/' %}active{% endif %}" href="{% url 'pedidos' %}">
-                            <img src="{% static 'img/iconos/orders.png' %}" alt="Pedidos" class="icon"> Pedidos
-                        </a>
-                    </li>
+
+                    <!-- Solo si está autenticado -->
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/suscripciones/' %}active{% endif %}" href="{% url 'suscripciones' %}">
+                                <img src="{% static 'img/iconos/plan.png' %}" alt="Suscripciones" class="icon"> Suscripciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/reseñas/' %}active{% endif %}" href="{% url 'reseñas' %}">
+                                <img src="{% static 'img/iconos/review.png' %}" alt="Reseñas" class="icon"> Reseñas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/pedidos/' %}active{% endif %}" href="{% url 'pedidos' %}">
+                                <img src="{% static 'img/iconos/orders.png' %}" alt="Pedidos" class="icon"> Pedidos
+                            </a>
+                        </li>
+                    {% endif %}
+
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == '/faq/' %}active{% endif %}" href="{% url 'faq' %}">
                             <img src="{% static 'img/iconos/faq.png' %}" alt="FAQ" class="icon"> FAQ
                         </a>
                     </li>
-                    
-                    <!-- 🔹 SOLO MOSTRAR PERFIL SI EL USUARIO ESTÁ AUTENTICADO -->
+
+                    <!-- Autenticación -->
                     {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/perfil/' %}active{% endif %}" href="{% url 'perfil' %}">
-                            <img src="{% static 'img/iconos/user.png' %}" alt="Perfil" class="icon"> Perfil
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="{% static avatar_path %}" alt="Avatar" class="icon"> {{ user.first_name }}
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión</a></li>
-                        </ul>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/perfil/' %}active{% endif %}" href="{% url 'perfil' %}">
+                                <img src="{% static 'img/iconos/user.png' %}" alt="Perfil" class="icon"> Perfil
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% static avatar_path %}" alt="Avatar" class="icon"> {{ user.first_name }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión</a></li>
+                            </ul>
+                        </li>
                     {% else %}
-                    <!-- 🔹 MOSTRAR "INICIAR SESIÓN" SI EL USUARIO NO ESTÁ AUTENTICADO -->
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'login' %}">
-                            <img src="{% static 'img/iconos/login.png' %}" alt="Iniciar sesión" class="icon"> Iniciar sesión
-                        </a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'login' %}">
+                                <img src="{% static 'img/iconos/login.png' %}" alt="Iniciar sesión" class="icon"> Iniciar sesión
+                            </a>
+                        </li>
                     {% endif %}
 
-                    <!-- 🔹 ICONO DE CARRITO CON CONTADOR -->
-<!-- Icono del carrito con contador -->
-<li class="nav-item">
-    <a class="nav-link {% if request.path == '/carrito/' %}active{% endif %}" href="{% url 'carrito' %}">
-        <i class="fas fa-shopping-cart"></i> <!-- Icono del carrito -->
-        {% with request.session.carrito as carrito %}
-            {% if carrito %}
-                <span class="cart-count">
-                    <img src="{% static 'img/iconos/cart.png' %}" alt="Carrito" class="cart-icon-img">
-                    {{ carrito|length }}
-                </span> <!-- Contador de productos -->
-            {% else %}
-                <span class="cart-count">
-                    <img src="{% static 'img/iconos/cart.png' %}" alt="Carrito" class="cart-icon-img">
-                    0
-                </span> <!-- Si no hay productos, mostrar 0 -->
-            {% endif %}
-        {% endwith %}
-    </a>
-</li>
-
-                    
+                    <!-- Icono del carrito -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/carrito/' %}active{% endif %}" href="{% url 'carrito' %}">
+                            <i class="fas fa-shopping-cart"></i>
+                            {% with request.session.carrito as carrito %}
+                                <span class="cart-count">
+                                    <img src="{% static 'img/iconos/cart.png' %}" alt="Carrito" class="cart-icon-img">
+                                    {{ carrito|length|default:"0" }}
+                                </span>
+                            {% endwith %}
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

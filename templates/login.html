@@ -5,12 +5,15 @@
 {% block content %}
     <div id="login-container">
         <h2 id="login-title">Iniciar Sesión</h2>
+
         {% if messages %}
-            <div class="alert-container">
-        {% for message in messages %}
-            <div class="alert alert-danger">{{ message }}</div>
-        {% endfor %}
-            </div>
+            {% for message in messages %}
+                {% if forloop.first %}
+                    <div class="alert alert-danger" id="login-alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
         {% endif %}
 
         <form method="POST" action="{% url 'login' %}">
@@ -36,4 +39,16 @@
             <a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a>
         </p>
     </div>
+
+    <script>
+        // Oculta el mensaje después de 4 segundos
+        setTimeout(() => {
+            const alert = document.getElementById('login-alert');
+            if (alert) {
+                alert.style.transition = 'opacity 0.5s ease-out';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.style.display = 'none', 500);
+            }
+        }, 4000);
+    </script>
 {% endblock %}

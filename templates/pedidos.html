@@ -3,44 +3,89 @@
 {% block title %}Pedidos - PetRoyale{% endblock %}
 
 {% block content %}
+
+
 <section class="orders-section">
     <h1 class="orders-title">📦 Pedidos</h1>
     <h2 class="orders-subtitle">Listado de pedidos</h2>
 
     {% if pedidos_con_detalles %}
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Número de Pedido</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>Total con IVA</th>
-                    <th>Producto/s</th>
-                    <th>Precio Unitario</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in pedidos_con_detalles %}
-                    {% for detalle in item.detalles %}
-                        <tr>
-                            {% if forloop.first %}
-                                <td rowspan="{{ item.detalles|length }}">{{ item.pedido.numero_pedido }}</td>
-                                <td rowspan="{{ item.detalles|length }}">{{ item.pedido.fecha_pedido|date:"d/m/Y H:i" }}</td>
-                                <td rowspan="{{ item.detalles|length }}">{{ item.pedido.estado }}</td>
-                                <td rowspan="{{ item.detalles|length }}">{{ item.pedido.total_con_iva }}€</td>
-                            {% endif %}
-                            <td>{{ detalle.cantidad }} x {{ detalle.producto.nombre }}</td>
-                            <td>{{ detalle.precio_unitario }}€ c/u</td>                            
-                        </tr>
+        <div class="orders-table-wrapper">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Número de Pedido</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Total con IVA</th>
+                        <th>Producto/s</th>
+                        <th>Precio Unitario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in pedidos_con_detalles %}
+                        {% for detalle in item.detalles %}
+                            <tr>
+                                {% if forloop.first %}
+                                    <td rowspan="{{ item.detalles|length }}">{{ item.pedido.numero_pedido }}</td>
+                                    <td rowspan="{{ item.detalles|length }}">
+                                        {% if item.pedido.es_suscripcion %}
+                                            Suscripción
+                                        {% else %}
+                                            Compra
+                                        {% endif %}
+                                    </td>
+                                    <td rowspan="{{ item.detalles|length }}">{{ item.pedido.fecha_pedido|date:"d/m/Y H:i" }}</td>
+                                    <td rowspan="{{ item.detalles|length }}">
+                                        {% if item.pedido.es_suscripcion %}
+                                            <div class="estado-wrapper">
+                                                <button class="btn-toggle-estado"
+                                                        data-duracion="{{ item.duracion }}"
+                                                        data-estado="{{ item.pedido.estado }}"
+                                                        onclick="toggleMeses(this)">Ver meses</button>
+                                                <ul class="estado-mensual"></ul>
+                                            </div>
+                                        {% else %}
+                                            {{ item.pedido.estado }}
+                                        {% endif %}
+                                    </td>
+                                    <td rowspan="{{ item.detalles|length }}">{{ item.pedido.total_con_iva }}€</td>
+                                {% endif %}
+                                <td>{{ detalle.cantidad }} x {{ detalle.producto.nombre }}</td>
+                                <td>{{ detalle.precio_unitario }}€ c/u</td>
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-            </tbody>
-                                   
-        </table>
+                </tbody>
+            </table>
+        </div>
     {% else %}
         <p class="orders-text">No hay ningún pedido.</p>
     {% endif %}
 
     <a href="{% url 'Tienda' %}" class="btn-create">🛍️ Hacer nuevo pedido</a>
 </section>
+
+<script>
+    function toggleMeses(btn) {
+        const duracion = parseInt(btn.getAttribute('data-duracion'));
+        const estado = btn.getAttribute('data-estado');
+        const lista = btn.parentElement.querySelector('.estado-mensual');
+
+        if (lista.childElementCount === 0) {
+            for (let i = 1; i <= duracion; i++) {
+                const li = document.createElement('li');
+                li.textContent = `Mes ${i}: ${estado}`;
+                lista.appendChild(li);
+            }
+            lista.style.display = "block";
+            btn.textContent = "Ocultar";
+        } else {
+            lista.innerHTML = '';
+            lista.style.display = "none";
+            btn.textContent = "Ver meses";
+        }
+    }
+</script>
 {% endblock %}

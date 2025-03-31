@@ -89,9 +89,14 @@ def registro_view(request):
 def inicio(request):
     return render(request, "inicio.html")
 
-# 🔹 Páginas informativas
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Reseña
+
+@login_required
 def reseñas(request):
-    return render(request, "reseñas.html")
+    reseñas = Reseña.objects.filter(usuario=request.user).order_by('-fecha')
+    return render(request, 'reseñas.html', {'reseñas': reseñas})
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -110,7 +115,16 @@ def pedidos(request):
 
     for pedido in pedidos:
         detalles = DetallePedido.objects.filter(pedido=pedido)
-        pedidos_con_detalles.append({"pedido": pedido, "detalles": detalles})
+
+        duracion = None
+        if pedido.es_suscripcion:
+            duracion = sum([detalle.cantidad for detalle in detalles])
+
+        pedidos_con_detalles.append({
+            "pedido": pedido,
+            "detalles": detalles,
+            "duracion": duracion  # ⬅️ esto lo usarás en el HTML
+        })
 
     return render(request, "pedidos.html", {"pedidos_con_detalles": pedidos_con_detalles})
 
@@ -365,12 +379,16 @@ def eliminar_producto(request, producto_id):
 
 def producto_detalle(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
-    stock_disponible = producto.stock_disponible()  # ✅ Llama al método correctamente
+    stock_disponible = producto.stock_disponible()
+
+    reseñas = Reseña.objects.filter(producto=producto).order_by('-fecha')
 
     return render(request, "producto_detalle.html", {
         "producto": producto,
-        "stock_disponible": stock_disponible,  # ✅ Pásalo como variable al template
+        "stock_disponible": stock_disponible,
+        "reseñas": reseñas,
     })
+
 
 def agregar_al_carrito(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
@@ -659,13 +677,13 @@ def procesar_compra(request):
     suscripciones = [datos for datos in carrito.values() if isinstance(datos, dict) and datos.get("tipo") == "suscripcion"]
 
     if suscripciones:
+        total = Decimal(0)
         for datos in suscripciones:
             try:
                 producto = Producto.objects.get(id=datos["producto_id"])
                 duracion = int(datos["duracion"])
-                total = Decimal(producto.precio) * duracion
-                iva = (total * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-                total_con_iva = (total + iva).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                subtotal = Decimal(producto.precio) * duracion
+                total += subtotal
 
                 mascota_id = datos.get("mascota_id")
                 mascota = Mascota.objects.filter(id=mascota_id, propietario=request.user).first() if mascota_id else None
@@ -674,21 +692,15 @@ def procesar_compra(request):
                     usuario=request.user,
                     numero_pedido=f"SUS-{now().strftime('%Y%m%d%H%M%S')}",
                     fecha_pedido=now(),
-                    total=total,
-                    iva=iva,
-                    total_con_iva=total_con_iva,
+                    total=subtotal,
+                    iva=(subtotal * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+                    total_con_iva=(subtotal * Decimal("1.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
                     estado="pendiente",
                     es_suscripcion=True,
                     estado_suscripcion="activa",
-                    mascota=mascota,  # ⬅️ Se asocia aquí
+                    mascota=mascota,
                 )
-                mascota = None
-                mascota_id = datos.get("mascota_id")
-                if mascota_id:
-                    try:
-                        mascota = Mascota.objects.get(id=mascota_id, propietario=request.user)
-                    except Mascota.DoesNotExist:
-                        mascota = None  # Por si acaso
+
                 DetallePedido.objects.create(
                     pedido=pedido,
                     producto=producto,
@@ -703,13 +715,74 @@ def procesar_compra(request):
         # 🧼 Vaciar el carrito tras procesar suscripciones
         request.session["carrito"] = {}
 
-        # ✅ Redirigir a confirmación
+        # Calcular totales finales para mostrar
+        iva_total = (total * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        total_con_iva = (total + iva_total).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        # 📄 Generar el PDF del recibo de suscripción
+        buffer = io.BytesIO()
+        pdf = canvas.Canvas(buffer, pagesize=letter)
+        pdf.setTitle("Recibo de Suscripción - PetRoyale")
+
+        pdf.drawString(100, 750, "PetRoyale - Recibo de Suscripción")
+        pdf.drawString(100, 730, f"Cliente: {request.user.username} ({request.user.email})")
+        pdf.drawString(100, 710, f"Fecha: {now().strftime('%d/%m/%Y %H:%M:%S')}")
+
+        y = 680
+        pdf.drawString(100, y, "Detalle de la(s) suscripción(es):")
+        y -= 20
+        pdf.drawString(100, y, "--------------------------------------------")
+
+        for datos in suscripciones:
+            try:
+                producto = Producto.objects.get(id=datos["producto_id"])
+                duracion = int(datos["duracion"])
+                mascota_id = datos.get("mascota_id")
+                mascota = Mascota.objects.filter(id=mascota_id, propietario=request.user).first() if mascota_id else None
+
+                y -= 20
+                linea = f"{producto.nombre} x {duracion} mes(es) - {producto.precio:.2f}€ / mes"
+                if mascota:
+                    linea += f" (Mascota: {mascota.nombre})"
+                pdf.drawString(100, y, linea)
+            except:
+                continue
+
+        y -= 30
+        pdf.drawString(100, y, f"Subtotal: {total:.2f}€")
+        y -= 20
+        pdf.drawString(100, y, f"IVA (21%): {iva_total:.2f}€")
+        y -= 20
+        pdf.drawString(100, y, f"Total con IVA: {total_con_iva:.2f}€")
+
+        pdf.save()
+        buffer.seek(0)
+
+        # 📩 Enviar el PDF por correo
+        email_subject = "Tu suscripción en PetRoyale 🐶"
+        email_body = render_to_string("email_recibo.html", {
+            "usuario": request.user,
+            "fecha_compra": now().strftime("%d/%m/%Y %H:%M:%S"),
+            "numero_pedido": pedido.numero_pedido,
+            "productos_comprados": suscripciones,
+            "total": f"{total:.2f}",
+            "iva": f"{iva_total:.2f}",
+            "total_con_iva": f"{total_con_iva:.2f}",
+        })
+
+        email = EmailMessage(
+            email_subject,
+            email_body,
+            "noreply@petroyale.com",
+            [request.user.email],
+        )
+        email.attach("recibo_suscripcion_petroyale.pdf", buffer.getvalue(), "application/pdf")
+        email.content_subtype = "html"
+        email.send()
+
         return render(request, "confirmacion_compra.html", {
             "numero_pedido": pedido.numero_pedido,
             "total_con_iva": total_con_iva
         })
-
-
     
     usuario = request.user
     fecha_compra = now()
@@ -811,7 +884,8 @@ def procesar_compra(request):
     pdf.drawString(100, y, f"IVA (21%): {iva:.2f}€")
     y -= 20
     pdf.drawString(100, y, f"Total con IVA: {total_con_iva:.2f}€")
-
+    y -= 40
+    pdf.drawString(100, y, "Gracias por cuidar a tus mascotas con PetRoyale 🐾")
     pdf.save()
     buffer.seek(0)
 
@@ -852,24 +926,40 @@ from django.contrib.auth.decorators import login_required
 from .models import Producto, Reseña  
 from .forms import ReseñaForm  
 
+def lista_reseñas(request):
+    if request.user.is_authenticated:
+        reseñas = Reseña.objects.filter(usuario=request.user).order_by('-fecha')
+    else:
+        reseñas = None  # No se mostrarán si no ha iniciado sesión
 
+    return render(request, "reseñas/lista_reseñas.html", {"reseñas": reseñas})
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Producto, Reseña
+from .forms import ReseñaForm
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def crear_reseña(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = ReseñaForm(request.POST)
         if form.is_valid():
             reseña = form.save(commit=False)
+            reseña.usuario = request.user
             reseña.producto = producto
-            if request.user.is_authenticated:
-                reseña.usuario = request.user         
             reseña.save()
-            messages.success(request, "¡Tu reseña ha sido guardada!")
-            return redirect('producto_detalle', producto_id=producto.id)
+            return redirect('reseñas')  # Cambia si quieres redirigir a otra vista
     else:
         form = ReseñaForm()
 
-    return render(request, 'crear_reseña.html', {'form': form, 'producto': producto})
+    return render(request, 'crear_reseña.html', {
+        'form': form,
+        'producto': producto,
+    })
+
 
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -1194,3 +1284,19 @@ def eliminar_perfil(request, user_id):
         messages.success(request, "Perfil eliminado correctamente.")
 
     return redirect("lista_perfiles")
+
+
+from django.template.defaulttags import register
+
+@register.filter
+def range_detalle_cantidad(value):
+    return range(int(value))
+
+from django.contrib.auth.decorators import user_passes_test
+
+@user_passes_test(lambda u: u.is_superuser)
+def eliminar_reseña(request, reseña_id):
+    reseña = get_object_or_404(Reseña, id=reseña_id)
+    producto_id = reseña.producto.id
+    reseña.delete()
+    return redirect('producto_detalle', producto_id=producto_id)

@@ -21,6 +21,7 @@ from mi_proyecto.views import (
 from .views import lista_perfiles, crear_perfil
 from .views import lista_perfiles, crear_perfil, editar_rol_usuario
 from .views import lista_perfiles, crear_perfil, editar_rol_usuario, eliminar_perfil
+from django.shortcuts import redirect
 
 
 urlpatterns = [
@@ -68,6 +69,7 @@ urlpatterns = [
    
     #Reseñas
     path('producto/<int:producto_id>/reseña/', views.crear_reseña, name='crear_reseña'),
+    path("producto/1/reseña/", lambda request: redirect("crear_reseña")),
 
     #Suscripciones
     # Suscripciones
@@ -88,6 +90,7 @@ urlpatterns = [
     path("perfiles/", lista_perfiles, name="lista_perfiles"),
     path("perfiles/<int:user_id>/editar/", editar_rol_usuario, name="editar_rol_usuario"),
     path("perfiles/<int:user_id>/eliminar/", eliminar_perfil, name="eliminar_perfil"),
+    path('reseñas/eliminar/<int:reseña_id>/', views.eliminar_reseña, name='eliminar_reseña'),
 
 ]
 
