@@ -1300,3 +1300,80 @@ def eliminar_reseña(request, reseña_id):
     producto_id = reseña.producto.id
     reseña.delete()
     return redirect('producto_detalle', producto_id=producto_id)
+
+import requests
+from django.conf import settings
+from django.utils import timezone
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Repartidor, RepartidorLocation
+from .serializers import RepartidorLocationSerializer
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+@login_required
+def repartidor_view(request):
+    return render(request, 'repartidor.html')
+
+from rest_framework.renderers import JSONRenderer
+
+class UpdateLocationView(APIView):
+    renderer_classes = [JSONRenderer]
+    """
+    Endpoint para recibir la ubicación del repartidor y devolver la ruta hacia el destino usando Google Maps.
+    Se espera recibir en el body JSON:
+    {
+        "repartidor_id": <id>,
+        "latitude": <valor>,
+        "longitude": <valor>,
+        "dest_latitude": <valor>,
+        "dest_longitude": <valor>
+    }
+    """
+    
+    @method_decorator(login_required)
+    def get(self, request, format=None):
+        # Devuelve la página HTML con el mapa
+        return render(request, 'repartidor.html', {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY})
+
+    @method_decorator(login_required)
+    def post(self, request, format=None):
+        repartidor_id = request.data.get("repartidor_id")
+        latitude = request.data.get("latitude")
+        longitude = request.data.get("longitude")
+        dest_latitude = request.data.get("dest_latitude")
+        dest_longitude = request.data.get("dest_longitude")
+
+        if not all([repartidor_id, latitude, longitude, dest_latitude, dest_longitude]):
+            return Response({"error": "Faltan campos obligatorios."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            repartidor = Repartidor.objects.get(pk=repartidor_id)
+        except Repartidor.DoesNotExist:
+            return Response({"error": "Repartidor no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        location = RepartidorLocation.objects.create(
+            repartidor=repartidor,
+            latitude=latitude,
+            longitude=longitude,
+            timestamp=timezone.now()
+        )
+
+        api_key = settings.GOOGLE_MAPS_API_KEY
+        origin = f"{latitude},{longitude}"
+        destination = f"{dest_latitude},{dest_longitude}"
+        directions_url = (
+            f"https://maps.googleapis.com/maps/api/directions/json?origin={origin}&destination={destination}&key={api_key}"
+        )
+
+        response = requests.get(directions_url)
+        if response.status_code != 200:
+            return Response({"error": "Error al obtener la ruta."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        directions = response.json()
+
+        return Response({
+            "location": RepartidorLocationSerializer(location).data,
+            "directions": directions
+        }, status=status.HTTP_200_OK)

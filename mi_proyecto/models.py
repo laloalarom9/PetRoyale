@@ -204,3 +204,18 @@ class Mascota(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.especie})"
+
+
+from django.utils import timezone
+
+class Repartidor(models.Model): 
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="repartidor_profile") 
+    def __str__(self):
+        return self.user.username
+class RepartidorLocation(models.Model): 
+    repartidor = models.ForeignKey(Repartidor, on_delete=models.CASCADE, related_name="locations") 
+    latitude = models.DecimalField(max_digits=9, decimal_places=6) 
+    longitude = models.DecimalField(max_digits=9, decimal_places=6) 
+    timestamp = models.DateTimeField(default=timezone.now)
+    def __str__(self):
+        return f"{self.repartidor.user.username}: {self.latitude}, {self.longitude} at {self.timestamp}"

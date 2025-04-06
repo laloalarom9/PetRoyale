@@ -22,7 +22,8 @@ from .views import lista_perfiles, crear_perfil
 from .views import lista_perfiles, crear_perfil, editar_rol_usuario
 from .views import lista_perfiles, crear_perfil, editar_rol_usuario, eliminar_perfil
 from django.shortcuts import redirect
-
+from .views import UpdateLocationView #Repartidor
+from .views import repartidor_view
 
 urlpatterns = [
     # Administrador
@@ -92,6 +93,10 @@ urlpatterns = [
     path("perfiles/<int:user_id>/eliminar/", eliminar_perfil, name="eliminar_perfil"),
     path('reseñas/eliminar/<int:reseña_id>/', views.eliminar_reseña, name='eliminar_reseña'),
 
+    #Repartidor
+    path('repartidor/', UpdateLocationView.as_view(), name='repartidor'), 
+    path('repartidor/', UpdateLocationView.as_view(), name='update-location'),
+    path('repartidor/', repartidor_view, name='repartidor'),
 ]
 
 # Configuración para servir archivos estáticos y multimedia en desarrollo
