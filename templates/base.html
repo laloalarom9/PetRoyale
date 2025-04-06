@@ -36,11 +36,16 @@
                             <img src="{% static 'img/iconos/store.png' %}" alt="Tienda" class="icon"> Tienda
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'repartidor' %}">
-                            <img src="{% static 'img/iconos/location.png' %}" alt="Repartidor" class="icon"> Repartidor
-                        </a>
-                    </li>
+                    {% if user.is_authenticated and is_repartidor %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'repartidor' %}">
+                                <img src="{% static 'img/iconos/location.png' %}" alt="Repartidor" class="icon"> Repartidor
+                            </a>
+                        </li>
+                    {% endif %}
+
+
+
                     <!-- Solo si está autenticado -->
                     {% if user.is_authenticated %}
                         <li class="nav-item">
