@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Ruta de entrega</h2>
+    <p>Distancia: {{ distancia }} km</p>
+    <p>Duración estimada: {{ duracion }} minutos</p>
+
+    <div id="map" style="height: 500px;"></div>
+
+    <h3>Pasos de la ruta:</h3>
+    <ol>
+        {% for paso in pasos %}
+            <li>{{ paso.instrucciones }} - {{ paso.distancia }} - {{ paso.duracion }}</li>
+        {% endfor %}
+    </ol>
+</div>
+
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 14,
+            center: { lat: 40.416775, lng: -3.703790 } // Madrid como punto central
+        });
+
+        var directionsService = new google.maps.DirectionsService();
+        var directionsRenderer = new google.maps.DirectionsRenderer();
+        directionsRenderer.setMap(map);
+
+        var request = {
+            origin: window.origen,
+            destination: window.destino,
+            travelMode: 'DRIVING'
+        };
+
+        directionsService.route(request, function(result, status) {
+            if (status == 'OK') {
+                directionsRenderer.setDirections(result);
+            } else {
+                alert('Error al calcular la ruta: ' + status);
+            }
+        });
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
+{% endblock %}
