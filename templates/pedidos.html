@@ -4,7 +4,6 @@
 
 {% block content %}
 
-
 <section class="orders-section">
     <h1 class="orders-title">📦 Pedidos</h1>
     <h2 class="orders-subtitle">Listado de pedidos</h2>
@@ -65,6 +64,12 @@
     {% endif %}
 
     <a href="{% url 'Tienda' %}" class="btn-create">🛍️ Hacer nuevo pedido</a>
+    
+    <!-- Botón para Asignar Pedidos a Rutas -->
+    <div class="assign-orders">
+        <a href="{% url 'asignar_pedidos' %}" class="btn-assign">🗺️ Asignar Pedidos a Rutas</a>
+    </div>
+
 </section>
 
 <script>

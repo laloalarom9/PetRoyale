@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Asignar Pedidos a Ruta - PetRoyale{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Asignar Pedidos a una Ruta</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" class="card p-3">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="nombre_ruta" class="form-label">Nombre de la Ruta:</label>
+            <input type="text" class="form-control" id="nombre_ruta" name="nombre_ruta" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="repartidor" class="form-label">Seleccionar Repartidor:</label>
+            <select class="form-select" id="repartidor" name="repartidor" required>
+                <option value="" disabled selected>-- Seleccionar Repartidor --</option>
+                {% for repartidor in repartidores %}
+                    <option value="{{ repartidor.id }}">{{ repartidor.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Seleccionar Pedidos:</label>
+            <div class="list-group">
+                {% for pedido in pedidos %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="{{ pedido.id }}" name="pedidos" id="pedido{{ pedido.id }}">
+                        <label class="form-check-label" for="pedido{{ pedido.id }}">
+                            Pedido #{{ pedido.id }} - {{ pedido.cliente.nombre }} - {{ pedido.direccion }}
+                        </label>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No hay pedidos pendientes de asignación.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Asignar Ruta</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .container {
+        max-width: 600px;
+        margin: auto;
+    }
+    .card {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+    .form-check {
+        margin-bottom: 5px;
+    }
+</style>
+
+{% endblock %}

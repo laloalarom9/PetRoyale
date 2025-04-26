@@ -64,18 +64,25 @@
                 }
             });
 
-            $.post("{% url 'update-location' %}", {
-                repartidor_id: {{ user.id }},
-                latitude: lat,
-                longitude: lng,
-                dest_latitude: destLat,
-                dest_longitude: destLng,
-                csrfmiddlewaretoken: '{{ csrf_token }}',
-            }).done(function(response) {
-                console.log("Ubicación enviada");
-            }).fail(function() {
-                console.log("Error al enviar la ubicación");
+            $.ajax({
+                type: "POST",
+                url: "{% url 'update-location' %}",
+                data: {
+                    repartidor_id: "{{ user.id }}",
+                    latitude: lat,
+                    longitude: lng,
+                    dest_latitude: destLat,
+                    dest_longitude: destLng,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success: function(response) {
+                    console.log("Ubicación enviada: ", response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al enviar la ubicación: ", status, error);
+                }
             });
+
         }
 
         function handleError(error) {

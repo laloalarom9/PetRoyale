@@ -210,8 +210,10 @@ from django.utils import timezone
 
 class Repartidor(models.Model): 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="repartidor_profile") 
+    sueldo = models.FloatField()
     def __str__(self):
         return self.user.username
+    
 class RepartidorLocation(models.Model): 
     repartidor = models.ForeignKey(Repartidor, on_delete=models.CASCADE, related_name="locations") 
     latitude = models.DecimalField(max_digits=9, decimal_places=6) 
@@ -219,3 +221,19 @@ class RepartidorLocation(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     def __str__(self):
         return f"{self.repartidor.user.username}: {self.latitude}, {self.longitude} at {self.timestamp}"
+
+from django.db import models
+from django.contrib.auth import get_user_model
+from django.utils.timezone import now
+
+User = get_user_model()
+
+class Ruta(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    repartidor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rutas')
+    fecha = models.DateTimeField(default=now)
+    pedidos = models.ManyToManyField('Pedido', related_name='rutas', blank=True)
+
+    def __str__(self):
+        return f"Ruta: {self.nombre} - Repartidor: {self.repartidor.username}"
+

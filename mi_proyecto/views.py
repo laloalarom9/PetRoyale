@@ -1377,3 +1377,50 @@ class UpdateLocationView(APIView):
             "location": RepartidorLocationSerializer(location).data,
             "directions": directions
         }, status=status.HTTP_200_OK)
+    
+
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Ruta, Pedido, CustomUser
+
+# Función temporal para depurar permisos
+def es_administrador(user):
+    if user.is_authenticated:
+        print(f"Grupos de {user.username}: {[group.name for group in user.groups.all()]}")
+        return user.groups.filter(name='Clientes').exists()
+    return False
+
+@login_required
+@user_passes_test(es_administrador, login_url='/login/')
+def asignar_pedidos_a_ruta(request):
+    # Filtrar usuarios que pertenecen al grupo 'Repartidores'
+    repartidores = CustomUser.objects.filter(groups__name='repartidor')
+    pedidos = Pedido.objects.filter(rutas__isnull=True)
+
+    if request.method == "POST":
+        nombre_ruta = request.POST.get("nombre_ruta")
+        repartidor_id = request.POST.get("repartidor")
+        pedidos_ids = request.POST.getlist("pedidos")
+
+        if nombre_ruta and repartidor_id and pedidos_ids:
+            repartidor = get_object_or_404(CustomUser, pk=repartidor_id)
+
+            # Crear la ruta
+            ruta = Ruta.objects.create(nombre=nombre_ruta, repartidor=repartidor)
+
+            # Asignar los pedidos a la ruta
+            for pedido_id in pedidos_ids:
+                pedido = get_object_or_404(Pedido, pk=pedido_id)
+                ruta.pedidos.add(pedido)
+
+            messages.success(request, "Ruta creada y pedidos asignados correctamente.")
+            return redirect("asignar_pedidos")
+        else:
+            messages.error(request, "Por favor, completa todos los campos.")
+
+    return render(request, "asignar_pedidos.html", {
+        "repartidores": repartidores,
+        "pedidos": pedidos,
+    })

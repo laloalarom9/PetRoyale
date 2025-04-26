@@ -24,6 +24,7 @@ from .views import lista_perfiles, crear_perfil, editar_rol_usuario, eliminar_pe
 from django.shortcuts import redirect
 from .views import UpdateLocationView #Repartidor
 from .views import repartidor_view
+from .views import asignar_pedidos_a_ruta
 
 urlpatterns = [
     # Administrador
@@ -97,6 +98,11 @@ urlpatterns = [
     path('repartidor/', UpdateLocationView.as_view(), name='repartidor'), 
     path('repartidor/', UpdateLocationView.as_view(), name='update-location'),
     path('repartidor/', repartidor_view, name='repartidor'),
+
+    #Ruta
+    path('asignar_pedidos/', asignar_pedidos_a_ruta, name='asignar_pedidos'),
+
+
 ]
 
 # Configuración para servir archivos estáticos y multimedia en desarrollo
