@@ -98,10 +98,12 @@ urlpatterns = [
     path('repartidor/', UpdateLocationView.as_view(), name='repartidor'), 
     path('repartidor/', UpdateLocationView.as_view(), name='update-location'),
     path('repartidor/', repartidor_view, name='repartidor'),
+    path('update-location/', views.update_location, name='update-location'),
 
     #Ruta
     path('asignar_pedidos/', asignar_pedidos_a_ruta, name='asignar_pedidos'),
-
+    path("rutas/", views.listar_rutas, name="listar_rutas"),
+    
 
 ]
 

@@ -16,6 +16,7 @@ class CustomUser(AbstractUser):
     apellido2 = models.CharField(max_length=50, blank=True, null=True)  # Segundo apellido opcional
     num_tel = models.CharField(max_length=15, blank=True, null=True)  # Número de teléfono
     genero = models.CharField(max_length=10, choices=GENERO_CHOICES, default="hombre")  # Nuevo campo de género
+    direccion = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.username
@@ -117,6 +118,7 @@ User = get_user_model()
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.timezone import now
 import uuid
+import requests
 
 class Pedido(models.Model):
     ESTADOS_PEDIDO = [
@@ -141,6 +143,8 @@ class Pedido(models.Model):
 
     es_suscripcion = models.BooleanField(default=False)
     estado_suscripcion = models.CharField(max_length=30, choices=ESTADOS_SUSCRIPCION, default="activa")
+    lat = models.FloatField(null=True, blank=True)
+    lng = models.FloatField(null=True, blank=True)
 
     # 👇 NUEVO: mascota vinculada a la suscripción
     mascota = models.ForeignKey(
@@ -152,7 +156,29 @@ class Pedido(models.Model):
     )
     def __str__(self):
         return f"Pedido {self.numero_pedido} - {self.usuario.username}"
+    
+    def save(self, *args, **kwargs):
+        # Si no tenemos lat/lng pero sí dirección
+        if (not self.lat or not self.lng) and self.usuario.direccion:
+            direccion = self.usuario.direccion
+            api_key = settings.GOOGLE_MAPS_API_KEY  # Usa la API Key de settings.py
+            url = f"https://maps.googleapis.com/maps/api/geocode/json?address={direccion.replace(' ', '+')}&key={api_key}"
+            
+            response = requests.get(url)
+            data = response.json()
 
+            if data['status'] == 'OK':
+                location = data['results'][0]['geometry']['location']
+                self.lat = location['lat']
+                self.lng = location['lng']
+            else:
+                print(f"⚠️ No se pudo geocodificar la dirección: {direccion}")
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Pedido {self.numero_pedido} - {self.usuario.username}"
+    
 class DetallePedido(models.Model):
     pedido = models.ForeignKey("Pedido", on_delete=models.CASCADE, related_name="detalles")
     producto = models.ForeignKey("Producto", on_delete=models.CASCADE)  # ✅ Se pasa como string para evitar el ciclo

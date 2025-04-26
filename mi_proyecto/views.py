@@ -1312,9 +1312,44 @@ from .serializers import RepartidorLocationSerializer
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.conf import settings
+from .models import Ruta, Pedido
+import json
+
 @login_required
 def repartidor_view(request):
-    return render(request, 'repartidor.html')
+    repartidor = request.user
+
+    ruta = Ruta.objects.filter(repartidor=repartidor).order_by('-fecha').first()
+
+    if ruta:
+        pedidos = ruta.pedidos.filter(lat__isnull=False, lng__isnull=False)
+    else:
+        pedidos = Pedido.objects.none()
+
+    pedidos_data = [
+        {
+            "id": pedido.id,
+            "lat": float(pedido.lat),
+            "lng": float(pedido.lng),
+        }
+        for pedido in pedidos
+    ]
+
+    pedidos_json = json.dumps(pedidos_data)
+
+    return render(request, 'repartidor.html', {
+        'pedidos_json': pedidos_json,
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
+    })
+
+
+
+
+
+
 
 from rest_framework.renderers import JSONRenderer
 
@@ -1378,6 +1413,20 @@ class UpdateLocationView(APIView):
             "directions": directions
         }, status=status.HTTP_200_OK)
     
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
+@csrf_exempt
+def update_location(request):
+    if request.method == "POST":
+        lat = request.POST.get('latitude')
+        lng = request.POST.get('longitude')
+        repartidor_id = request.POST.get('repartidor_id')
+        print(f"Ubicación recibida: {lat}, {lng} para repartidor {repartidor_id}")
+        return JsonResponse({"status": "ok"})
+
+    return JsonResponse({"status": "bad request"}, status=400)
+
 
 
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -1389,13 +1438,12 @@ from .models import Ruta, Pedido, CustomUser
 def es_administrador(user):
     if user.is_authenticated:
         print(f"Grupos de {user.username}: {[group.name for group in user.groups.all()]}")
-        return user.groups.filter(name='Clientes').exists()
-    return False
+        return user.is_superuser or user.groups.filter(name='Administrador').exists()
+
 
 @login_required
 @user_passes_test(es_administrador, login_url='/login/')
 def asignar_pedidos_a_ruta(request):
-    # Filtrar usuarios que pertenecen al grupo 'Repartidores'
     repartidores = CustomUser.objects.filter(groups__name='repartidor')
     pedidos = Pedido.objects.filter(rutas__isnull=True)
 
@@ -1404,23 +1452,37 @@ def asignar_pedidos_a_ruta(request):
         repartidor_id = request.POST.get("repartidor")
         pedidos_ids = request.POST.getlist("pedidos")
 
-        if nombre_ruta and repartidor_id and pedidos_ids:
+        if not nombre_ruta:
+            messages.error(request, "Debes proporcionar un nombre para la ruta.")
+        elif not repartidor_id:
+            messages.error(request, "Debes seleccionar un repartidor.")
+        elif not pedidos_ids:
+            messages.error(request, "Debes seleccionar al menos un pedido.")
+        else:
             repartidor = get_object_or_404(CustomUser, pk=repartidor_id)
 
-            # Crear la ruta
             ruta = Ruta.objects.create(nombre=nombre_ruta, repartidor=repartidor)
 
-            # Asignar los pedidos a la ruta
             for pedido_id in pedidos_ids:
                 pedido = get_object_or_404(Pedido, pk=pedido_id)
                 ruta.pedidos.add(pedido)
 
             messages.success(request, "Ruta creada y pedidos asignados correctamente.")
             return redirect("asignar_pedidos")
-        else:
-            messages.error(request, "Por favor, completa todos los campos.")
 
     return render(request, "asignar_pedidos.html", {
         "repartidores": repartidores,
         "pedidos": pedidos,
     })
+
+@login_required
+@user_passes_test(es_administrador, login_url='/login/')
+def listar_rutas(request):
+    rutas = Ruta.objects.prefetch_related('pedidos').all()
+
+    return render(request, "listar_rutas.html", {
+        "rutas": rutas,
+    })
+
+
+

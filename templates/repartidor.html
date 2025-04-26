@@ -6,9 +6,28 @@
 {% block content %}
 <div class="repartidor-container">
     <h2 class="repartidor-title">📍 Ubicación del Repartidor</h2>
+
     <div id="map" class="map-container" style="height: 400px; width: 100%;"></div>
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
+
+    <script>
+        const pedidos = {{ pedidos_json|safe }};
+        console.log("Pedidos cargados:", pedidos);
+    </script>
+    
+    
+    
+
+    <div id="info-pedidos" class="info-pedidos-container">
+        <h3>📋 Estado de Pedidos</h3>
+        <p><strong>Pedido actual:</strong> <span id="pedido-actual">Buscando...</span></p>
+        <h4>📦 Pedidos restantes:</h4>
+        <ul id="pedidos-restantes">
+        </ul>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=geometry&callback=initMap" async defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         let map, marker, directionsService, directionsRenderer;
 
@@ -47,12 +66,71 @@
             marker.setPosition(coords);
             map.setCenter(coords);
 
-            const destLat = 40.416775;
-            const destLng = -3.703790;
+            if (pedidos.length > 0) {
+                encontrarPedidoMasCercano(coords, pedidos);
+            } else {
+                console.log("No hay pedidos disponibles.");
+            }
 
+            $.ajax({
+                type: "POST",
+                url: "{% url 'update-location' %}",
+                data: {
+                    repartidor_id: "{{ user.id }}",
+                    latitude: lat,
+                    longitude: lng,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success: function(response) {
+                    console.log("Ubicación enviada: ", response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al enviar la ubicación: ", status, error);
+                }
+            });
+        }
+
+        function encontrarPedidoMasCercano(origen, pedidos) {
+            let distanciaMin = Infinity;
+            let pedidoCercano = null;
+
+            pedidos.forEach(pedido => {
+                const distancia = google.maps.geometry.spherical.computeDistanceBetween(
+                    new google.maps.LatLng(origen.lat, origen.lng),
+                    new google.maps.LatLng(pedido.lat, pedido.lng)
+                );
+
+                if (distancia < distanciaMin) {
+                    distanciaMin = distancia;
+                    pedidoCercano = pedido;
+                }
+            });
+
+            if (pedidoCercano) {
+                actualizarInformacionPedidos(pedidoCercano, pedidos);
+                trazarRuta(origen, { lat: pedidoCercano.lat, lng: pedidoCercano.lng });
+            }
+        }
+
+        function actualizarInformacionPedidos(pedidoActual, todosPedidos) {
+            document.getElementById('pedido-actual').textContent = `ID ${pedidoActual.id}`;
+
+            const ulRestantes = document.getElementById('pedidos-restantes');
+            ulRestantes.innerHTML = '';
+
+            todosPedidos.forEach(pedido => {
+                if (pedido.id !== pedidoActual.id) {
+                    const li = document.createElement('li');
+                    li.textContent = `ID ${pedido.id}`;
+                    ulRestantes.appendChild(li);
+                }
+            });
+        }
+
+        function trazarRuta(origen, destino) {
             const request = {
-                origin: coords,
-                destination: { lat: destLat, lng: destLng },
+                origin: origen,
+                destination: destino,
                 travelMode: 'DRIVING',
             };
 
@@ -63,26 +141,6 @@
                     console.log("Error al calcular la ruta: " + status);
                 }
             });
-
-            $.ajax({
-                type: "POST",
-                url: "{% url 'update-location' %}",
-                data: {
-                    repartidor_id: "{{ user.id }}",
-                    latitude: lat,
-                    longitude: lng,
-                    dest_latitude: destLat,
-                    dest_longitude: destLng,
-                    csrfmiddlewaretoken: "{{ csrf_token }}"
-                },
-                success: function(response) {
-                    console.log("Ubicación enviada: ", response);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error al enviar la ubicación: ", status, error);
-                }
-            });
-
         }
 
         function handleError(error) {
@@ -95,6 +153,24 @@
     .repartidor-title {
         margin-top: 20px;
         padding-top: 20px;
+        text-align: center;
+    }
+    .map-container {
+        margin-top: 20px;
+    }
+    .info-pedidos-container {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+    #pedido-actual {
+        font-weight: bold;
+        color: #007bff;
+    }
+    #pedidos-restantes li {
+        margin: 5px 0;
     }
 </style>
+
 {% endblock %}

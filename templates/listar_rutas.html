@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de Rutas - PetRoyale{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Listado de Rutas</h2>
+
+    {% if rutas %}
+        <div class="list-group">
+            {% for ruta in rutas %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <strong>{{ ruta.nombre }}</strong> - Repartidor: {{ ruta.repartidor.username }}
+                    </div>
+                    <div class="card-body">
+                        {% if ruta.pedidos.all %}
+                            <ul class="list-group list-group-flush">
+                                {% for pedido in ruta.pedidos.all %}
+                                    <li class="list-group-item">
+                                        Pedido #{{ pedido.id }} - {{ pedido.usuario.username }} - {{ pedido.usuario.direccion }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted">No hay pedidos asignados a esta ruta.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-muted">No hay rutas creadas aún.</p>
+    {% endif %}
+</div>
+{% endblock %}
