@@ -114,3 +114,5 @@ EMAIL_HOST_PASSWORD = "slem pwdx acny pclb"  # ⚠ Pon tu contraseña aquí (No 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 GOOGLE_MAPS_API_KEY = 'AIzaSyBYNP4mbrKHHFxP3t5E-11Sl6cFYkzJ0es'
+
+
