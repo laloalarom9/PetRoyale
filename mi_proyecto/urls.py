@@ -95,9 +95,10 @@ urlpatterns = [
     path('reseñas/eliminar/<int:reseña_id>/', views.eliminar_reseña, name='eliminar_reseña'),
 
     #Repartidor
+    path('repartidor/', repartidor_view, name='repartidor'),
     path('repartidor/', UpdateLocationView.as_view(), name='repartidor'), 
     path('repartidor/', UpdateLocationView.as_view(), name='update-location'),
-    path('repartidor/', repartidor_view, name='repartidor'),
+    
     path('update-location/', views.update_location, name='update-location'),
 
     #Ruta

@@ -1314,15 +1314,26 @@ from django.utils.decorators import method_decorator
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.conf import settings
 from .models import Ruta, Pedido
 import json
+from django.conf import settings
 
 @login_required
 def repartidor_view(request):
+    
     repartidor = request.user
 
-    ruta = Ruta.objects.filter(repartidor=repartidor).order_by('-fecha').first()
+    
+
+
+    rutas = Ruta.objects.filter(repartidor=repartidor).order_by('-fecha')
+
+    ruta_id = request.GET.get('ruta')
+
+    if ruta_id:
+        ruta = rutas.filter(id=ruta_id).first()
+    else:
+        ruta = rutas.first()
 
     if ruta:
         pedidos = ruta.pedidos.filter(lat__isnull=False, lng__isnull=False)
@@ -1330,20 +1341,20 @@ def repartidor_view(request):
         pedidos = Pedido.objects.none()
 
     pedidos_data = [
-        {
-            "id": pedido.id,
-            "lat": float(pedido.lat),
-            "lng": float(pedido.lng),
-        }
+        {'id': pedido.id, 'lat': float(pedido.lat), 'lng': float(pedido.lng)}
         for pedido in pedidos
     ]
 
     pedidos_json = json.dumps(pedidos_data)
 
     return render(request, 'repartidor.html', {
+        'rutas': rutas,
+        'ruta_seleccionada': ruta,
         'pedidos_json': pedidos_json,
         'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
     })
+
+
 
 
 

@@ -1,28 +1,45 @@
 {% extends "base.html" %}
-{% load static %}
-
-{% block title %}Ubicación del Repartidor - PetRoyale{% endblock %}
+{% block title %}Ubicación del Repartidor{% endblock %}
 
 {% block content %}
 <div class="repartidor-container">
     <h2 class="repartidor-title">📍 Ubicación del Repartidor</h2>
+    <p>Total de rutas: {{ rutas|length }}</p>
+    <!-- Selector de Rutas -->
+    <form method="GET" id="selector-rutas-form">
+        <label for="ruta">Selecciona una Ruta:</label>
+        <select name="ruta" id="selector-rutas" onchange="document.getElementById('selector-rutas-form').submit()">
+            {% for ruta in rutas %}
+                <option value="{{ ruta.id }}" {% if ruta.id == ruta_seleccionada.id %}selected{% endif %}>
+                    {{ ruta.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
 
+    <!-- Mapa -->
     <div id="map" class="map-container" style="height: 400px; width: 100%;"></div>
 
+    <!-- JSON embebido -->
+    <script id="pedidos-data" type="application/json">
+        {{ pedidos_json|safe }}
+    </script>
+
     <script>
-        const pedidos = {{ pedidos_json|safe }};
+        let pedidos = [];
+        try {
+            pedidos = JSON.parse(document.getElementById('pedidos-data').textContent);
+        } catch (error) {
+            console.error("Error parsing pedidos:", error);
+        }
         console.log("Pedidos cargados:", pedidos);
     </script>
-    
-    
-    
 
     <div id="info-pedidos" class="info-pedidos-container">
         <h3>📋 Estado de Pedidos</h3>
         <p><strong>Pedido actual:</strong> <span id="pedido-actual">Buscando...</span></p>
         <h4>📦 Pedidos restantes:</h4>
-        <ul id="pedidos-restantes">
-        </ul>
+        <ul id="pedidos-restantes"></ul>
     </div>
 
     <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=geometry&callback=initMap" async defer></script>
@@ -54,7 +71,7 @@
                     maximumAge: 0
                 });
             } else {
-                console.log("Geolocalización no soportada en este navegador.");
+                console.log("Geolocalización no soportada.");
             }
         }
 
@@ -71,23 +88,6 @@
             } else {
                 console.log("No hay pedidos disponibles.");
             }
-
-            $.ajax({
-                type: "POST",
-                url: "{% url 'update-location' %}",
-                data: {
-                    repartidor_id: "{{ user.id }}",
-                    latitude: lat,
-                    longitude: lng,
-                    csrfmiddlewaretoken: "{{ csrf_token }}"
-                },
-                success: function(response) {
-                    console.log("Ubicación enviada: ", response);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error al enviar la ubicación: ", status, error);
-                }
-            });
         }
 
         function encontrarPedidoMasCercano(origen, pedidos) {
@@ -138,13 +138,13 @@
                 if (status === 'OK') {
                     directionsRenderer.setDirections(result);
                 } else {
-                    console.log("Error al calcular la ruta: " + status);
+                    console.log("Error al calcular la ruta:", status);
                 }
             });
         }
 
         function handleError(error) {
-            console.log("Error al obtener la ubicación: ", error.message);
+            console.log("Error al obtener la ubicación:", error.message);
         }
     </script>
 </div>
@@ -172,5 +172,4 @@
         margin: 5px 0;
     }
 </style>
-
 {% endblock %}
