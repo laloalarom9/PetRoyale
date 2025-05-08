@@ -2079,42 +2079,48 @@ input[type="number"] {
     display: flex;
     justify-content: space-around;
     margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .cart-buttons a {
+    display: inline-block;
     text-decoration: none;
     padding: 12px 18px;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
     font-weight: bold;
     text-align: center;
     transition: 0.3s;
+    width: 100%;
+    max-width: 250px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.cart-buttons .btn-continue {
-    background-color: #4CAF50;
+/* Estilos unificados de botones */
+.btn-cart {
+    display: inline-block;
     color: white;
 }
 
-.cart-buttons .btn-continue:hover {
+.btn-cart.green {
+    background-color: #4CAF50;
+}
+.btn-cart.green:hover {
     background-color: #45a049;
 }
 
-.cart-buttons .btn-clear {
+.btn-cart.red {
     background-color: #e53935;
-    color: white;
 }
-
-.cart-buttons .btn-clear:hover {
+.btn-cart.red:hover {
     background-color: #c62828;
 }
 
-.cart-buttons .btn-buy {
+.btn-cart.blue {
     background-color: #007bff;
-    color: white;
 }
-
-.cart-buttons .btn-buy:hover {
+.btn-cart.blue:hover {
     background-color: #0056b3;
 }
 
@@ -2149,6 +2155,7 @@ input[type="number"] {
 /* ---------------------------------------------------------------------------------------------------------------- */
 /* FIN CARRITO DE COMPRAS */
 /* ---------------------------------------------------------------------------------------------------------------- */
+
 /* ---------------------------------------------------------------------------------------------------------------- */
 /* INICIO CHECKOUT */
 /* ---------------------------------------------------------------------------------------------------------------- */

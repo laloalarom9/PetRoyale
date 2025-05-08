@@ -105,6 +105,10 @@ urlpatterns = [
     path('asignar_pedidos/', asignar_pedidos_a_ruta, name='asignar_pedidos'),
     path("rutas/", views.listar_rutas, name="listar_rutas"),
     
+    path("donaciones/", views.donaciones_view, name="donaciones"),
+    path("donacion/confirmar/", views.confirmar_donacion, name="confirmar_donacion"),
+    path("donacion/confirmar/", views.confirmar_donacion, name="confirmar_donacion"),
+
 
 ]
 
