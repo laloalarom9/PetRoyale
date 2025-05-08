@@ -272,4 +272,4 @@ class Refugio(models.Model):
     descripcion = models.TextField()
 
     def __str__(self):
-        return self.nombre
+        return self.nombre 
