@@ -59,6 +59,7 @@
         let pedidos = [];
         let pedidosOrdenados = [];
         let pedidoActual = null;
+        let ultimaPosicion = null;
 
         // 🛠️ Cargar pedidos
         try {
@@ -98,13 +99,13 @@
         function updatePosition(position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-            const coords = { lat: lat, lng: lng };
+            ultimaPosicion = { lat: lat, lng: lng };
 
-            marker.setPosition(coords);
-            map.setCenter(coords);
+            marker.setPosition(ultimaPosicion);
+            map.setCenter(ultimaPosicion);
 
             if (pedidos.length > 0) {
-                encontrarPedidoMasCercano(coords);
+                encontrarPedidoMasCercano(ultimaPosicion);
             } else {
                 console.log("No hay pedidos disponibles.");
             }
@@ -150,21 +151,21 @@
         }
 
         function entregarPedido() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const coords = { lat: lat, lng: lng };
+            if (!pedidoActual) return;
 
-                    // 🎯 Añadir a pedidos entregados
-                    const entregadosList = document.getElementById('pedidos-entregados');
-                    const liEntregado = document.createElement('li');
-                    liEntregado.textContent = `✅ ID ${pedidoActual.id} entregado`;
-                    liEntregado.classList.add('fade-in');
-                    entregadosList.appendChild(liEntregado);
+            // ✅ Mover el pedido actual al listado entregado
+            const entregadosList = document.getElementById('pedidos-entregados');
+            const liEntregado = document.createElement('li');
+            liEntregado.textContent = `✅ ID ${pedidoActual.id} entregado`;
+            liEntregado.classList.add('fade-in');
+            entregadosList.appendChild(liEntregado);
 
-                    avanzarAlSiguientePedido(coords);
-                });
+            // ❌ Eliminar este pedido del array principal
+            pedidos = pedidos.filter(p => p.id !== pedidoActual.id);
+
+            // ✅ Recalcular distancias con la última posición
+            if (ultimaPosicion) {
+                encontrarPedidoMasCercano(ultimaPosicion);
             }
         }
 
