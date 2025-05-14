@@ -1495,5 +1495,21 @@ def listar_rutas(request):
         "rutas": rutas,
     })
 
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from mi_proyecto.models import Pedido
 
+@csrf_exempt
+@login_required
+def marcar_pedido_entregado(request):
+    if request.method == 'POST':
+        try:
+            pedido_id = int(request.POST.get('pedido_id'))
+            pedido = Pedido.objects.get(id=pedido_id)
+            pedido.estado = 'entregado'  # Asegúrate de que esté entre las opciones válidas
+            pedido.save()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})
 

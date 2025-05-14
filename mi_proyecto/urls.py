@@ -98,13 +98,19 @@ urlpatterns = [
     path('repartidor/', repartidor_view, name='repartidor'),
     path('repartidor/', UpdateLocationView.as_view(), name='repartidor'), 
     path('repartidor/', UpdateLocationView.as_view(), name='update-location'),
-    
     path('update-location/', views.update_location, name='update-location'),
+    path('marcar-entregado/', views.marcar_pedido_entregado, name='marcar-entregado'),
+    
 
     #Ruta
     path('asignar_pedidos/', asignar_pedidos_a_ruta, name='asignar_pedidos'),
     path("rutas/", views.listar_rutas, name="listar_rutas"),
     
+    #Donaciones
+    path("donaciones/", views.donaciones_view, name="donaciones"),
+    path("donacion/confirmar/", views.confirmar_donacion, name="confirmar_donacion"),
+    path("donacion/confirmar/", views.confirmar_donacion, name="confirmar_donacion"),
+
 
 ]
 
