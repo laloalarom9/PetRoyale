@@ -1487,14 +1487,15 @@ def asignar_pedidos_a_ruta(request):
         else:
             repartidor = get_object_or_404(CustomUser, pk=repartidor_id)
 
-            ruta = Ruta.objects.create(nombre=nombre_ruta, repartidor=repartidor)
-
-            for pedido_id in pedidos_ids:
-                pedido = get_object_or_404(Pedido, pk=pedido_id)
-                ruta.pedidos.add(pedido)
-
-            messages.success(request, "Ruta creada y pedidos asignados correctamente.")
-            return redirect("asignar_pedidos")
+            if Ruta.objects.filter(nombre=nombre_ruta).exists():
+                messages.error(request, f"⚠️ Ya existe una ruta con el nombre '{nombre_ruta}'. Elige otro nombre.")
+            else:
+                ruta = Ruta.objects.create(nombre=nombre_ruta, repartidor=repartidor)
+                for pedido_id in pedidos_ids:
+                    pedido = get_object_or_404(Pedido, pk=pedido_id)
+                    ruta.pedidos.add(pedido)
+                messages.success(request, "Ruta creada y pedidos asignados correctamente.")
+                return redirect("asignar_pedidos")
 
     return render(request, "asignar_pedidos.html", {
         "repartidores": repartidores,

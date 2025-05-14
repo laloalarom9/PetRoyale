@@ -50,7 +50,13 @@ from .models import Mascota
 class MascotaForm(forms.ModelForm):
     fecha_nacimiento = forms.DateField(
         input_formats=["%d/%m/%Y"],
-        widget=forms.DateInput(attrs={"type": "text", "placeholder": "dd/mm/aaaa"})
+        widget=forms.DateInput(
+            format='%d/%m/%Y',  # ✅ Esto indica cómo mostrar el valor cargado
+            attrs={
+                "type": "text",
+                "placeholder": "dd/mm/aaaa"
+            }
+        )
     )
 
     class Meta:
