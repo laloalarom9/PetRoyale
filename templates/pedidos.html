@@ -41,7 +41,7 @@
                                             <div class="estado-wrapper">
                                                 <button class="btn-toggle-estado"
                                                         data-duracion="{{ item.duracion }}"
-                                                        data-estado="{{ item.pedido.estado }}"
+                                                        data-pedido-id="{{ item.pedido.id }}"
                                                         onclick="toggleMeses(this)">Ver meses</button>
                                                 <ul class="estado-mensual"></ul>
                                             </div>
@@ -64,36 +64,38 @@
     {% endif %}
 
     <a href="{% url 'Tienda' %}" class="btn-create">🛍️ Hacer nuevo pedido</a>
-    
+
     <!-- Botón para Asignar Pedidos a Rutas -->
-    <!-- Botón para Ver Rutas y sus Pedidos -->
     <div class="assign-orders" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
         <form action="{% url 'asignar_pedidos' %}">
             <button type="submit" class="btn btn-primary">🗺️ Asignar Pedidos a Rutas</button>
         </form>
-    
+
         <form action="{% url 'listar_rutas' %}">
             <button type="submit" class="btn btn-secondary">🛣️ Ver Rutas y Pedidos</button>
         </form>
     </div>
-    
-
 </section>
 
 <script>
     function toggleMeses(btn) {
+        const pedidoId = btn.getAttribute('data-pedido-id');
         const duracion = parseInt(btn.getAttribute('data-duracion'));
-        const estado = btn.getAttribute('data-estado');
         const lista = btn.parentElement.querySelector('.estado-mensual');
 
         if (lista.childElementCount === 0) {
-            for (let i = 1; i <= duracion; i++) {
-                const li = document.createElement('li');
-                li.textContent = `Mes ${i}: ${estado}`;
-                lista.appendChild(li);
-            }
-            lista.style.display = "block";
-            btn.textContent = "Ocultar";
+            fetch(`/api/estado-meses-entregados/?pedido_id=${pedidoId}`)
+                .then(res => res.json())
+                .then(data => {
+                    for (let i = 0; i < duracion; i++) {
+                        const li = document.createElement('li');
+                        const estado = data.entregas[i] ? "Entregado" : "Pendiente";
+                        li.textContent = `Mes ${i + 1}: ${estado}`;
+                        lista.appendChild(li);
+                    }
+                    lista.style.display = "block";
+                    btn.textContent = "Ocultar";
+                });
         } else {
             lista.innerHTML = '';
             lista.style.display = "none";
@@ -103,3 +105,39 @@
 </script>
 
 {% endblock %}
+
+<style>
+    .estado {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 0.85rem;
+        text-transform: capitalize;
+    }
+
+    .estado-pendiente {
+        background-color: #ffeeba;
+        color: #856404;
+    }
+
+    .estado-procesando {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .estado-enviado {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+
+    .estado-entregado {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .estado-donado {
+        background-color: #e2e3e5;
+        color: #383d41;
+    }
+</style>

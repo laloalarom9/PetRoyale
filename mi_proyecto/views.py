@@ -1327,36 +1327,38 @@ from django.utils.decorators import method_decorator
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from .models import Ruta, Pedido
+from .models import Pedido, MesEntregaSuscripcion
 import json
 from django.conf import settings
 
+
 @login_required
 def repartidor_view(request):
-    
     repartidor = request.user
-
-    
-
-
     rutas = Ruta.objects.filter(repartidor=repartidor).order_by('-fecha')
 
     ruta_id = request.GET.get('ruta')
-
-    if ruta_id:
-        ruta = rutas.filter(id=ruta_id).first()
-    else:
-        ruta = rutas.first()
+    ruta = rutas.filter(id=ruta_id).first() if ruta_id else rutas.first()
 
     if ruta:
         pedidos = ruta.pedidos.filter(lat__isnull=False, lng__isnull=False)
     else:
         pedidos = Pedido.objects.none()
 
-    pedidos_data = [
-        {'id': pedido.id, 'lat': float(pedido.lat), 'lng': float(pedido.lng)}
-        for pedido in pedidos
-    ]
+    pedidos_data = []
+    for pedido in pedidos:
+        mes_index = 0
+        if pedido.es_suscripcion:
+            entregados = MesEntregaSuscripcion.objects.filter(pedido=pedido, entregado=True).count()
+            mes_index = entregados
+
+        pedidos_data.append({
+            'id': pedido.id,
+            'lat': float(pedido.lat),
+            'lng': float(pedido.lng),
+            'es_suscripcion': pedido.es_suscripcion,
+            'mes_index': mes_index
+        })
 
     pedidos_json = json.dumps(pedidos_data)
 
@@ -1499,6 +1501,33 @@ def asignar_pedidos_a_ruta(request):
         "pedidos": pedidos,
     })
 
+# utils.py o dentro de views.py
+from .models import Pedido, Ruta
+from django.utils.timezone import now
+
+
+def asignar_suscripcion_a_ruta(pedido):
+    if not pedido.es_suscripcion:
+        return  # Solo aplica a suscripciones
+
+    # Buscar la ruta más reciente para el repartidor asignado (puedes adaptar esto si usas reparto automático)
+    rutas = Ruta.objects.filter(repartidor__isnull=False).order_by('-fecha')
+
+    if rutas.exists():
+        ruta = rutas.first()
+        ruta.pedidos.add(pedido)
+        ruta.save()
+    else:
+        # Crear una ruta automática si no hay ninguna
+        nueva_ruta = Ruta.objects.create(
+            nombre=f"RutaAuto-{now().strftime('%Y%m%d%H%M%S')}",
+            repartidor=pedido.usuario.repartidor_profile,  # Asegúrate de que este campo existe
+            fecha=now()
+        )
+        nueva_ruta.pedidos.add(pedido)
+        nueva_ruta.save()
+
+
 @login_required
 @user_passes_test(es_administrador, login_url='/login/')
 def listar_rutas(request):
@@ -1508,23 +1537,59 @@ def listar_rutas(request):
         "rutas": rutas,
     })
 
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from mi_proyecto.models import Pedido
+from .models import Pedido, DetallePedido, Producto, MesEntregaSuscripcion
+
+@csrf_exempt
+def marcar_entregado(request):
+    if request.method == 'POST':
+        pedido_id = request.POST.get('pedido_id')
+        try:
+            pedido = Pedido.objects.get(pk=pedido_id)
+            pedido.estado = 'entregado'
+            pedido.save()
+            return JsonResponse({'success': True})
+        except Pedido.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Pedido no encontrado'})
+    return JsonResponse({'success': False, 'error': 'Método inválido'})
 
 @csrf_exempt
 @login_required
-def marcar_pedido_entregado(request):
-    if request.method == 'POST':
+def marcar_mes_entregado(request):
+    if request.method == "POST":
         try:
-            pedido_id = int(request.POST.get('pedido_id'))
-            pedido = Pedido.objects.get(id=pedido_id)
-            pedido.estado = 'entregado'  # Asegúrate de que esté entre las opciones válidas
-            pedido.save()
-            return JsonResponse({'success': True})
+            pedido_id = int(request.POST.get("pedido_id"))
+            mes_index = int(request.POST.get("mes_index"))
+
+            pedido = Pedido.objects.get(id=pedido_id, es_suscripcion=True)
+            obj, _ = MesEntregaSuscripcion.objects.get_or_create(pedido=pedido, mes_index=mes_index)
+            obj.entregado = True
+            obj.save()
+            return JsonResponse({"success": True})
+        except Pedido.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Pedido no encontrado"})
         except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    return JsonResponse({'success': False, 'error': 'Método no permitido'})
+            return JsonResponse({"success": False, "error": str(e)})
+    return JsonResponse({"success": False, "error": "Método no permitido"})
+
+from django.http import JsonResponse
+
+@login_required
+def estado_meses_entregados(request):
+    pedido_id = request.GET.get("pedido_id")
+    try:
+        pedido = Pedido.objects.get(id=pedido_id, es_suscripcion=True)
+        duracion = pedido.detalles.first().cantidad
+        entregas = [False] * duracion
+
+        entregas_db = MesEntregaSuscripcion.objects.filter(pedido=pedido)
+        for entrega in entregas_db:
+            if entrega.mes_index < duracion:
+                entregas[entrega.mes_index] = entrega.entregado
+
+        return JsonResponse({"entregas": entregas})
+    except Pedido.DoesNotExist:
+        return JsonResponse({"entregas": []})
+
 
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Refugio

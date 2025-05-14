@@ -158,6 +158,7 @@ class Pedido(models.Model):
         return f"Pedido {self.numero_pedido} - {self.usuario.username}"
     
     def save(self, *args, **kwargs):
+        is_new = self._state.adding  # Saber si es un pedido nuevo
         # Si no tenemos lat/lng pero sí dirección
         if (not self.lat or not self.lng) and self.usuario.direccion:
             direccion = self.usuario.direccion
@@ -175,7 +176,6 @@ class Pedido(models.Model):
                 print(f"⚠️ No se pudo geocodificar la dirección: {direccion}")
 
         super().save(*args, **kwargs)
-
     def __str__(self):
         return f"Pedido {self.numero_pedido} - {self.usuario.username}"
     
@@ -273,3 +273,11 @@ class Refugio(models.Model):
 
     def __str__(self):
         return self.nombre 
+    
+class MesEntregaSuscripcion(models.Model):
+    pedido = models.ForeignKey("Pedido", on_delete=models.CASCADE, related_name="entregas_mensuales")
+    mes_index = models.PositiveIntegerField()  # 0 para el primer mes, 1 para el segundo...
+    entregado = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("pedido", "mes_index")

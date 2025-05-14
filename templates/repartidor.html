@@ -153,21 +153,86 @@
         function entregarPedido() {
             if (!pedidoActual) return;
 
-            // ✅ Mover el pedido actual al listado entregado
+            if (pedidoActual.es_suscripcion) {
+                const mesIndex = pedidoActual.mes_index || 0;
+                entregarMesSuscripcion(pedidoActual.id, mesIndex);
+            } else {
+                entregarPedidoNormal(pedidoActual.id);
+            }
+        }
+
+
+        function entregarPedidoNormal(pedidoId) {
+        fetch("{% url 'marcar-entregado' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: new URLSearchParams({
+                'pedido_id': pedidoId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log(`✅ Pedido ${pedidoId} marcado como entregado`);
+                // Actualizar interfaz si es necesario
+            } else {
+                console.warn("❌ Error:", data.error);
+            }
+        });
+        // ✅ Mover el pedido actual al listado entregado
+        const entregadosList = document.getElementById('pedidos-entregados');
+                const liEntregado = document.createElement('li');
+                liEntregado.textContent = `✅ ID ${pedidoActual.id} entregado`;
+                liEntregado.classList.add('fade-in');
+                entregadosList.appendChild(liEntregado);
+
+                // ❌ Eliminar este pedido del array principal
+                pedidos = pedidos.filter(p => p.id !== pedidoActual.id);
+
+                // ✅ Recalcular distancias con la última posición
+                if (ultimaPosicion) {
+                    encontrarPedidoMasCercano(ultimaPosicion);
+                }
+        }
+
+        function entregarMesSuscripcion(pedidoId, mesIndex) {
+            fetch("{% url 'marcar-mes-entregado' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: new URLSearchParams({
+                    'pedido_id': pedidoId,
+                    'mes_index': mesIndex
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(`📦 Pedido ${pedidoId}, mes ${mesIndex + 1} marcado como entregado`);
+                } else {
+                    console.warn("❌ Error:", data.error);
+                }
+            });
+
+            // Actualizar UI
             const entregadosList = document.getElementById('pedidos-entregados');
             const liEntregado = document.createElement('li');
-            liEntregado.textContent = `✅ ID ${pedidoActual.id} entregado`;
+            liEntregado.textContent = `✅ ID ${pedidoId}, mes ${mesIndex + 1} entregado`;
             liEntregado.classList.add('fade-in');
             entregadosList.appendChild(liEntregado);
 
-            // ❌ Eliminar este pedido del array principal
-            pedidos = pedidos.filter(p => p.id !== pedidoActual.id);
-
-            // ✅ Recalcular distancias con la última posición
+            pedidos = pedidos.filter(p => p.id !== pedidoId);
             if (ultimaPosicion) {
                 encontrarPedidoMasCercano(ultimaPosicion);
             }
         }
+
+
 
         function trazarRuta(origen, destino) {
             const request = {
