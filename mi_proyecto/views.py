@@ -20,9 +20,18 @@ from django.http import HttpResponse
 from decimal import Decimal
 import pprint
 from django.utils.timezone import now, timedelta
-
-
-
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+import io
+from decimal import Decimal, ROUND_HALF_UP
+from django.utils.timezone import now
+from .models import Refugio, Producto, Pedido, DetallePedido
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+import random
 User = get_user_model()  # Obtener el modelo de usuario personalizado
 
 def registro_view(request):
@@ -688,9 +697,12 @@ def procesar_compra(request):
                 mascota_id = datos.get("mascota_id")
                 mascota = Mascota.objects.filter(id=mascota_id, propietario=request.user).first() if mascota_id else None
 
+
+                numero_pedido = generar_numero_pedido_unico("SUS")  # ✅ Genera un número único
+
                 pedido = Pedido.objects.create(
                     usuario=request.user,
-                    numero_pedido=f"SUS-{now().strftime('%Y%m%d%H%M%S')}",
+                    numero_pedido=numero_pedido,  # ✅ Usa el número único
                     fecha_pedido=now(),
                     total=subtotal,
                     iva=(subtotal * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
@@ -736,6 +748,7 @@ def procesar_compra(request):
             try:
                 producto = Producto.objects.get(id=datos["producto_id"])
                 duracion = int(datos["duracion"])
+                numero_pedido = generar_numero_pedido_unico("SUS")
                 mascota_id = datos.get("mascota_id")
                 mascota = Mascota.objects.filter(id=mascota_id, propietario=request.user).first() if mascota_id else None
 
@@ -1513,3 +1526,191 @@ def marcar_pedido_entregado(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Refugio
+
+def donaciones_view(request):
+    refugios = Refugio.objects.all()
+    return render(request, "donaciones.html", {"refugios": refugios})
+
+
+from django.contrib import messages
+
+def confirmar_donacion(request):
+    if request.method == "POST":
+        refugio_id = request.POST.get("refugio_id")
+        if not refugio_id:
+            messages.error(request, "Debes seleccionar un refugio.")
+            return redirect("donaciones")
+
+        refugio = get_object_or_404(Refugio, id=refugio_id)
+
+        # Aquí puedes guardar la donación en una tabla, carrito, sesión, etc.
+        request.session["donacion_refugio_id"] = refugio.id
+        messages.success(request, f"Has seleccionado donar a {refugio.nombre}. Confirma tu donación.")
+        return redirect("checkout")  # O a la vista final que uses
+    return redirect("donaciones")
+
+
+from decimal import Decimal
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Refugio, Producto
+from django.utils import timezone
+import datetime
+import random
+
+def confirmar_donacion(request):
+    if request.method == "POST":
+        refugio_id = request.POST.get("refugio_id")
+        if not refugio_id:
+            return redirect('donaciones')  # Redirige si no se eligió ningún refugio
+
+        refugio = get_object_or_404(Refugio, id=refugio_id)
+        carrito = request.session.get("carrito", {})
+
+        productos = []
+        total = Decimal("0.00")
+        for producto_id_str, item in carrito.items():
+            producto = get_object_or_404(Producto, id=int(producto_id_str))
+            cantidad = item["cantidad"]
+            subtotal = producto.precio * cantidad
+            productos.append({
+                "producto": producto,
+                "cantidad": cantidad,
+                "subtotal": subtotal,
+            })
+            total += subtotal
+
+        iva = total * Decimal("0.21")
+        total_con_iva = total + iva
+        numero_pedido = "DON-" + timezone.now().strftime("%Y%m%d%H%M%S")
+
+        # Aquí se limpia el carrito una vez procesada la donación
+        request.session["carrito"] = {}
+
+        context = {
+            "numero_pedido": numero_pedido,
+            "refugio": refugio,
+            "productos": productos,
+            "subtotal": total,
+            "iva": iva,
+            "total_con_iva": total_con_iva,
+        }
+        return render(request, "confirmacion_donacion.html", context)
+
+    return redirect("donaciones")
+
+
+@login_required
+def confirmar_donacion(request):
+    if request.method == "POST":
+        refugio_id = request.POST.get("refugio_id")
+        if not refugio_id:
+            messages.error(request, "Debes seleccionar un refugio.")
+            return redirect('donaciones')
+
+        refugio = get_object_or_404(Refugio, id=refugio_id)
+        carrito = request.session.get("carrito", {})
+        if not carrito:
+            messages.error(request, "Tu carrito está vacío.")
+            return redirect('carrito')
+
+        productos = []
+        total = Decimal("0.00")
+        for producto_id_str, item in carrito.items():
+            if not producto_id_str.isdigit():
+                continue  # Ignorar claves como suscripciones
+            producto = get_object_or_404(Producto, id=int(producto_id_str))
+            cantidad = item["cantidad"]
+            subtotal = Decimal(producto.precio) * cantidad
+            productos.append((producto, cantidad, subtotal))
+            total += subtotal
+
+        iva = (total * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        total_con_iva = (total + iva).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+        numero_pedido = "DON-" + now().strftime("%Y%m%d%H%M%S")
+        pedido = Pedido.objects.create(
+            usuario=request.user,
+            numero_pedido=numero_pedido,
+            fecha_pedido=now(),
+            total=total,
+            iva=iva,
+            total_con_iva=total_con_iva,
+            estado="donado",  # Puedes ajustar este estado
+            es_suscripcion=False
+        )
+
+        for producto, cantidad, subtotal in productos:
+            DetallePedido.objects.create(
+                pedido=pedido,
+                producto=producto,
+                cantidad=cantidad,
+                precio_unitario=producto.precio
+            )
+
+        request.session["carrito"] = {}
+
+        # 📄 PDF generado
+        buffer = io.BytesIO()
+        pdf = canvas.Canvas(buffer, pagesize=letter)
+        pdf.setTitle("Recibo de Donación - PetRoyale")
+        pdf.drawString(100, 750, "PetRoyale - Recibo de Donación")
+        pdf.drawString(100, 730, f"Cliente: {request.user.username} ({request.user.email})")
+        pdf.drawString(100, 710, f"Fecha: {now().strftime('%d/%m/%Y %H:%M:%S')}")
+        pdf.drawString(100, 690, f"Número de pedido: {numero_pedido}")
+        pdf.drawString(100, 670, f"Refugio beneficiario: {refugio.nombre}")
+        y = 640
+        for producto, cantidad, subtotal in productos:
+            y -= 20
+            pdf.drawString(100, y, f"{producto.nombre} x {cantidad} - {subtotal:.2f}€")
+        y -= 30
+        pdf.drawString(100, y, f"Subtotal: {total:.2f}€")
+        y -= 20
+        pdf.drawString(100, y, f"IVA: {iva:.2f}€")
+        y -= 20
+        pdf.drawString(100, y, f"Total con IVA: {total_con_iva:.2f}€")
+        pdf.save()
+        buffer.seek(0)
+
+        # ✉️ Email
+        email_subject = "Recibo de Donación - PetRoyale"
+        email_body = render_to_string("email_recibo.html", {
+            "usuario": request.user,
+            "fecha_compra": now().strftime("%d/%m/%Y %H:%M:%S"),
+            "numero_pedido": numero_pedido,
+            "productos_comprados": productos,
+            "total": f"{total:.2f}",
+            "iva": f"{iva:.2f}",
+            "total_con_iva": f"{total_con_iva:.2f}",
+        })
+
+        email = EmailMessage(
+            email_subject,
+            email_body,
+            "noreply@petroyale.com",
+            [request.user.email],
+        )
+        email.attach("recibo_donacion_petroyale.pdf", buffer.getvalue(), "application/pdf")
+        email.content_subtype = "html"
+        email.send()
+
+        return render(request, "confirmacion_donacion.html", {
+            "numero_pedido": numero_pedido,
+            "refugio": refugio,
+            "productos": productos,
+            "subtotal": total,
+            "iva": iva,
+            "total_con_iva": total_con_iva,
+        })
+
+    return redirect("donaciones")
+
+
+import random  # Asegúrate de tener este import arriba también
+
+def generar_numero_pedido_unico(prefijo):
+    while True:
+        numero = f"{prefijo}-{now().strftime('%Y%m%d%H%M%S')}-{random.randint(1000, 9999)}"
+        if not Pedido.objects.filter(numero_pedido=numero).exists():
+            return numero

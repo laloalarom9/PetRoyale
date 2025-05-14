@@ -31,7 +31,7 @@
                         </div>
                     </td>
                     <td>{{ producto.nombre }}</td>
-                    <td>${{ producto.precio }}</td>
+                    <td>€{{ producto.precio }}</td>
                     <td>{{ producto.stock }}</td>
                     <td>
                         <a href="{% url 'editar_producto' producto.id %}" class="btn-edit">Editar</a>
@@ -44,3 +44,4 @@
     </div>
 </div>
 {% endblock %}
+<!-- CSS Styles -->

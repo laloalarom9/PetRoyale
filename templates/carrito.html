@@ -48,10 +48,12 @@
         </div>
 
         <div class="cart-buttons">
-            <a href="{% url 'Tienda' %}" class="btn-continue">🛍️ Seguir Comprando</a>
-            <a href="{% url 'vaciar_carrito' %}" class="btn-clear">🗑️ Vaciar Carrito</a>
-            <a href="{% url 'checkout' %}" class="btn-buy">💳 Comprar</a>
+            <a href="{% url 'Tienda' %}" class="btn-cart green">🛍️ Seguir Comprando</a>
+            <a href="{% url 'vaciar_carrito' %}" class="btn-cart red">🗑️ Vaciar Carrito</a>
+            <a href="{% url 'checkout' %}" class="btn-cart blue">💳 Comprar</a>
+            <a href="{% url 'donaciones' %}" class="btn-cart green">🐾 Donar</a>
         </div>
+        
 
     {% else %}
         <p class="empty-cart">El carrito está vacío. <a href="{% url 'Tienda' %}">Ir a la tienda</a></p>

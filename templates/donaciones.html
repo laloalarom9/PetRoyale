@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Donar Producto - PetRoyale{% endblock %}
+
+{% block content %}
+<style>
+  .donacion-section {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .donacion-title {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #2c3e50;
+  }
+
+  .refugios-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+
+  .refugio-card {
+    background: #eef4ff;
+    padding: 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 250px;
+    transition: transform 0.3s, background 0.3s;
+    border: 2px solid transparent;
+  }
+
+  .refugio-card:hover {
+    transform: scale(1.03);
+    background: #dbe8ff;
+  }
+
+  .refugio-card.selected {
+    border-color: #3498db;
+    background: #cce5ff;
+  }
+
+  .refugio-card input {
+    display: none;
+  }
+
+  .refugio-nombre {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #2c3e50;
+  }
+
+  .refugio-desc {
+    font-size: 14px;
+    color: #555;
+  }
+
+  .donar-btn {
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transition: all 0.3s;
+  }
+
+  .donar-btn.enabled {
+    cursor: pointer;
+    opacity: 1;
+  }
+</style>
+
+<section class="donacion-section">
+  <h1 class="donacion-title">Elige un Refugio para Donar tu Producto</h1>
+
+  <form method="POST" action="{% url 'confirmar_donacion' %}">
+    {% csrf_token %}
+
+    <div class="refugios-grid">
+      {% for refugio in refugios %}
+      <label class="refugio-card" id="card-{{ refugio.id }}">
+        <input type="radio" name="refugio_id" value="{{ refugio.id }}">
+        <div class="refugio-nombre">{{ refugio.nombre }}</div>
+        <div class="refugio-desc">{{ refugio.descripcion }}</div>
+      </label>
+      {% endfor %}
+    </div>
+
+    <button type="submit" id="btn-confirmar" class="donar-btn" disabled>Confirmar Donación</button>
+  </form>
+</section>
+
+<script>
+  const radios = document.querySelectorAll('input[name="refugio_id"]');
+  const button = document.getElementById('btn-confirmar');
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      // Marcar visualmente la tarjeta seleccionada
+      document.querySelectorAll('.refugio-card').forEach(card => card.classList.remove('selected'));
+      radio.closest('.refugio-card').classList.add('selected');
+
+      // Habilitar el botón
+      button.disabled = false;
+      button.classList.add('enabled');
+    });
+  });
+</script>
+{% endblock %}
