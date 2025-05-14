@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+{% block title %}Ubicación del Repartidor{% endblock %}
+
+{% block content %}
+<div class="repartidor-container">
+    <h2 class="repartidor-title">📍 Ubicación del Repartidor</h2>
+    <p>Total de rutas: {{ rutas|length }}</p>
+
+    <!-- Selector de Rutas -->
+    <form method="GET" id="selector-rutas-form">
+        <label for="ruta">Selecciona una Ruta:</label>
+        <select name="ruta" id="selector-rutas" onchange="document.getElementById('selector-rutas-form').submit()">
+            {% for ruta in rutas %}
+                <option value="{{ ruta.id }}" {% if ruta.id == ruta_seleccionada.id %}selected{% endif %}>
+                    {{ ruta.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <!-- Mapa -->
+    <div id="map" class="map-container" style="height: 400px; width: 100%;"></div>
+
+    <!-- JSON embebido -->
+    <script id="pedidos-data" type="application/json">
+        {{ pedidos_json|safe }}
+    </script>
+
+    <div id="estado-pedidos" class="estado-pedidos-container">
+        <h3 class="seccion-titulo">📋 Estado de la Ruta</h3>
+
+        <div class="pedido-actual">
+            <h4>🚚 Pedido en curso:</h4>
+            <p id="pedido-actual">Buscando...</p>
+        </div>
+
+        <div class="pedidos-restantes">
+            <h4>📦 Pedidos pendientes:</h4>
+            <ul id="pedidos-restantes"></ul>
+        </div>
+
+        <div class="acciones-repartidor">
+            <button id="entregar-pedido-btn" class="btn-entregar" style="display:none;">✅ Entregar Pedido</button>
+        </div>
+
+        <div class="pedidos-entregados" style="margin-top: 20px;">
+            <h4>🛡️ Pedidos entregados:</h4>
+            <ul id="pedidos-entregados" style="color: #28a745;"></ul>
+        </div>
+    </div>
+
+    <!-- Scripts externos -->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=geometry&callback=initMap" async defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Scripts propios -->
+    <script>
+        let map, marker, directionsService, directionsRenderer;
+        let pedidos = [];
+        let pedidosOrdenados = [];
+        let pedidoActual = null;
+        let ultimaPosicion = null;
+
+        // 🛠️ Cargar pedidos
+        try {
+            pedidos = JSON.parse(document.getElementById('pedidos-data').textContent);
+        } catch (error) {
+            console.error("Error parsing pedidos:", error);
+        }
+        console.log("Pedidos cargados:", pedidos);
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 40.416775, lng: -3.703790 },
+                zoom: 14,
+            });
+
+            marker = new google.maps.Marker({
+                position: map.getCenter(),
+                map: map,
+                title: "Ubicación del Repartidor",
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(updatePosition, handleError, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            } else {
+                console.log("Geolocalización no soportada.");
+            }
+        }
+
+        function updatePosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            ultimaPosicion = { lat: lat, lng: lng };
+
+            marker.setPosition(ultimaPosicion);
+            map.setCenter(ultimaPosicion);
+
+            if (pedidos.length > 0) {
+                encontrarPedidoMasCercano(ultimaPosicion);
+            } else {
+                console.log("No hay pedidos disponibles.");
+            }
+        }
+
+        function encontrarPedidoMasCercano(origen) {
+            pedidosOrdenados = pedidos.map(pedido => {
+                const distancia = google.maps.geometry.spherical.computeDistanceBetween(
+                    new google.maps.LatLng(origen.lat, origen.lng),
+                    new google.maps.LatLng(pedido.lat, pedido.lng)
+                );
+                return { ...pedido, distancia };
+            }).sort((a, b) => a.distancia - b.distancia);
+
+            avanzarAlSiguientePedido(origen);
+        }
+
+        function avanzarAlSiguientePedido(origen) {
+            if (pedidosOrdenados.length === 0) {
+                document.getElementById('pedido-actual').textContent = "🎉 Todos los pedidos entregados";
+                document.getElementById('pedidos-restantes').innerHTML = '';
+                document.getElementById('entregar-pedido-btn').style.display = 'none';
+                return;
+            }
+
+            pedidoActual = pedidosOrdenados.shift();
+            actualizarInformacionPedidos();
+            trazarRuta(origen, { lat: pedidoActual.lat, lng: pedidoActual.lng });
+            document.getElementById('entregar-pedido-btn').style.display = 'inline-block';
+        }
+
+        function actualizarInformacionPedidos() {
+            document.getElementById('pedido-actual').textContent = `ID ${pedidoActual.id}`;
+
+            const ulRestantes = document.getElementById('pedidos-restantes');
+            ulRestantes.innerHTML = '';
+
+            pedidosOrdenados.forEach(pedido => {
+                const li = document.createElement('li');
+                li.textContent = `ID ${pedido.id}`;
+                ulRestantes.appendChild(li);
+            });
+        }
+
+        function entregarPedido() {
+            if (!pedidoActual) return;
+
+            if (pedidoActual.es_suscripcion) {
+                const mesIndex = pedidoActual.mes_index || 0;
+                entregarMesSuscripcion(pedidoActual.id, mesIndex);
+            } else {
+                entregarPedidoNormal(pedidoActual.id);
+            }
+        }
+
+
+        function entregarPedidoNormal(pedidoId) {
+        fetch("{% url 'marcar-entregado' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: new URLSearchParams({
+                'pedido_id': pedidoId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log(`✅ Pedido ${pedidoId} marcado como entregado`);
+                // Actualizar interfaz si es necesario
+            } else {
+                console.warn("❌ Error:", data.error);
+            }
+        });
+        // ✅ Mover el pedido actual al listado entregado
+        const entregadosList = document.getElementById('pedidos-entregados');
+                const liEntregado = document.createElement('li');
+                liEntregado.textContent = `✅ ID ${pedidoActual.id} entregado`;
+                liEntregado.classList.add('fade-in');
+                entregadosList.appendChild(liEntregado);
+
+                // ❌ Eliminar este pedido del array principal
+                pedidos = pedidos.filter(p => p.id !== pedidoActual.id);
+
+                // ✅ Recalcular distancias con la última posición
+                if (ultimaPosicion) {
+                    encontrarPedidoMasCercano(ultimaPosicion);
+                }
+        }
+
+        function entregarMesSuscripcion(pedidoId, mesIndex) {
+            fetch("{% url 'marcar-mes-entregado' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: new URLSearchParams({
+                    'pedido_id': pedidoId,
+                    'mes_index': mesIndex
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(`📦 Pedido ${pedidoId}, mes ${mesIndex + 1} marcado como entregado`);
+                } else {
+                    console.warn("❌ Error:", data.error);
+                }
+            });
+
+            // Actualizar UI
+            const entregadosList = document.getElementById('pedidos-entregados');
+            const liEntregado = document.createElement('li');
+            liEntregado.textContent = `✅ ID ${pedidoId}, mes ${mesIndex + 1} entregado`;
+            liEntregado.classList.add('fade-in');
+            entregadosList.appendChild(liEntregado);
+
+            pedidos = pedidos.filter(p => p.id !== pedidoId);
+            if (ultimaPosicion) {
+                encontrarPedidoMasCercano(ultimaPosicion);
+            }
+        }
+
+
+
+        function trazarRuta(origen, destino) {
+            const request = {
+                origin: origen,
+                destination: destino,
+                travelMode: 'DRIVING',
+            };
+
+            directionsService.route(request, function(result, status) {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    console.log("Error al calcular la ruta:", status);
+                }
+            });
+        }
+
+        function handleError(error) {
+            console.log("Error al obtener la ubicación:", error.message);
+        }
+
+        // 🎯 Ahora sí: cuando todo el DOM esté cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('entregar-pedido-btn').addEventListener('click', entregarPedido);
+        });
+    </script>
+
+</div>
+
+<style>
+    .repartidor-title {
+        margin-top: 20px;
+        padding-top: 20px;
+        text-align: center;
+    }
+    .map-container {
+        margin-top: 20px;
+    }
+    .estado-pedidos-container {
+        margin-top: 30px;
+        padding: 20px;
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+    }
+    .seccion-titulo {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333333;
+        font-weight: 700;
+    }
+    .pedido-actual h4, .pedidos-restantes h4 {
+        margin-bottom: 8px;
+        color: #555555;
+    }
+    #pedido-actual {
+        font-weight: bold;
+        color: #007bff;
+    }
+    #pedidos-restantes li, #pedidos-entregados li {
+        margin: 5px 0;
+        padding-left: 10px;
+        list-style: none;
+    }
+    .acciones-repartidor {
+        text-align: center;
+        margin-top: 15px;
+    }
+    .btn-entregar {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .btn-entregar:hover {
+        background-color: #218838;
+    }
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.8s forwards;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+{% endblock %}

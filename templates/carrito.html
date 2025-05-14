@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Carrito - PetRoyale{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <h2>🛒 Carrito de Compras</h2>
+
+    {% if productos %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in productos %}
+                    <tr>
+                        <td>
+                            {{ item.producto.nombre }}
+                            {% if item.tipo == "suscripcion" %}(suscripción){% endif %}
+                        </td> 
+                        <td>{{ item.producto.precio }}€</td>
+                        <td>{{ item.cantidad }}</td>
+                        <td>{{ item.subtotal|floatformat:2 }}€</td>
+                        <td>
+                            {% if item.tipo == "suscripcion" %}
+                                <a href="{% url 'reducir_suscripcion_carrito' item.clave %}" class="btn-reducir">➖</a>
+                            {% else %}
+                                <a href="{% url 'reducir_cantidad_carrito' item.producto.id %}" class="btn-reducir">➖</a>
+                            {% endif %}
+                        </td>                        
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <p><strong>Total: </strong> {{ total|floatformat:2 }}€</p>
+            <p><strong>IVA (21%): </strong> {{ iva|floatformat:2 }}€</p>
+            <p><strong>Total con IVA: </strong> {{ total_con_iva|floatformat:2 }}€</p>
+            
+        </div>
+
+        <div class="cart-buttons">
+            <a href="{% url 'Tienda' %}" class="btn-cart green">🛍️ Seguir Comprando</a>
+            <a href="{% url 'vaciar_carrito' %}" class="btn-cart red">🗑️ Vaciar Carrito</a>
+            <a href="{% url 'checkout' %}" class="btn-cart blue">💳 Comprar</a>
+            <a href="{% url 'donaciones' %}" class="btn-cart green">🐾 Donar</a>
+        </div>
+        
+
+    {% else %}
+        <p class="empty-cart">El carrito está vacío. <a href="{% url 'Tienda' %}">Ir a la tienda</a></p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load filtros_personalizados %}
+
+{% block title %}Mis Reseñas — PetRoyale{% endblock %}
+
+{% block content %}
+<section class="container mt-5">
+  <h2 class="text-center mb-4">Mis Reseñas</h2>
+
+  {% if user.is_authenticated %}
+    {% if reseñas %}
+      <div class="row justify-content-center">
+        {% for reseña in reseñas %}
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title text-center">{{ reseña.producto.nombre }}</h5>
+                <p class="card-text">{{ reseña.contenido }}</p>
+                <div class="mb-2 text-center">
+                  {% for _ in reseña.valoracion|to_range %}
+                    ⭐
+                  {% endfor %}
+                </div>
+                <p class="text-muted small text-center">
+                  Publicado el {{ reseña.fecha|date:"d/m/Y H:i" }}
+                </p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-center">Aún no has dejado ninguna reseña.</p>
+    {% endif %}
+  {% else %}
+    <div class="alert alert-warning text-center">
+      Debes iniciar sesión para ver tus reseñas.
+    </div>
+  {% endif %}
+
+  <div class="text-center mt-4">
+    <a href="{% url 'Tienda' %}" class="btn btn-outline-secondary">Ir a la tienda</a>
+  </div>
+</section>
+{% endblock %}

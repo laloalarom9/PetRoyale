@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tienda - PetRoyale{% endblock %}
+
+{% block content %}
+<style>
+/* --------------------------------------- ESTILO GENERAL --------------------------------------- */
+
+.store-section {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.store-title {
+    font-size: 42px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+/* --------------------------------------- BOTÓN ADMIN --------------------------------------- */
+
+.admin-product-button {
+    margin-bottom: 20px;
+}
+
+.btn-admin {
+    background-color: #1abc9c;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-admin:hover {
+    background-color: #16a085;
+}
+
+/* --------------------------------------- FILTROS --------------------------------------- */
+
+.filters-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    justify-content: center;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.filters select,
+.filters input {
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    min-width: 150px;
+}
+
+.filters button {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.filters button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* --------------------------------------- PRODUCTOS --------------------------------------- */
+
+.store-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+    padding: 0 20px;
+    margin: 0 auto;
+    max-width: 1300px;
+    width: 100%;
+}
+
+.product-card {
+    background: #f0f4ff;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 280px;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+.product-card:hover {
+    transform: scale(1.03);
+    border-color: #3e64ff;
+    box-shadow: 0 12px 24px rgba(62, 100, 255, 0.25);
+}
+
+/* ✨ Extra: efecto suave de iluminación al fondo */
+.product-card::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(62, 100, 255, 0.08), transparent 70%);
+    transform: rotate(25deg);
+    z-index: 0;
+}
+
+/* Asegura que el contenido esté sobre el pseudo-elemento */
+.product-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+
+.product-image-container {
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.product-info {
+    text-align: center;
+    margin-top: 5px;
+    padding: 0;
+}
+
+
+.product-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.product-price {
+    color: #e67e22;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 5px 0 15px;
+}
+
+.btn-buy {
+    background-color: #f1c40f;
+    color: #1e2a3a;
+    padding: 10px 18px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-buy:hover {
+    background-color: #d4ac0d;
+    transform: scale(1.05);
+}
+
+.auth-warning {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* --------------------------------------- NO HAY PRODUCTOS --------------------------------------- */
+
+.no-products-message {
+    text-align: center;
+    margin-top: 40px;
+    background-color: #fefefe;
+    padding: 30px;
+    border-radius: 10px;
+    color: #2c3e50;
+}
+
+/* --------------------------------------- RESPONSIVE --------------------------------------- */
+
+@media screen and (max-width: 768px) {
+    .filters {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .filters select,
+    .filters input,
+    .filters button {
+        width: 100%;
+    }
+
+    .store-title {
+        font-size: 30px;
+    }
+
+    .product-image-container {
+        height: 180px;
+    }
+
+    .btn-buy {
+        font-size: 14px;
+    }
+}
+</style>
+
+<section class="store-section">
+    <h1 class="store-title">Nuestros Productos</h1>
+
+    {% if request.user.is_authenticated and request.user.is_superuser %}
+    <div class="admin-product-button">
+        <a href="{% url 'lista_productos' %}" class="btn-admin">Administrar Productos</a>
+    </div>
+    {% endif %}
+
+    <!-- Filtros -->
+    <div class="filters-container">
+        <form method="GET" action="{% url 'Tienda' %}" class="filters">
+            <select name="categoria">
+                <option value="">Todas las categorías</option>
+                {% for cat in categorias_disponibles %}
+                    <option value="{{ cat }}" {% if request.GET.categoria == cat %}selected{% endif %}>{{ cat|capfirst }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="marca">
+                <option value="">Todas las marcas</option>
+                {% for mar in marcas_disponibles %}
+                    <option value="{{ mar }}" {% if request.GET.marca == mar %}selected{% endif %}>{{ mar|capfirst }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="edad_recomendada">
+                <option value="">Todas las edades</option>
+                {% for edad in edades_disponibles %}
+                    <option value="{{ edad }}" {% if request.GET.edad_recomendada == edad %}selected{% endif %}>{{ edad|capfirst }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="tamano_mascota">
+                <option value="">Todos los tamaños</option>
+                {% for tam in tamanos_disponibles %}
+                    <option value="{{ tam }}" {% if request.GET.tamano_mascota == tam %}selected{% endif %}>{{ tam|capfirst }}</option>
+                {% endfor %}
+            </select>
+
+            <input type="number" name="min_precio" placeholder="Precio mínimo" value="{{ request.GET.min_precio }}">
+            <input type="number" name="max_precio" placeholder="Precio máximo" value="{{ request.GET.max_precio }}">
+
+            <button type="submit">Filtrar</button>
+        </form>
+    </div>
+
+    <!-- Productos -->
+    <div class="store-container">
+        {% if productos %}
+            {% for producto in productos %}
+                <div class="product-card">
+                    <div class="product-image-container">
+                        {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="product-img">
+                        {% else %}
+                            <img src="{% static 'img/productos/default.png' %}" alt="Imagen no disponible" class="product-img">
+                        {% endif %}
+                    </div>
+                    <div class="producto-info">
+                        <h3 class="product-title">{{ producto.nombre }}</h3>
+                        <p class="product-price">{{ producto.precio }}€</p>
+
+                        <a href="{% url 'producto_detalle' producto.id %}" class="btn-buy">Más Detalles</a>
+
+                        {% if not request.user.is_authenticated %}
+                            <p class="auth-warning">Debes registrarte para comprar</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-products-message">
+                <h4>No hay productos con esas características</h4>
+                <p>Prueba con otros filtros o revisa más tarde.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

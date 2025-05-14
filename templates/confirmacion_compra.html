@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Compra Exitosa - PetRoyale{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <h2>✅ ¡Gracias por tu compra!</h2>
+    <p>Tu pedido <strong>{{ numero_pedido }}</strong> ha sido procesado con éxito.</p>
+    <p>Recibirás un correo con tu recibo.</p>
+    <p class="total-paid">Total pagado: {{ total_con_iva }}€</p>
+    <a href="{% url 'Tienda' %}" class="back-to-store">Volver a la Tienda</a>
+</div>
+{% endblock %}

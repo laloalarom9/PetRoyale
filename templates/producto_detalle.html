@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load filtros_personalizados %}
+
+{% block title %}{{ producto.nombre }} - PetRoyale{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row g-4">
+    <!-- Sección izquierda: Detalle del producto -->
+    <div class="col-12 col-md-5">
+      <div class="card shadow p-3">
+        <div class="text-center mb-3">
+          {% if producto.imagen %}
+            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="img-fluid rounded">
+          {% else %}
+            <img src="{% static 'img/productos/default.png' %}" alt="Imagen no disponible" class="img-fluid rounded">
+          {% endif %}
+        </div>
+        <h2 class="text-center">{{ producto.nombre }}</h2>
+        <p class="text-center text-danger fs-4 fw-bold">{{ producto.precio }}€</p>
+        <p>{{ producto.descripcion|safe }}</p>
+
+        {% if producto.stock_disponible > 0 %}
+          <form method="POST" action="{% url 'agregar_al_carrito' producto.id %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="cantidad">Cantidad:</label>
+              <input type="number" name="cantidad" value="1" min="1" max="{{ producto.stock_disponible }}" class="form-control w-50">
+            </div>
+
+            {% if request.user.is_authenticated %}
+              <button type="submit" class="btn btn-warning w-100 mb-2">🛒 Añadir al carrito</button>
+            {% else %}
+              <p style="color: red;">Debes iniciar sesión para comprar</p>
+            {% endif %}
+          </form>
+        {% else %}
+          <p class="text-danger fw-bold">Este producto está agotado.</p>
+        {% endif %}
+
+        <a href="{% url 'crear_reseña' producto.id %}" class="btn btn-success w-100 mt-2">📝 Añadir reseña</a>
+      </div>
+    </div>
+
+    <!-- Sección derecha: Reseñas -->
+    <div class="col-12 col-md-7">
+      <h3 class="text-center mb-4">Reseñas del producto</h3>
+      {% if reseñas %}
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+          {% for reseña in reseñas %}
+            <div class="col">
+              <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">{{ reseña.usuario.username }}</h5>
+                  <p class="card-text">{{ reseña.contenido }}</p>
+                  <div class="mb-2">
+                    {% for _ in reseña.valoracion|to_range %}
+                      ⭐
+                    {% endfor %}
+                  </div>
+                  <p class="text-muted small">
+                    Publicado el {{ reseña.fecha|date:"d/m/Y H:i" }}
+                  </p>
+
+                  {% if user.is_superuser %}
+                  <!-- Botón para abrir modal -->
+                  <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal{{ reseña.id }}">
+                    Eliminar
+                  </button>
+
+                  <!-- Modal de confirmación -->
+                  <div class="modal fade" id="confirmModal{{ reseña.id }}" tabindex="-1" aria-labelledby="modalLabel{{ reseña.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                          <h5 class="modal-title" id="modalLabel{{ reseña.id }}">¿Estás seguro?</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                          Esta acción eliminará la reseña de <strong>{{ reseña.usuario.username }}</strong>.
+                          <br>¿Deseas continuar?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                          <form method="POST" action="{% url 'eliminar_reseña' reseña.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-center">Este producto aún no tiene reseñas.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

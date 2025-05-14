@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>{% block title %}PetRoyale{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <header class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a href="{% url 'inicio' %}" class="navbar-brand d-flex align-items-center">
+                <img src="{% static 'img/PetRoyaleLogo.png' %}" alt="PetRoyale Logo" class="logo">
+            </a>
+
+            <!-- Botón menú hamburguesa -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Enlaces de navegación -->
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav">
+                    <!-- Siempre visibles -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'inicio' %}">
+                            <img src="{% static 'img/iconos/casa.png' %}" alt="Inicio" class="icon"> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/Tienda/' %}active{% endif %}" href="{% url 'Tienda' %}">
+                            <img src="{% static 'img/iconos/store.png' %}" alt="Tienda" class="icon"> Tienda
+                        </a>
+                    </li>
+                    {% if user.is_authenticated and is_repartidor %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'repartidor' %}">
+                                <img src="{% static 'img/iconos/location.png' %}" alt="Repartidor" class="icon"> Repartidor
+                            </a>
+                        </li>
+                    {% endif %}
+
+
+
+                    <!-- Solo si está autenticado -->
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/suscripciones/' %}active{% endif %}" href="{% url 'suscripciones' %}">
+                                <img src="{% static 'img/iconos/plan.png' %}" alt="Suscripciones" class="icon"> Suscripciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/reseñas/' %}active{% endif %}" href="{% url 'reseñas' %}">
+                                <img src="{% static 'img/iconos/review.png' %}" alt="Reseñas" class="icon"> Reseñas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/pedidos/' %}active{% endif %}" href="{% url 'pedidos' %}">
+                                <img src="{% static 'img/iconos/orders.png' %}" alt="Pedidos" class="icon"> Pedidos
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/faq/' %}active{% endif %}" href="{% url 'faq' %}">
+                            <img src="{% static 'img/iconos/faq.png' %}" alt="FAQ" class="icon"> FAQ
+                        </a>
+                    </li>
+
+                    <!-- Autenticación -->
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/perfil/' %}active{% endif %}" href="{% url 'perfil' %}">
+                                <img src="{% static 'img/iconos/user.png' %}" alt="Perfil" class="icon"> Perfil
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% static avatar_path %}" alt="Avatar" class="icon"> {{ user.first_name }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'login' %}">
+                                <img src="{% static 'img/iconos/login.png' %}" alt="Iniciar sesión" class="icon"> Iniciar sesión
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <!-- Icono del carrito -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/carrito/' %}active{% endif %}" href="{% url 'carrito' %}">
+                            <i class="fas fa-shopping-cart"></i>
+                            {% with request.session.carrito as carrito %}
+                                <span class="cart-count">
+                                    <img src="{% static 'img/iconos/cart.png' %}" alt="Carrito" class="cart-icon-img">
+                                    {{ carrito|length|default:"0" }}
+                                </span>
+                            {% endwith %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mt-5">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

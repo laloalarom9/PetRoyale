@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    h2 {
+        margin-top: 100px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    form {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    select.form-control {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    button.btn {
+        width: 100%;
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    @media (max-width: 576px) {
+        h2 {
+            font-size: 1.3rem;
+        }
+
+        form {
+            padding: 15px;
+            margin-top: 60px;
+        }
+    }
+</style>
+
+<h2>Editar Rol de {{ usuario.username }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="rol">Nuevo Rol:</label>
+    <select name="rol" class="form-control">
+        <option value="administrador" {% if usuario.is_superuser %}selected{% endif %}>Administrador</option>
+        <option value="operador" {% if usuario.groups.first.name == "operador" %}selected{% endif %}>Operador</option>
+        <option value="repartidor" {% if usuario.groups.first.name == "repartidor" %}selected{% endif %}>Repartidor</option>
+        <option value="cliente" {% if usuario.groups.count == 0 %}selected{% endif %}>Cliente</option>
+    </select>
+
+    <button type="submit" class="btn btn-success mt-3">Guardar Cambios</button>
+</form>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Login - PetRoyale{% endblock %}
+
+{% block content %}
+    <div id="login-container">
+        <h2 id="login-title">Iniciar Sesión</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if forloop.first %}
+                    <div class="alert alert-danger" id="login-alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="login-form-group">
+                <label for="login-email" class="login-label">Correo electrónico</label>
+                <input type="email" id="login-email" name="email" required>
+            </div>
+
+            <div class="login-form-group">
+                <label for="login-password" class="login-label">Contraseña</label>
+                <input type="password" id="login-password" name="password" required>
+            </div>
+
+            <button type="submit" id="login-btn">Ingresar</button>
+        </form>
+
+        <p id="login-message">¿No tienes una cuenta? 
+            <a href="{% url 'registro' %}" id="register-link">Regístrate aquí</a>
+        </p>
+
+        <p id="forgot-password">
+            <a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a>
+        </p>
+    </div>
+
+    <script>
+        // Oculta el mensaje después de 4 segundos
+        setTimeout(() => {
+            const alert = document.getElementById('login-alert');
+            if (alert) {
+                alert.style.transition = 'opacity 0.5s ease-out';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.style.display = 'none', 500);
+            }
+        }, 4000);
+    </script>
+{% endblock %}

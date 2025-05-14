@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Suscripciones - PetRoyale{% endblock %}
+
+{% block content %}
+<section class="subscription-section">
+    <h1 class="store-title">Elige tus productos de suscripción</h1>
+    {% if tiene_suscripcion %}
+    <a href="{% url 'gestionar_suscripcion' %}" class="btn-gestionar-suscripcion">
+        🛠️ Gestionar mi suscripción
+    </a>
+    {% endif %}
+
+    
+    <!-- Cambiado el método a GET -->
+    <form method="GET" action="{% url 'seleccionar_suscripcion' %}" class="subscription-form">
+        {% csrf_token %}
+        <div class="plans-grid">
+            {% for producto in productos %}
+                <div class="plan-card">
+                    <input type="checkbox" id="producto_{{ producto.id }}" name="producto_id" value="{{ producto.id }}" class="product-checkbox">
+                    <label for="producto_{{ producto.id }}" class="plan-label">
+                        <h2 class="plan-title">{{ producto.nombre }}</h2>
+                        <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/default.png' %}{% endif %}" class="plan-img" alt="{{ producto.nombre }}">
+                        <p class="plan-price">Desde {{ producto.precio }} €/mes</p>
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+    
+        <!-- 💡 Aquí va el mensaje de error -->
+        <div id="mensaje-error" class="mensaje-error" style="display: none;">
+            ⚠️ Por favor, selecciona al menos un producto antes de continuar con la suscripción.
+        </div>
+    
+        <button type="submit" class="btn-buy">Suscribirse</button>
+    </form>
+    
+
+    <!-- 💡 JavaScript después del formulario -->
+    <script>
+        document.querySelector('.subscription-form').addEventListener('submit', function(event) {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            const algunoSeleccionado = Array.from(checkboxes).some(checkbox => checkbox.checked);
+    
+            const mensaje = document.getElementById('mensaje-error');
+            if (!algunoSeleccionado) {
+                event.preventDefault();
+                mensaje.style.display = 'block';
+            } else {
+                mensaje.style.display = 'none';
+            }
+        });
+    </script>
+    
+</section>
+{% endblock %}

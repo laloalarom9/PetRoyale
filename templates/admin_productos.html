@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="admin-container">
+    <h2 class="admin-title">Administración de Productos</h2>
+    
+    <a href="{% url 'agregar_producto' %}" class="btn-add">Añadir Producto</a>
+    
+    <div class="table-responsive">
+        <table class="product-table">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>
+                        <div class="admin-product-image-container">
+                            {% if producto.imagen %}
+                                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="admin-product-img">
+                            {% else %}
+                                <img src="{% static 'img/productos/default.png' %}" alt="Sin imagen" class="admin-product-img">
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>{{ producto.nombre }}</td>
+                    <td>€{{ producto.precio }}</td>
+                    <td>{{ producto.stock }}</td>
+                    <td>
+                        <a href="{% url 'editar_producto' producto.id %}" class="btn-edit">Editar</a>
+                        <a href="{% url 'eliminar_producto' producto.id %}" class="btn-delete" onclick="return confirm('¿Eliminar producto?');">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+<!-- CSS Styles -->

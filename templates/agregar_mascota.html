@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Registrar Mascota{% endblock %}
+
+{% block content %}
+<style>
+.registro-mascota-section {
+    margin-top: 130px;
+    padding: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #f9f9f9;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+.registro-title {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+.registro-mascota-form .form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.registro-mascota-form label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.registro-mascota-form input,
+.registro-mascota-form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+.form-errors {
+    background-color: #ffe6e6;
+    border: 1px solid #ff5e5e;
+    padding: 15px;
+    border-radius: 10px;
+    color: #a94442;
+    margin-bottom: 20px;
+}
+.form-errors ul {
+    margin: 0;
+    padding-left: 20px;
+}
+.btn-explorar {
+    display: block;
+    margin: 0 auto;
+    padding: 12px 24px;
+    background-color: #fdd835;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.btn-explorar:hover {
+    background-color: #fbc02d;
+}
+
+.volver-perfil {
+    text-align: center;
+    margin-top: 20px;
+}
+.volver-perfil a {
+    background-color: #b0bec5;
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+.volver-perfil a:hover {
+    background-color: #90a4ae;
+}
+
+@media screen and (max-width: 768px) {
+    .registro-title {
+        font-size: 26px;
+    }
+    .registro-mascota-section {
+        padding: 20px;
+        margin-top: 100px;
+    }
+}
+@media screen and (max-width: 480px) {
+    .registro-title {
+        font-size: 22px;
+    }
+    .registro-mascota-section {
+        padding: 15px;
+        margin-top: 90px;
+    }
+    .btn-explorar {
+        width: 100%;
+    }
+}
+</style>
+
+<section class="registro-mascota-section">
+    <h1 class="registro-title">🐾 Registrar nueva mascota</h1>
+
+    <form method="POST" action="{% url 'agregar_mascota' %}" enctype="multipart/form-data" class="registro-mascota-form">
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="form-errors">
+                <p>⚠️ Corrige los errores abajo:</p>
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="id_nombre">Nombre</label>
+            {{ form.nombre }}
+        </div>
+        <div class="form-group">
+            <label for="id_especie">Especie</label>
+            {{ form.especie }}
+        </div>
+        <div class="form-group">
+            <label for="id_raza">Raza</label>
+            {{ form.raza }}
+        </div>
+        <div class="form-group">
+            <label for="id_fecha_nacimiento">Fecha de nacimiento</label>
+            {{ form.fecha_nacimiento }}
+        </div>
+        <div class="form-group">
+            <label for="id_foto">Foto</label>
+            {{ form.foto }}
+        </div>
+
+        <button type="submit" class="btn-explorar">Guardar mascota</button>
+    </form>
+
+    <div class="volver-perfil">
+        <a href="{% url 'perfil' %}">← Volver al perfil</a>
+    </div>
+</section>
+{% endblock %}

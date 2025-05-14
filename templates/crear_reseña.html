@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Dejar Reseña - PetRoyale{% endblock %}
+
+{% block content %}
+<section class="container mt-5">
+  <h2 class="text-center mb-4">Dejar una Reseña para <strong>{{ producto.nombre }}</strong></h2>
+
+  <form method="POST" class="mx-auto" style="max-width: 600px;">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary w-100 mt-3">Enviar Reseña</button>
+  </form>
+</section>
+{% endblock %}

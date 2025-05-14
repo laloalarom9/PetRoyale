@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Recibo de Compra - PetRoyale</title>
+</head>
+<body>
+    <h2>¡Gracias por tu compra en PetRoyale! 🐶🐱</h2>
+    <p>Fecha: {{ fecha_compra }}</p>
+    <p>Número de Pedido: <strong>{{ numero_pedido }}</strong></p>
+
+    <h3>Resumen de compra:</h3>
+    <ul>
+        {% for item in productos_comprados %}
+            <li>{{ item.nombre }} x {{ item.cantidad }} - {{ item.precio }}€ c/u (Subtotal: {{ item.subtotal }}€)</li>
+        {% endfor %}
+    </ul>
+
+    <p><strong>Subtotal: </strong> {{ total }}€</p>
+    <p><strong>IVA (21%): </strong> {{ iva }}€</p>
+    <p><strong>Total con IVA: </strong> {{ total_con_iva }}€</p>
+
+    <p>Tu recibo está adjunto a este correo.</p>
+    <p>¡Esperamos verte pronto en <strong>PetRoyale</strong>! 🐾</p>
+</body>
+</html>

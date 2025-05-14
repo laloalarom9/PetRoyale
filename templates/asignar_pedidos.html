@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Asignar Pedidos a Ruta - PetRoyale{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Asignar Pedidos a una Ruta</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" class="card p-3">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="nombre_ruta" class="form-label">Nombre de la Ruta:</label>
+            <input type="text" class="form-control" id="nombre_ruta" name="nombre_ruta" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="repartidor" class="form-label">Seleccionar Repartidor:</label>
+            <select class="form-select" id="repartidor" name="repartidor" required>
+                <option value="" disabled selected>-- Seleccionar Repartidor --</option>
+                {% for repartidor in repartidores %}
+                    <option value="{{ repartidor.id }}">{{ repartidor.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="pedidos" class="form-label">Seleccionar Pedidos:</label>
+            <select name="pedidos" id="pedidos" class="form-select" multiple size="10" required>
+                {% for pedido in pedidos %}
+                    <option value="{{ pedido.id }}">
+                        Pedido #{{ pedido.id }} - {{ pedido.usuario.username }} - {{ pedido.usuario.direccion }}
+                    </option>
+                {% empty %}
+                    <option disabled>No hay pedidos pendientes de asignación.</option>
+                {% endfor %}
+            </select>
+            <small class="form-text text-muted">Mantén pulsado Ctrl (o Cmd en Mac) para seleccionar varios pedidos.</small>
+        </div>
+
+        <div class="text-center mt-3">
+            <button type="submit" class="btn btn-primary">Asignar Ruta</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .container {
+        max-width: 900px;
+        margin: auto;
+    }
+    .card {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+    .form-select[multiple] {
+        height: auto;
+        min-height: 300px;
+    }
+</style>
+
+{% endblock %}

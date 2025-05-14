@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Registro - PetRoyale{% endblock %}
+
+{% block content %}
+    <div id="registro-container">
+        <h2 id="registro-title">Crear una Cuenta</h2>
+
+        {% if messages %}
+        <div class="alert-container">
+            {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    
+        <form method="POST" action="{% url 'registro' %}">
+            {% csrf_token %}
+
+            <div class="registro-form-group">
+                <label for="username">Nombre de Usuario</label>
+                <input type="text" id="username" name="username" value="{{ username|default:'' }}" required>
+            </div>
+
+            <div class="registro-form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" value="{{ nombre|default:'' }}" required>
+            </div>
+
+            <div class="registro-form-group">
+                <label for="apellido">Primer Apellido</label>
+                <input type="text" id="apellido" name="apellido" value="{{ apellido|default:'' }}" required>
+            </div>
+
+            <div class="registro-form-group">
+                <label for="apellido2">Segundo Apellido (Opcional)</label>
+                <input type="text" id="apellido2" name="apellido2" value="{{ apellido2|default:'' }}">
+            </div>
+
+            <div class="registro-form-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" name="email" value="{{ email|default:'' }}" required>
+            </div>
+
+            <div class="registro-form-group">
+                <label for="num_tel">Número de Teléfono</label>
+                <input type="tel" id="num_tel" name="num_tel" maxlength="15" value="{{ num_tel|default:'' }}">
+            </div>
+
+            <div class="registro-form-group">
+                <label for="password1">Contraseña</label>
+                <input type="password" id="password1" name="password1" required>
+            </div>
+
+            <div class="registro-form-group">
+                <label for="password2">Confirmar Contraseña</label>
+                <input type="password" id="password2" name="password2" required>
+            </div>
+
+            <div class="registro-form-group">
+                <label for="genero">Género</label>
+                <select id="genero" name="genero" required>
+                    <option value="" disabled {% if not genero %}selected{% endif %}>Selecciona una opción</option>
+                    <option value="hombre" {% if genero == "hombre" %}selected{% endif %}>Hombre</option>
+                    <option value="mujer" {% if genero == "mujer" %}selected{% endif %}>Mujer</option>
+                </select>
+            </div>
+
+            <div class="registro-form-group">
+                <label for="cuenta_bancaria">Cuenta Bancaria</label>
+                <input type="text" id="cuenta_bancaria" name="cuenta_bancaria" value="{{ cuenta_bancaria|default:'' }}">
+            </div>
+
+            <div class="registro-form-group">
+                <label for="direccion">Dirección</label>
+                <input type="text" id="direccion" name="direccion" value="{{ direccion|default:'' }}">
+            </div>
+
+            <button type="submit" id="registro-btn">Registrarse</button>
+        </form>
+
+        <p id="login-message">¿Ya tienes una cuenta? 
+            <a href="{% url 'login' %}" id="login-link">Inicia sesión aquí</a>
+        </p>
+    </div>
+{% endblock %}
