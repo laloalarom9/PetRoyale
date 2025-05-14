@@ -31,7 +31,7 @@ from .models import Refugio, Producto, Pedido, DetallePedido
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
+import random
 User = get_user_model()  # Obtener el modelo de usuario personalizado
 
 def registro_view(request):
@@ -697,9 +697,12 @@ def procesar_compra(request):
                 mascota_id = datos.get("mascota_id")
                 mascota = Mascota.objects.filter(id=mascota_id, propietario=request.user).first() if mascota_id else None
 
+
+                numero_pedido = generar_numero_pedido_unico("SUS")  # ✅ Genera un número único
+
                 pedido = Pedido.objects.create(
                     usuario=request.user,
-                    numero_pedido=f"SUS-{now().strftime('%Y%m%d%H%M%S')}",
+                    numero_pedido=numero_pedido,  # ✅ Usa el número único
                     fecha_pedido=now(),
                     total=subtotal,
                     iva=(subtotal * Decimal("0.21")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
@@ -745,6 +748,7 @@ def procesar_compra(request):
             try:
                 producto = Producto.objects.get(id=datos["producto_id"])
                 duracion = int(datos["duracion"])
+                numero_pedido = generar_numero_pedido_unico("SUS")
                 mascota_id = datos.get("mascota_id")
                 mascota = Mascota.objects.filter(id=mascota_id, propietario=request.user).first() if mascota_id else None
 
@@ -1685,3 +1689,12 @@ def confirmar_donacion(request):
         })
 
     return redirect("donaciones")
+
+
+import random  # Asegúrate de tener este import arriba también
+
+def generar_numero_pedido_unico(prefijo):
+    while True:
+        numero = f"{prefijo}-{now().strftime('%Y%m%d%H%M%S')}-{random.randint(1000, 9999)}"
+        if not Pedido.objects.filter(numero_pedido=numero).exists():
+            return numero
